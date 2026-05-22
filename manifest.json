@@ -2,7 +2,7 @@
   "name": "NetScope India ",
   "short_name": "NetScope",
   "description": "AI Powered Telecom Intelligence Platform",
-  "start_url": "https://bhavingarg121-glitch.github.io/net_scope/",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#050816",
   "theme_color": "#050816",
@@ -11,12 +11,12 @@
     {
       "src": "Icon.png",
       "sizes": "192x192",
-      "type": "png"
+      "type": "image/png"
     },
     {
       "src": "Icon.png",
       "sizes": "512x512",
-      "type": "png"
+      "type": "image/png"
     }
   ]
 }
