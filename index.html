@@ -3,77 +3,65 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>NetScope AI Telecom Control Center</title>
-
-<!-- TensorFlow -->
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.20.0/dist/tf.min.js"></script>
-  <script src="app.js"></script>
-<script type="module" src="firebase.js"></script>
+<title>NetScope AI Telecom Comparator</title>
 
 <!-- Leaflet -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
 
 <style>
 body{
 margin:0;
+font-family:Arial;
 background:#050816;
 color:white;
-font-family:Poppins, sans-serif;
 overflow:hidden;
 }
 
-/* MAP */
 #map{
 width:100%;
 height:100vh;
 }
 
-/* GLASS PANEL */
+/* PANEL */
 .panel{
 position:absolute;
 top:15px;
 left:15px;
-width:340px;
+width:320px;
 background:rgba(255,255,255,0.08);
-backdrop-filter:blur(18px);
-padding:18px;
-border-radius:18px;
+backdrop-filter:blur(15px);
+padding:15px;
+border-radius:15px;
 z-index:999;
-border:1px solid rgba(255,255,255,0.1);
 }
 
-/* BUTTON */
-.btn{
+select,button{
 width:100%;
-padding:12px;
+padding:10px;
 margin-top:10px;
 border:none;
-border-radius:12px;
-background:linear-gradient(45deg,#00c6ff,#0072ff);
+border-radius:10px;
+}
+
+button{
+background:#00c6ff;
 color:white;
 font-weight:bold;
 cursor:pointer;
-transition:0.3s;
 }
 
-.btn:hover{
-transform:translateY(-2px);
-}
-
-/* CARDS */
-.card{
+/* RESULT BOX */
+.box{
 margin-top:10px;
 padding:10px;
 background:#101935;
-border-radius:12px;
+border-radius:10px;
 font-size:13px;
-line-height:1.5;
 }
 
-/* TOP DASHBOARD */
-.topbar{
+/* TOP STATS */
+.top{
 position:absolute;
 top:15px;
 right:15px;
@@ -85,62 +73,43 @@ z-index:999;
 
 .stat{
 background:rgba(255,255,255,0.08);
-padding:12px;
-border-radius:12px;
+padding:10px;
+border-radius:10px;
 text-align:center;
-border:1px solid rgba(255,255,255,0.1);
 }
 
-.stat b{
-font-size:18px;
-}
-
-/* STATUS COLORS */
-.low{color:#00ff88}
-.med{color:#ffd000}
-.high{color:#ff4d4d}
-
-h3{
-margin:0;
-margin-bottom:10px;
-}
-
-.small{
-font-size:12px;
-opacity:0.7;
-}
+.good{color:#00ff88}
+.mid{color:#ffd000}
+.bad{color:#ff4d4d}
 </style>
 </head>
 
 <body>
 
-<!-- CONTROL PANEL -->
 <div class="panel">
-<h3>📡 NetScope AI Telecom</h3>
-<div class="small">India Real-Time Network Intelligence</div>
+<h3>📡 NetScope Telecom Comparator</h3>
 
-<button class="btn" onclick="startTest()">🚀 Run Network Test</button>
+<select id="operator">
+<option>Jio</option>
+<option>Airtel</option>
+<option>Vi</option>
+<option>BSNL</option>
+</select>
 
-<div class="card" id="status">Status: Waiting for test...</div>
-<div class="card" id="ai">AI: Initializing neural network...</div>
-<div class="card" id="risk">Risk: --</div>
+<button onclick="runTest()">🚀 Start Network Test</button>
 
-<div class="card">
-📶 Live Signal Monitoring<br>
-🧠 AI Prediction Engine<br>
-🛰️ Satellite + Tower Fusion Layer
-</div>
-</div>
-
-<!-- DASHBOARD -->
-<div class="topbar">
-<div class="stat">Speed<br><b id="speed">0</b> Mbps</div>
-<div class="stat">Ping<br><b id="ping">0</b> ms</div>
-<div class="stat">Users<br><b id="users">500</b></div>
-<div class="stat">Outages<br><b id="outages">0</b></div>
+<div class="box" id="status">Waiting...</div>
+<div class="box" id="selected">Selected: --</div>
+<div class="box" id="compare">Comparison: --</div>
 </div>
 
-<!-- MAP -->
+<div class="top">
+<div class="stat">Speed<br><b id="speed">0</b></div>
+<div class="stat">Ping<br><b id="ping">0</b></div>
+<div class="stat">Signal<br><b id="signal">0</b></div>
+<div class="stat">Quality<br><b id="quality">--</b></div>
+</div>
+
 <div id="map"></div>
 
 <script>
@@ -152,153 +121,85 @@ L.tileLayer(
 ).addTo(map);
 
 /* ================= TOWERS ================= */
-const towers = [
-[28.61,77.20],[19.07,72.87],[13.08,80.27],
-[22.57,88.36],[26.91,75.78]
-];
+const towers = {
+"Jio":[[28.6,77.2],[19.1,72.8]],
+"Airtel":[[28.7,77.1],[13.0,80.2]],
+"Vi":[[19.0,72.9],[22.5,88.3]],
+"BSNL":[[26.9,75.8],[17.4,78.4]]
+};
 
-towers.forEach(t=>{
+function drawTowers(){
+Object.keys(towers).forEach(op=>{
+towers[op].forEach(t=>{
 L.circle(t,{
 radius:50000,
 color:"#00ff88",
 fillOpacity:0.05
-}).addTo(map);
+}).addTo(map).bindPopup(op+" Tower");
+});
+});
+}
+drawTowers();
+
+/* ================= SIGNAL MODEL ================= */
+function signalStrength(lat,lng,op){
+
+let base = 0;
+
+towers[op].forEach(t=>{
+let d = Math.hypot(lat-t[0], lng-t[1]);
+base += 1/(d+0.1);
 });
 
-/* ================= SATELLITE LAYER ================= */
-for(let i=0;i<6;i++){
-L.circle([
-20 + Math.random()*10,
-70 + Math.random()*20
-],{
-radius:200000,
-color:"#00c6ff",
-fillOpacity:0.03
-}).addTo(map);
+return Math.min(base*60,100);
 }
 
-/* ================= HEAT ================= */
-L.heatLayer([
-[28.61,77.20,0.9],
-[19.07,72.87,0.8],
-[13.08,80.27,0.7]
-],{radius:40}).addTo(map);
+/* ================= QUALITY ================= */
+function quality(speed,ping,signal){
 
-/* ================= AI MODEL ================= */
-let model;
+let q = (speed*0.5) + (signal*0.4) - (ping*0.3);
 
-async function initAI(){
-model = tf.sequential();
+if(q>70) return {text:"EXCELLENT",cls:"good"};
+if(q>40) return {text:"GOOD",cls:"mid"};
+return {text:"POOR",cls:"bad"};
+}
 
-model.add(tf.layers.dense({
-units:16,
-inputShape:[3],
-activation:"relu"
-}));
+/* ================= COMPARE ================= */
+function compareAll(lat,lng){
 
-model.add(tf.layers.dense({
-units:1,
-activation:"sigmoid"
-}));
+let results = [];
 
-model.compile({
-optimizer:"adam",
-loss:"binaryCrossentropy"
+Object.keys(towers).forEach(op=>{
+let s = signalStrength(lat,lng,op);
+results.push({op,signal:s});
 });
 
-document.getElementById("ai").innerHTML =
-"🧠 AI Engine: Neural Network Ready";
+results.sort((a,b)=>b.signal-a.signal);
+
+return results;
 }
-
-initAI();
-
-/* ================= SIGNAL ================= */
-function signal(lat,lng){
-let s=0;
-towers.forEach(t=>{
-let d=Math.hypot(lat-t[0],lng-t[1]);
-s += 1/(d+0.1);
-});
-return Math.min(s*55,100);
-}
-
-/* ================= PREDICT ================= */
-function predict(speed,ping,users){
-const input=tf.tensor2d([[speed/100,ping/100,users/1000]]);
-const out=model.predict(input);
-return out.dataSync()[0];
-}
-
-/* ================= STATE ================= */
-let users=500;
-let outages=0;
 
 /* ================= TEST ENGINE ================= */
-function startTest(){
+function runTest(){
+
+const op = document.getElementById("operator").value;
 
 navigator.geolocation.getCurrentPosition(pos=>{
 
-const lat=pos.coords.latitude;
-const lng=pos.coords.longitude;
+const lat = pos.coords.latitude;
+const lng = pos.coords.longitude;
 
-const speed=Math.random()*100;
-const ping=Math.random()*60;
+/* fake but realistic values */
+const speed = Math.random()*100;
+const ping = Math.random()*60;
 
-const sig=signal(lat,lng);
-const risk=predict(speed,ping,users);
+const signal = signalStrength(lat,lng,op);
+const q = quality(speed,ping,signal);
 
-document.getElementById("speed").innerText=Math.round(speed);
-document.getElementById("ping").innerText=Math.round(ping);
-document.getElementById("users").innerText=users;
+/* UI */
+document.getElementById("speed").innerText = Math.round(speed);
+document.getElementById("ping").innerText = Math.round(ping);
+document.getElementById("signal").innerText = Math.round(signal);
 
-let level="LOW 🟢";
-let cls="low";
-
-if(risk>0.7){
-level="HIGH 🔴";
-cls="high";
-}
-else if(risk>0.4){
-level="MEDIUM 🟠";
-cls="med";
-}
-
-document.getElementById("risk").innerHTML=
-`Risk: <span class="${cls}">${level}</span>`;
-
-document.getElementById("status").innerText=
-`Speed ${Math.round(speed)} Mbps | Ping ${Math.round(ping)} ms | Signal ${Math.round(sig)}`;
-
-L.circleMarker([lat,lng],{
-radius:10,
-color: risk>0.7?"red":"#00ff88",
-fillOpacity:0.9
-}).addTo(map);
-
-map.setView([lat,lng],10);
-
-if(risk>0.7 || sig<20){
-outages++;
-document.getElementById("outages").innerText=outages;
-
-L.circle([lat,lng],{
-radius:40000,
-color:"red",
-fillOpacity:0.08
-}).addTo(map);
-}
-
-});
-
-}
-
-/* ================= LIVE SIM ================= */
-setInterval(()=>{
-users += Math.floor(Math.random()*10);
-document.getElementById("users").innerText=users;
-},3000);
-
-</script>
-
-</body>
-</html>
+document.getElementById("quality").innerHTML =
+`<span class="${q.cls}">${q 
