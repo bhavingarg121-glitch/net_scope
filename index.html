@@ -3,10 +3,13 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>NetScope AI Telecom Comparator</title>
+<title>NetScope Telecom AI Comparator</title>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<!-- CHART.JS -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 body{
@@ -22,12 +25,11 @@ width:100%;
 height:100vh;
 }
 
-/* PANEL */
 .panel{
 position:absolute;
 top:15px;
 left:15px;
-width:340px;
+width:360px;
 background:rgba(255,255,255,0.08);
 backdrop-filter:blur(15px);
 padding:15px;
@@ -58,22 +60,16 @@ border-radius:10px;
 font-size:13px;
 }
 
-/* TOP */
 .top{
 position:absolute;
 top:15px;
 right:15px;
-display:grid;
-grid-template-columns:repeat(2,140px);
-gap:10px;
+width:320px;
 z-index:999;
-}
-
-.stat{
 background:rgba(255,255,255,0.08);
 padding:10px;
 border-radius:10px;
-text-align:center;
+backdrop-filter:blur(10px);
 }
 
 .good{color:#00ff88}
@@ -85,7 +81,7 @@ text-align:center;
 <body>
 
 <div class="panel">
-<h3>📡 NetScope Telecom Comparator</h3>
+<h3>📡 Telecom AI Comparator</h3>
 
 <select id="operator">
 <option>Jio</option>
@@ -94,24 +90,17 @@ text-align:center;
 <option>BSNL</option>
 </select>
 
-<button onclick="runTest()">🚀 Start Network Test</button>
+<button onclick="runTest()">🚀 Run Test</button>
 
-<div class="box" id="status">Waiting for test...</div>
-<div class="box" id="selected">Selected: --</div>
-<div class="box" id="compare">Comparison: --</div>
-</div>
+<div class="box" id="status">Waiting...</div>
+<div class="box" id="best">Best Network: --</div>
 
-<div class="top">
-<div class="stat">Speed<br><b id="speed">0</b></div>
-<div class="stat">Ping<br><b id="ping">0</b></div>
-<div class="stat">Signal<br><b id="signal">0</b></div>
-<div class="stat">Quality<br><b id="quality">--</b></div>
+<canvas id="chart" height="180"></canvas>
 </div>
 
 <div id="map"></div>
 
 <script>
-/* ================= MAP ================= */
 const map = L.map("map").setView([22.9734,78.6569],5);
 
 L.tileLayer(
@@ -120,114 +109,115 @@ L.tileLayer(
 
 /* ================= TOWERS ================= */
 const towers = {
-  "Jio":[[28.6,77.2],[19.1,72.8]],
-  "Airtel":[[28.7,77.1],[13.0,80.2]],
-  "Vi":[[19.0,72.9],[22.5,88.3]],
-  "BSNL":[[26.9,75.8],[17.4,78.4]]
+Jio:[[28.6,77.2],[19.1,72.8]],
+Airtel:[[28.7,77.1],[13.0,80.2]],
+Vi:[[19.0,72.9],[22.5,88.3]],
+BSNL:[[26.9,75.8],[17.4,78.4]]
 };
 
-/* ================= DRAW TOWERS ================= */
-Object.keys(towers).forEach(op=>{
-  towers[op].forEach(t=>{
-    L.circle(t,{
-      radius:50000,
-      color:"#00ff88",
-      fillOpacity:0.05
-    }).addTo(map).bindPopup(op+" Tower");
-  });
+/* ================= SIGNAL ================= */
+function signal(lat,lng,op){
+let s=0;
+towers[op].forEach(t=>{
+let d=Math.hypot(lat-t[0],lng-t[1]);
+s+=1/(d+0.1);
+});
+return Math.min(s*60,100);
+}
+
+/* ================= DATA STORAGE ================= */
+let labels = [];
+let jioData = [];
+let airtelData = [];
+let viData = [];
+let bsnlData = [];
+
+/* ================= CHART ================= */
+const ctx = document.getElementById("chart");
+
+const chart = new Chart(ctx,{
+type:"bar",
+data:{
+labels:["Jio","Airtel","Vi","BSNL"],
+datasets:[{
+label:"Network Score",
+data:[0,0,0,0],
+backgroundColor:["#00ff88","#00c6ff","#ffd000","#ff4d4d"]
+}]
+},
+options:{
+responsive:true,
+plugins:{legend:{display:false}}
+}
 });
 
-/* ================= SIGNAL ================= */
-function signalStrength(lat,lng,op){
-  let base = 0;
-
-  towers[op].forEach(t=>{
-    let d = Math.hypot(lat-t[0], lng-t[1]);
-    base += 1/(d+0.1);
-  });
-
-  return Math.min(base*60,100);
+/* ================= QUALITY SCORE ================= */
+function score(speed,ping,signal){
+return (speed*0.5)+(signal*0.4)-(ping*0.3);
 }
 
-/* ================= QUALITY ================= */
-function quality(speed,ping,signal){
-
-  let q = (speed*0.5) + (signal*0.4) - (ping*0.3);
-
-  if(q > 70) return {text:"EXCELLENT", cls:"good"};
-  if(q > 40) return {text:"GOOD", cls:"mid"};
-  return {text:"POOR", cls:"bad"};
+/* ================= UPDATE GRAPH ================= */
+function updateGraph(j,a,v,b){
+chart.data.datasets[0].data=[j,a,v,b];
+chart.update();
 }
 
-/* ================= COMPARE ALL ================= */
-function compareAll(lat,lng){
-
-  let results = [];
-
-  Object.keys(towers).forEach(op=>{
-    let s = signalStrength(lat,lng,op);
-    results.push({op, signal:s});
-  });
-
-  results.sort((a,b)=>b.signal-a.signal);
-
-  return results;
-}
-
-/* ================= TEST ENGINE ================= */
+/* ================= MAIN TEST ================= */
 function runTest(){
 
-  const op = document.getElementById("operator").value;
+navigator.geolocation.getCurrentPosition(pos=>{
 
-  if(!navigator.geolocation){
-    alert("Geolocation not supported");
-    return;
-  }
+const lat=pos.coords.latitude;
+const lng=pos.coords.longitude;
 
-  navigator.geolocation.getCurrentPosition(pos=>{
+const speed=Math.random()*100;
+const ping=Math.random()*60;
 
-    const lat = pos.coords.latitude;
-    const lng = pos.coords.longitude;
+/* scores */
+const jio = score(speed,ping,signal(lat,lng,"Jio"));
+const airtel = score(speed,ping,signal(lat,lng,"Airtel"));
+const vi = score(speed,ping,signal(lat,lng,"Vi"));
+const bsnl = score(speed,ping,signal(lat,lng,"BSNL"));
 
-    const speed = Math.random()*100;
-    const ping = Math.random()*60;
+/* store history */
+jioData.push(jio);
+airtelData.push(airtel);
+viData.push(vi);
+bsnlData.push(bsnl);
 
-    const signal = signalStrength(lat,lng,op);
-    const q = quality(speed,ping,signal);
+updateGraph(
+jio.toFixed(2),
+airtel.toFixed(2),
+vi.toFixed(2),
+bsnl.toFixed(2)
+);
 
-    /* UI */
-    document.getElementById("speed").innerText = Math.round(speed);
-    document.getElementById("ping").innerText = Math.round(ping);
-    document.getElementById("signal").innerText = Math.round(signal);
+/* BEST NETWORK */
+let best = "Jio";
+let max = jio;
 
-    document.getElementById("quality").innerHTML =
-      `<span class="${q.cls}">${q.text}</span>`;
+if(airtel>max){max=airtel;best="Airtel";}
+if(vi>max){max=vi;best="Vi";}
+if(bsnl>max){best="BSNL";}
 
-    document.getElementById("status").innerText =
-      `Speed ${Math.round(speed)} Mbps | Ping ${Math.round(ping)} ms | Signal ${Math.round(signal)}`;
+/* UI */
+document.getElementById("status").innerHTML=
+`Speed: ${speed.toFixed(1)} Mbps<br>
+Ping: ${ping.toFixed(1)} ms`;
 
-    document.getElementById("selected").innerText =
-      `Selected Operator: ${op}`;
+document.getElementById("best").innerHTML=
+"🏆 Best Network: <b style='color:#00ff88'>"+best+"</b>";
 
-    /* COMPARE */
-    const comp = compareAll(lat,lng);
-    document.getElementById("compare").innerHTML =
-      `Best Network: ${comp[0].op} (${comp[0].signal.toFixed(1)})`;
+/* MAP MARKER */
+L.circleMarker([lat,lng],{
+radius:8,
+color:"#00ff88"
+}).addTo(map);
 
-    /* MAP MARKER */
-    L.circleMarker([lat,lng],{
-      radius:10,
-      color:"#00c6ff",
-      fillOpacity:0.9
-    }).addTo(map);
+map.setView([lat,lng],10);
 
-    map.setView([lat,lng],10);
-
-  },
-  ()=> alert("Location access denied"));
-
+});
 }
-
 </script>
 
 </body>
