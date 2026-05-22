@@ -2,7 +2,20 @@
 // NETSCOPE INDIA ULTRA PRO v3
 // AI + FIREBASE + REALTIME ENGINE
 // ==========================
+import { collection, onSnapshot } from "firebase/firestore";
 
+onSnapshot(collection(window.db, "outages"), (snapshot) => {
+    snapshot.docChanges().forEach((change) => {
+
+        if (change.type === "added") {
+            const data = change.doc.data();
+
+            showOutageAlert(data);
+            updateOutageUI(data);
+        }
+
+    });
+});
 // ==========================
 // MAP INIT
 // ==========================
