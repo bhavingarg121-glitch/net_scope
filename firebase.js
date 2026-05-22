@@ -1,64 +1,231 @@
 // ==========================
-// FIREBASE CONFIG
+// NETSCOPE INDIA
 // firebase.js
 // ==========================
 
-// IMPORTS
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+// FIREBASE IMPORTS
+import {
+
+    initializeApp
+
+}
+
+from
+
+"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
 import {
+
+    getAnalytics
+
+}
+
+from
+
+"https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
+
+import {
+
     getFirestore,
+
     collection,
-    addDoc
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+    addDoc,
 
-// YOUR FIREBASE CONFIG
-// Replace with your Firebase project config
+    serverTimestamp
+
+}
+
+from
+
+"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+// ==========================
+// FIREBASE CONFIG
+// ==========================
 
 const firebaseConfig = {
 
-    apiKey: "YOUR_API_KEY",
+    apiKey:
+    "AIzaSyBG-HUAwA7eJEqQLZUAWJ2KcGSzWjnb-h0",
 
-    authDomain: "YOUR_PROJECT.firebaseapp.com",
+    authDomain:
+    "netscope-e7974.firebaseapp.com",
 
-    projectId: "YOUR_PROJECT_ID",
+    projectId:
+    "netscope-e7974",
 
-    storageBucket: "YOUR_PROJECT.appspot.com",
+    storageBucket:
+    "netscope-e7974.firebasestorage.app",
 
-    messagingSenderId: "123456789",
+    messagingSenderId:
+    "813986350854",
 
-    appId: "YOUR_APP_ID"
+    appId:
+    "1:813986350854:web:380209d5fb7f7d274b0087",
+
+    measurementId:
+    "G-LBFVYCPHVM"
 
 };
 
-
+// ==========================
 // INITIALIZE FIREBASE
-const app = initializeApp(firebaseConfig);
+// ==========================
+
+const app =
+initializeApp(firebaseConfig);
+
+// ANALYTICS
+const analytics =
+getAnalytics(app);
 
 // FIRESTORE DATABASE
-const db = getFirestore(app);
+const db =
+getFirestore(app);
 
+// ==========================
+// SAVE SPEED TEST
+// ==========================
 
-// SAVE TEST FUNCTION
-async function saveTestResult(data) {
+async function saveTestResult(data){
 
-    try {
+    try{
 
-        // ADD TO COLLECTION
-        await addDoc(collection(db, "speedtests"), data);
+        await addDoc(
 
-        console.log("✅ Data saved to Firebase");
+            collection(
+                db,
+                "speedtests"
+            ),
+
+            {
+
+                ...data,
+
+                createdAt:
+                serverTimestamp()
+
+            }
+
+        );
+
+        console.log(
+            "✅ Speed Test Saved"
+        );
 
     }
-    catch (error) {
 
-        console.error("❌ Firebase Error:", error);
+    catch(error){
+
+        console.error(
+            "❌ Firebase Error:",
+            error
+        );
 
     }
 
 }
 
+// ==========================
+// SAVE AI INSIGHTS
+// ==========================
 
-// EXPORT
-window.saveTestResult = saveTestResult;
+async function saveAIInsight(insight){
+
+    try{
+
+        await addDoc(
+
+            collection(
+                db,
+                "aiInsights"
+            ),
+
+            {
+
+                message:
+                insight,
+
+                createdAt:
+                serverTimestamp()
+
+            }
+
+        );
+
+        console.log(
+            "✅ AI Insight Saved"
+        );
+
+    }
+
+    catch(error){
+
+        console.error(
+            "❌ AI Error:",
+            error
+        );
+
+    }
+
+}
+
+// ==========================
+// SAVE LIVE ACTIVITY
+// ==========================
+
+async function saveActivity(activity){
+
+    try{
+
+        await addDoc(
+
+            collection(
+                db,
+                "activities"
+            ),
+
+            {
+
+                activity:
+                activity,
+
+                createdAt:
+                serverTimestamp()
+
+            }
+
+        );
+
+        console.log(
+            "✅ Activity Saved"
+        );
+
+    }
+
+    catch(error){
+
+        console.error(
+            "❌ Activity Error:",
+            error
+        );
+
+    }
+
+}
+
+// ==========================
+// EXPORT FUNCTIONS
+// ==========================
+
+window.saveTestResult =
+saveTestResult;
+
+window.saveAIInsight =
+saveAIInsight;
+
+window.saveActivity =
+saveActivity;
+
+window.db = db;
