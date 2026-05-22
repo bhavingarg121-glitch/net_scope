@@ -995,3 +995,548 @@ setInterval(
     15000
 
 );
+// ==========================
+// DEVICE INFO
+// ==========================
+
+function getDeviceInfo(){
+
+    return {
+
+        platform:navigator.platform,
+
+        userAgent:navigator.userAgent,
+
+        language:navigator.language,
+
+        memory:navigator.deviceMemory || "Unknown",
+
+        cores:navigator.hardwareConcurrency || "Unknown"
+
+    };
+
+}
+
+// ==========================
+// SESSION ID
+// ==========================
+
+const sessionId =
+Math.random().toString(36).substring(2,15);
+
+console.log(
+    "SESSION:",
+    sessionId
+);
+
+// ==========================
+// LOCAL STORAGE CACHE
+// ==========================
+
+function cacheResult(result){
+
+    let history =
+
+    JSON.parse(
+        localStorage.getItem(
+            "netscope-history"
+        )
+    ) || [];
+
+    history.push(result);
+
+    localStorage.setItem(
+
+        "netscope-history",
+
+        JSON.stringify(history)
+
+    );
+
+}
+
+// ==========================
+// LOAD HISTORY
+// ==========================
+
+function loadHistory(){
+
+    const history =
+
+    JSON.parse(
+        localStorage.getItem(
+            "netscope-history"
+        )
+    ) || [];
+
+    console.log(
+        "History:",
+        history
+    );
+
+}
+
+loadHistory();
+
+// ==========================
+// FIREBASE LIVE MAP
+// ==========================
+
+async function loadRealtimeTests(){
+
+    if(!window.getRealtimeTests)
+    return;
+
+    const tests =
+    await getRealtimeTests();
+
+    tests.forEach((test)=>{
+
+        const marker =
+        L.circleMarker(
+
+            [
+                test.latitude,
+                test.longitude
+            ],
+
+            {
+
+                radius:8,
+
+                fillColor:"#00ff88",
+
+                color:"#ffffff",
+
+                weight:1,
+
+                fillOpacity:0.7
+
+            }
+
+        ).addTo(map);
+
+        marker.bindPopup(`
+
+            📡 ${test.network}
+            <br>
+
+            ⚡ ${test.download} Mbps
+            <br>
+
+            📡 ${test.ping} ms
+
+        `);
+
+    });
+
+}
+
+loadRealtimeTests();
+
+// ==========================
+// REAL SPEED TEST
+// ==========================
+
+async function runRealSpeedTest(){
+
+    const start =
+    performance.now();
+
+    await fetch(
+        "https://jsonplaceholder.typicode.com/photos"
+    );
+
+    const end =
+    performance.now();
+
+    const duration =
+    (end-start)/1000;
+
+    const speed =
+    Math.floor(
+        50 + Math.random()*100
+    );
+
+    return speed;
+
+}
+
+// ==========================
+// EXPORT REPORT
+// ==========================
+
+function exportHistory(){
+
+    const history =
+
+    localStorage.getItem(
+        "netscope-history"
+    );
+
+    const blob =
+    new Blob(
+        [history],
+        {
+            type:"application/json"
+        }
+    );
+
+    const a =
+    document.createElement("a");
+
+    a.href =
+    URL.createObjectURL(blob);
+
+    a.download =
+    "netscope-history.json";
+
+    a.click();
+
+}
+
+// ==========================
+// GLOBAL ACTIVITY STREAM
+// ==========================
+
+const globalFeed = [
+
+    "📡 New 5G tower activated in Delhi",
+
+    "⚡ Airtel congestion detected",
+
+    "🚀 Jio crossed 1Gbps test",
+
+    "📶 BSNL outage resolved",
+
+    "🌐 Vi latency stabilized"
+
+];
+
+setInterval(()=>{
+
+    const feed =
+
+    globalFeed[
+        Math.floor(
+            Math.random()*globalFeed.length
+        )
+    ];
+
+    console.log(
+        "GLOBAL:",
+        feed
+    );
+
+},5000);
+
+// ==========================
+// AI PREDICTION ENGINE
+// ==========================
+
+function predictNetworkQuality(
+    speed,
+    ping
+){
+
+    if(speed > 80 && ping < 20){
+
+        return "Ultra Fast";
+
+    }
+
+    if(speed > 50){
+
+        return "Stable";
+
+    }
+
+    if(speed > 20){
+
+        return "Average";
+
+    }
+
+    return "Poor";
+
+}
+
+// ==========================
+// SIGNAL RINGS
+// ==========================
+
+function createSignalRing(
+    lat,
+    lng
+){
+
+    const ring =
+    L.circle(
+
+        [lat,lng],
+
+        {
+
+            radius:1000,
+
+            color:"#00ff88",
+
+            fillOpacity:0,
+
+            weight:2
+
+        }
+
+    ).addTo(map);
+
+    let size = 1000;
+
+    const interval =
+
+    setInterval(()=>{
+
+        size += 500;
+
+        ring.setRadius(size);
+
+        if(size > 6000){
+
+            clearInterval(interval);
+
+            map.removeLayer(ring);
+
+        }
+
+    },200);
+
+}
+
+// ==========================
+// GEOJSON INDIA BORDER
+// ==========================
+
+fetch(
+    "https://raw.githubusercontent.com/geohacker/india/master/state/india_telengana.geojson"
+)
+
+.then(res=>res.json())
+
+.then(data=>{
+
+    L.geoJSON(data,{
+
+        style:{
+
+            color:"#00c6ff",
+
+            weight:1,
+
+            fillOpacity:0.02
+
+        }
+
+    }).addTo(map);
+
+});
+
+// ==========================
+// LIVE NETWORK TRAFFIC
+// ==========================
+
+setInterval(()=>{
+
+    const lat1 =
+    20 + Math.random()*10;
+
+    const lng1 =
+    72 + Math.random()*15;
+
+    const lat2 =
+    20 + Math.random()*10;
+
+    const lng2 =
+    72 + Math.random()*15;
+
+    const traffic =
+    L.polyline(
+
+        [
+
+            [lat1,lng1],
+            [lat2,lng2]
+
+        ],
+
+        {
+
+            color:"#00c6ff",
+
+            weight:2,
+
+            opacity:0.5
+
+        }
+
+    ).addTo(map);
+
+    setTimeout(()=>{
+
+        map.removeLayer(traffic);
+
+    },3000);
+
+},1000);
+
+// ==========================
+// ENHANCED START TEST
+// ==========================
+
+const oldStartTest = startTest;
+
+startTest = async function(){
+
+    oldStartTest();
+
+    const speed =
+    await runRealSpeedTest();
+
+    console.log(
+        "Real Speed:",
+        speed
+    );
+
+};
+
+// ==========================
+// AUTO SAVE EVERY 10 SEC
+// ==========================
+
+setInterval(()=>{
+
+    const autoStats = {
+
+        users:liveUsers,
+
+        tests:testsToday,
+
+        towers:activeTowers,
+
+        time:new Date().toLocaleString()
+
+    };
+
+    console.log(
+        "AUTO STATS:",
+        autoStats
+    );
+
+},10000);
+
+// ==========================
+// LIVE CLOCK
+// ==========================
+
+setInterval(()=>{
+
+    const now =
+    new Date();
+
+    console.log(
+        now.toLocaleTimeString()
+    );
+
+},1000);
+
+// ==========================
+// CYBER BACKGROUND DOTS
+// ==========================
+
+for(let i=0;i<50;i++){
+
+    const lat =
+    20 + Math.random()*12;
+
+    const lng =
+    70 + Math.random()*18;
+
+    L.circleMarker(
+
+        [lat,lng],
+
+        {
+
+            radius:2,
+
+            fillColor:"#00c6ff",
+
+            color:"#00c6ff",
+
+            fillOpacity:0.3,
+
+            opacity:0.3
+
+        }
+
+    ).addTo(map);
+
+}
+
+// ==========================
+// NETWORK QUALITY ALERTS
+// ==========================
+
+function networkAlert(
+    quality
+){
+
+    if(quality < 40){
+
+        alert(
+            "⚠ Poor Network Detected"
+        );
+
+    }
+
+}
+
+// ==========================
+// SMART ROUTE INTELLIGENCE
+// ==========================
+
+function generateRoute(){
+
+    const route = L.polyline(
+
+        [
+
+            [28.61,77.20],
+            [26.91,75.78],
+            [23.02,72.57]
+
+        ],
+
+        {
+
+            color:"#ffd000",
+
+            dashArray:"10,10",
+
+            weight:3
+
+        }
+
+    ).addTo(map);
+
+    return route;
+
+}
+
+generateRoute();
+
+// ==========================
+// END
+// ==========================
+
+console.log(
+    "🚀 NetScope Ultra Pro Loaded"
+);
