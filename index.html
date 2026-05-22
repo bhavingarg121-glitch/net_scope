@@ -4,287 +4,264 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-<title>NetScope India </title>
+<title>NetScope AI Telecom Control Center</title>
 
-<meta name="description" content="AI-powered realtime telecom intelligence platform for India"/>
-<meta name="theme-color" content="#050816"/>
-
-<!-- FAVICON -->
-<link rel="icon" href="https://cdn-icons-png.flaticon.com/512/483/483947.png"/>
-
-<!-- TENSORFLOW.JS (AI ENGINE) -->
+<!-- TensorFlow.js AI -->
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.20.0/dist/tf.min.js"></script>
 
-<!-- FONTS -->
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
-
-<!-- LEAFLET -->
+<!-- Leaflet -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css"/>
-<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css"/>
 
-<!-- ANIMATION -->
-<link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet"/>
-
-<!-- CHART -->
+<!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-
-/* =========================
-   GLOBAL
-========================= */
-
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:'Poppins',sans-serif;
-}
-
 body{
+margin:0;
+font-family:Arial;
 background:#050816;
-overflow:hidden;
 color:white;
+overflow:hidden;
 }
 
 /* MAP */
 #map{
 width:100%;
 height:100vh;
-position:absolute;
-z-index:1;
 }
 
-/* =========================
-   GLASS UI
-========================= */
-
-.glass{
+/* CONTROL CENTER */
+.panel{
+position:absolute;
+top:15px;
+left:15px;
+width:320px;
 background:rgba(255,255,255,0.08);
 backdrop-filter:blur(15px);
-border:1px solid rgba(255,255,255,0.1);
-border-radius:18px;
 padding:15px;
-}
-
-/* =========================
-   AI PANEL
-========================= */
-
-.aiPanel{
-position:absolute;
-top:20px;
-left:20px;
-width:300px;
+border-radius:16px;
 z-index:1000;
 }
 
-.badge{
-background:#00ff88;
-color:#000;
-padding:4px 10px;
-border-radius:20px;
-font-size:12px;
-display:inline-block;
-margin-bottom:8px;
-}
-
-/* =========================
-   OUTAGE ALERT BAR
-========================= */
-
-.alertBar{
-position:absolute;
-top:0;
-left:0;
-right:0;
-background:#ff3b3b;
-color:white;
-text-align:center;
-padding:8px;
-font-size:13px;
-z-index:2000;
-display:none;
-}
-
-/* =========================
-   STATUS PANEL
-========================= */
-
-.statusPanel{
-position:absolute;
-bottom:20px;
-left:20px;
-width:300px;
-z-index:1000;
-}
-
-/* =========================
-   SIDEBAR
-========================= */
-
-.sidebar{
-position:absolute;
-top:20px;
-right:20px;
-width:340px;
-z-index:1000;
-overflow:auto;
-max-height:90vh;
-}
-
-.logo{
-font-size:24px;
-font-weight:700;
-background:linear-gradient(45deg,#00c6ff,#00ff88);
--webkit-background-clip:text;
--webkit-text-fill-color:transparent;
+.title{
+font-size:18px;
+font-weight:bold;
 margin-bottom:10px;
 }
 
-/* =========================
-   STATS
-========================= */
-
-.stats{
-position:absolute;
-top:20px;
-left:50%;
-transform:translateX(-50%);
-display:grid;
-grid-template-columns:repeat(4,150px);
-gap:10px;
-z-index:1000;
-}
-
-.card{
-text-align:center;
-}
-
-/* =========================
-   CHART
-========================= */
-
-.chart{
-position:absolute;
-bottom:20px;
-left:50%;
-transform:translateX(-50%);
-width:520px;
-z-index:1000;
-}
-
-/* BUTTON */
-button{
-width:100%;
-padding:12px;
-border:none;
-border-radius:12px;
-background:linear-gradient(45deg,#00c6ff,#0072ff);
-color:white;
-cursor:pointer;
-margin-top:10px;
-}
-
-button:hover{
-transform:scale(1.02);
-}
-
-select{
-width:100%;
+.box{
+background:#101935;
 padding:10px;
 margin-top:10px;
 border-radius:10px;
-background:#101935;
-color:white;
-border:none;
+font-size:13px;
 }
 
-</style>
+/* RIGHT DASHBOARD */
+.dashboard{
+position:absolute;
+right:15px;
+top:15px;
+width:300px;
+z-index:1000;
+background:rgba(255,255,255,0.08);
+backdrop-filter:blur(15px);
+padding:15px;
+border-radius:16px;
+}
 
+/* HEALTH INDEX */
+.health{
+font-size:22px;
+font-weight:bold;
+color:#00ff88;
+}
+
+/* CHART */
+.chartBox{
+position:absolute;
+bottom:15px;
+left:50%;
+transform:translateX(-50%);
+width:500px;
+background:rgba(255,255,255,0.08);
+padding:15px;
+border-radius:16px;
+z-index:1000;
+}
+</style>
 </head>
 
 <body>
 
-<!-- 🔴 OUTAGE ALERT -->
-<div class="alertBar" id="alertBar">
-⚠ Live Outage Detected in Network Region
-</div>
+<!-- AI CONTROL CENTER -->
+<div class="panel">
+<div class="title">📡 Telecom AI Control Center</div>
 
-<!-- 🤖 AI PANEL -->
-<div class="aiPanel glass">
-<div class="badge">AI ENGINE LIVE</div>
-
-<h3>Network Intelligence</h3>
-
-<div id="aiRisk" class="glass">Analyzing network...</div>
-<div id="outagePredict" class="glass">Outage Risk: LOW</div>
-</div>
-
-<!-- 📡 STATUS -->
-<div class="statusPanel glass">
-<div>🟢 Live Network Simulation</div>
-
-<div id="activityFeed" class="glass">Waiting for activity...</div>
-
-<div class="glass">
-Users: <span id="liveUsers">0</span><br/>
-Tests: <span id="testsToday">0</span><br/>
-Outages: <span id="outages">0</span>
-</div>
-</div>
-
-<!-- 📊 STATS -->
-<div class="stats">
-<div class="glass card"><h4>Speed</h4><h2 id="avgSpeed">0</h2></div>
-<div class="glass card"><h4>Ping</h4><h2 id="avgPing">0</h2></div>
-<div class="glass card"><h4>Tests</h4><h2 id="tests">0</h2></div>
-<div class="glass card"><h4>Status</h4><h2 id="liveStatus">ONLINE</h2></div>
-</div>
-
-<!-- 📡 SIDEBAR -->
-<div class="sidebar glass">
-
-<div class="logo">📡 NetScope AI</div>
-
-<div class="glass">Realtime Telecom Intelligence + AI Prediction Engine</div>
-
+<div class="box">
+Network: 
 <select id="network">
 <option>Jio</option>
 <option>Airtel</option>
 <option>Vi</option>
 <option>BSNL</option>
 </select>
-
-<button onclick="startTest()">🚀 Start Network Test</button>
-
-<div id="status" class="glass">Waiting...</div>
-<div id="aiInsight" class="glass">AI Insight...</div>
-
 </div>
 
-<!-- 📈 CHART -->
-<div class="chart glass">
-<canvas id="speedChart"></canvas>
+<div class="box">
+AI Risk: <span id="aiRisk">0%</span>
 </div>
 
-<!-- 🗺 MAP -->
+<div class="box">
+Outage Forecast: <span id="forecast">Stable</span>
+</div>
+
+<button onclick="runTest()" style="margin-top:10px;width:100%">
+Run Network Test
+</button>
+
+<div class="box" id="status">Waiting...</div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="dashboard">
+<div>📊 INDIA TELECOM HEALTH INDEX</div>
+<div class="health" id="healthIndex">87</div>
+
+<div class="box">
+Live Users: <span id="users">1200</span>
+</div>
+
+<div class="box">
+Outages: <span id="outages">0</span>
+</div>
+</div>
+
+<!-- CHART -->
+<div class="chartBox">
+<canvas id="chart"></canvas>
+</div>
+
+<!-- MAP -->
 <div id="map"></div>
 
-<!-- LIBS -->
+<!-- LEAFLET -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
-<script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
-<script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
 
-<script>AOS.init();</script>
+<script>
+// ================= MAP =================
+const map = L.map("map").setView([22.9734,78.6569],5);
 
-<!-- FIREBASE -->
-<script type="module" src="firebase.js"></script>
+L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png")
+.addTo(map);
 
-<!-- APP -->
-<script src="app.js"></script>
+// ================= AI MODEL (LSTM-like simulation) =================
+let model;
+
+async function initAI(){
+
+model = tf.sequential();
+
+model.add(tf.layers.dense({inputShape:[3],units:16,activation:"relu"}));
+model.add(tf.layers.dense({units:8,activation:"relu"}));
+model.add(tf.layers.dense({units:1,activation:"sigmoid"}));
+
+model.compile({optimizer:"adam",loss:"binaryCrossentropy"});
+
+console.log("AI Telecom Engine Ready");
+}
+
+initAI();
+
+// ================= PREDICT =================
+function predict(speed,ping,users){
+
+const input = tf.tensor2d([[speed/100,ping/100,users/2000]]);
+const output = model.predict(input);
+return output.dataSync()[0];
+
+}
+
+// ================= TELECOM HEALTH =================
+let health = 87;
+let users = 1200;
+let outages = 0;
+
+function updateUI(){
+document.getElementById("users").innerText = users;
+document.getElementById("outages").innerText = outages;
+document.getElementById("healthIndex").innerText = health;
+}
+
+// ================= CHART =================
+const chart = new Chart(document.getElementById("chart"),{
+type:"line",
+data:{
+labels:[],
+datasets:[{
+label:"Network Speed",
+data:[],
+borderColor:"#00ff88"
+}]
+}
+});
+
+// ================= RUN TEST =================
+function runTest(){
+
+navigator.geolocation.getCurrentPosition(pos=>{
+
+const lat = pos.coords.latitude;
+const lng = pos.coords.longitude;
+
+const speed = Math.random()*100;
+const ping = Math.random()*60;
+
+const risk = predict(speed,ping,users);
+
+document.getElementById("aiRisk").innerText =
+Math.round(risk*100)+"%";
+
+document.getElementById("forecast").innerText =
+risk>0.7?"⚠ High Risk":risk>0.4?"Medium":"Stable";
+
+// MAP MARKER
+L.circleMarker([lat,lng],{
+radius:10,
+color:risk>0.7?"red":"#00ff88"
+}).addTo(map);
+
+map.setView([lat,lng],6);
+
+// HEALTH ENGINE
+health = Math.max(40,health - risk*5);
+users += Math.floor(Math.random()*50);
+
+if(risk>0.7) outages++;
+
+updateUI();
+
+// CHART
+chart.data.labels.push("T"+chart.data.labels.length);
+chart.data.datasets[0].data.push(speed);
+chart.update();
+
+document.getElementById("status").innerText =
+`Speed: ${speed.toFixed(1)} Mbps | Ping: ${ping.toFixed(1)} ms`;
+
+});
+
+}
+
+// ================= LIVE SIMULATION =================
+setInterval(()=>{
+users += Math.floor(Math.random()*20);
+health += (Math.random()-0.5)*2;
+updateUI();
+},3000);
+
+console.log("🚀 NetScope AI Telecom Control Center Loaded");
+</script>
 
 </body>
 </html>
