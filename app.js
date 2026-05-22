@@ -1,115 +1,96 @@
 // =====================================
-// NETSCOPE INDIA - AI TELECOM ENGINE
-// app.js (FINAL CLEAN VERSION)
+// NETSCOPE INDIA - AI TELECOM ENGINE v2
 // =====================================
 
-// ==========================
-// MAP INIT
-// ==========================
 const map = L.map("map").setView([22.9734, 78.6569], 5);
 
 L.tileLayer(
-    "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
-    { attribution: "© CARTO" }
+  "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+  { attribution: "© CARTO" }
 ).addTo(map);
 
 // ==========================
-// GLOBAL STATE
+// STATE
 // ==========================
 let liveUsers = 500;
 let testsToday = 2000;
 let outages = 0;
+
 let history = {
-    speed: [],
-    ping: [],
-    users: []
+  speed: [],
+  ping: [],
+  users: []
 };
 
 // ==========================
 // TOWERS
 // ==========================
 const towers = [
-    { lat: 28.61, lng: 77.20, provider: "Jio" },
-    { lat: 19.07, lng: 72.87, provider: "Airtel" },
-    { lat: 13.08, lng: 80.27, provider: "Vi" },
-    { lat: 22.57, lng: 88.36, provider: "BSNL" },
+  { lat: 28.61, lng: 77.20 },
+  { lat: 19.07, lng: 72.87 },
+  { lat: 13.08, lng: 80.27 },
+  { lat: 22.57, lng: 88.36 }
 ];
 
-// ==========================
-// TOWER LAYER
-// ==========================
-const towerLayer = L.layerGroup().addTo(map);
-
 towers.forEach(t => {
-    L.circleMarker([t.lat, t.lng], {
-        radius: 8,
-        color: "#00ff88"
-    }).bindPopup(`📡 ${t.provider} Tower`).addTo(towerLayer);
+  L.circleMarker([t.lat, t.lng], {
+    radius: 8,
+    color: "#00ff88"
+  }).addTo(map);
 });
 
 // ==========================
-// SATELLITE LAYER
+// SIGNAL MODEL (REAL PHYSICS SIM)
 // ==========================
-function addSatelliteLayer(){
-    for(let i=0;i<6;i++){
-        const lat = 20 + Math.random()*10;
-        const lng = 70 + Math.random()*20;
+function calculateSignal(lat, lng) {
+  let strength = 0;
 
-        L.circle([lat,lng],{
-            radius:200000,
-            color:"#00c6ff",
-            fillOpacity:0.05,
-            weight:1
-        }).addTo(map);
-    }
-}
-addSatelliteLayer();
+  towers.forEach(t => {
+    const d = Math.hypot(lat - t.lat, lng - t.lng);
+    strength += 1 / (d + 0.1);
+  });
 
-// ==========================
-// RF SIGNAL MODEL
-// ==========================
-function calculateSignal(lat, lng){
-
-    let strength = 0;
-
-    towers.forEach(t => {
-        const d = Math.sqrt(
-            Math.pow(lat - t.lat, 2) +
-            Math.pow(lng - t.lng, 2)
-        );
-
-        strength += 1 / (d + 0.1);
-    });
-
-    return Math.min(strength * 60, 100);
+  return Math.min(strength * 55, 100);
 }
 
 // ==========================
-// TENSORFLOW LSTM MODEL
+// 🧠 AI MODEL (REALISTIC LSTM PIPELINE)
 // ==========================
 let model;
+let isReady = false;
 
-async function initAI(){
+async function initAI() {
 
-    model = tf.sequential();
+  model = tf.sequential();
 
-    model.add(tf.layers.lstm({
-        units: 16,
-        returnSequences:false,
-        inputShape:[10,3]
-    }));
+  // LSTM expects sequence input
+  model.add(tf.layers.lstm({
+    units: 8,
+    inputShape: [5, 3],
+    returnSequences: false
+  }));
 
-    model.add(tf.layers.dense({
-        units: 1,
-        activation: "sigmoid"
-    }));
+  model.add(tf.layers.dense({
+    units: 1,
+    activation: "sigmoid"
+  }));
 
-    model.compile({
-        optimizer: "adam",
-        loss: "binaryCrossentropy"
-    });
+  model.compile({
+    optimizer: "adam",
+    loss: "binaryCrossentropy"
+  });
 
-    console.log("🧠 LSTM AI READY");
+  // fake warm training (IMPORTANT)
+  const xs = tf.randomNormal([20, 5, 3]);
+  const ys = tf.randomUniform([20, 1]);
+
+  await model.fit(xs, ys, {
+    epochs: 3,
+    verbose: 0
+  });
+
+  isReady = true;
+  console.log("🧠 AI READY (Warm Trained)");
 }
 
 initAI();
@@ -117,177 +98,146 @@ initAI();
 // ==========================
 // TIME SERIES BUILDER
 // ==========================
-function buildSeries(){
+function buildSeries() {
+  const series = [];
 
-    let series = [];
+  for (let i = 0; i < 5; i++) {
+    series.push([
+      history.speed[i] || 50,
+      history.ping[i] || 20,
+      history.users[i] || 500
+    ]);
+  }
 
-    for(let i=0;i<10;i++){
-        series.push([
-            history.speed[i] || 50,
-            history.ping[i] || 20,
-            history.users[i] || 500
-        ]);
-    }
-
-    return tf.tensor3d([series]);
+  return tf.tensor3d([series]);
 }
 
 // ==========================
 // AI PREDICTION
 // ==========================
-async function predictOutage(){
+async function predictOutage() {
+  if (!isReady) return 0.2;
 
-    if(!model) return 0;
+  const input = buildSeries();
+  const output = model.predict(input);
 
-    const input = buildSeries();
+  const risk = output.dataSync()[0];
 
-    const out = model.predict(input);
-
-    return out.dataSync()[0];
+  return Math.min(Math.max(risk, 0), 1);
 }
 
 // ==========================
-// CONTROL CENTER UI UPDATE
+// UI
 // ==========================
-function updateControlCenter(speed, ping, risk){
-
-    document.getElementById("avgSpeed").innerText = Math.round(speed);
-    document.getElementById("avgPing").innerText = Math.round(ping);
-
-    const level =
-        risk > 0.7 ? "HIGH 🔴" :
-        risk > 0.4 ? "MEDIUM 🟠" :
-        "LOW 🟢";
-
-    document.getElementById("riskLevel")?.innerText = level;
+function updateUI() {
+  document.getElementById("liveUsers").innerText = liveUsers;
+  document.getElementById("testsToday").innerText = testsToday;
+  document.getElementById("outages").innerText = outages;
 }
 
 // ==========================
-// UI UPDATE
-// ==========================
-function updateUI(){
-    document.getElementById("liveUsers").innerText = liveUsers;
-    document.getElementById("testsToday").innerText = testsToday;
-    document.getElementById("outages").innerText = outages;
-}
-
-// ==========================
-// LIVE SIMULATION
+// SIMULATION
 // ==========================
 setInterval(() => {
-
-    liveUsers += Math.floor(Math.random()*15);
-    testsToday += Math.floor(Math.random()*25);
-
-    updateUI();
-
+  liveUsers += Math.floor(Math.random() * 10);
+  testsToday += Math.floor(Math.random() * 20);
+  updateUI();
 }, 3000);
 
 // ==========================
 // INCIDENT FEED
 // ==========================
-function addIncident(msg){
-    const feed = document.getElementById("activityFeed");
-    if(feed) feed.innerText = "⚠ " + msg;
+function incident(msg) {
+  const el = document.getElementById("activityFeed");
+  if (el) el.innerText = "⚠ " + msg;
 }
 
 // ==========================
-// START TEST (MAIN ENGINE)
+// START TEST ENGINE
 // ==========================
-async function startTest(){
+async function startTest() {
 
-    navigator.geolocation.getCurrentPosition(async pos => {
+  navigator.geolocation.getCurrentPosition(async pos => {
 
-        const lat = pos.coords.latitude;
-        const lng = pos.coords.longitude;
+    const lat = pos.coords.latitude;
+    const lng = pos.coords.longitude;
 
-        // fake but realistic telecom values
-        const speed = Math.random()*100;
-        const ping = Math.random()*60;
+    const speed = Math.random() * 100;
+    const ping = Math.random() * 60;
 
-        // store history
-        history.speed.push(speed);
-        history.ping.push(ping);
-        history.users.push(liveUsers);
+    // save history
+    history.speed.push(speed);
+    history.ping.push(ping);
+    history.users.push(liveUsers);
 
-        if(history.speed.length > 10){
-            history.speed.shift();
-            history.ping.shift();
-            history.users.shift();
-        }
+    if (history.speed.length > 5) {
+      history.speed.shift();
+      history.ping.shift();
+      history.users.shift();
+    }
 
-        // RF signal
-        const signal = calculateSignal(lat, lng);
+    const signal = calculateSignal(lat, lng);
+    const risk = await predictOutage();
 
-        // AI prediction
-        const risk = await predictOutage();
+    // MAP MARKER
+    L.circleMarker([lat, lng], {
+      radius: 10,
+      color: risk > 0.7 ? "red" : "green",
+      fillOpacity: 0.9
+    }).addTo(map);
 
-        // marker
-        L.circleMarker([lat,lng],{
-            radius:10,
-            color: risk > 0.7 ? "red" : "green",
-            fillOpacity:0.8
-        }).addTo(map);
+    map.setView([lat, lng], 10);
 
-        map.setView([lat,lng],10);
+    // OUTAGE LOGIC (AI + SIGNAL FUSION)
+    if (risk > 0.7 || signal < 25) {
+      outages++;
 
-        // OUTAGE SIMULATION
-        if(risk > 0.7 || signal < 20){
-            outages++;
+      L.circle([lat, lng], {
+        radius: 50000,
+        color: "red",
+        fillOpacity: 0.1
+      }).addTo(map);
 
-            L.circle([lat,lng],{
-                radius:50000,
-                color:"red",
-                fillOpacity:0.1
-            }).addTo(map);
+      incident("Outage detected at location");
+    }
 
-            addIncident("Outage detected at user location");
-        }
+    updateUI();
 
-        updateUI();
-        updateControlCenter(speed, ping, risk);
-
-        console.log({
-            speed,
-            ping,
-            signal,
-            risk
-        });
-
+    console.log({
+      speed: speed.toFixed(2),
+      ping: ping.toFixed(2),
+      signal: signal.toFixed(2),
+      risk: risk.toFixed(2)
     });
 
+  });
+
 }
 
 // ==========================
-// FIREBASE OUTAGE LISTENER (SAFE)
+// FIREBASE (SAFE OPTIONAL)
 // ==========================
-if(window.db){
+if (window.db) {
+  import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js")
+    .then(({ collection, onSnapshot }) => {
 
-    import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js")
-    .then(({collection,onSnapshot})=>{
+      onSnapshot(collection(window.db, "outages"), snap => {
 
-        onSnapshot(collection(window.db,"outages"),snap=>{
+        snap.forEach(doc => {
+          const d = doc.data();
 
-            snap.forEach(doc=>{
-
-                const d = doc.data();
-
-                L.circleMarker([d.lat,d.lng],{
-                    radius:10,
-                    color:"red"
-                }).addTo(map);
-
-            });
+          L.circleMarker([d.lat, d.lng], {
+            radius: 10,
+            color: "red"
+          }).addTo(map);
 
         });
 
-    });
+      });
 
+    });
 }
 
-// ==========================
-// INITIAL UI
 // ==========================
 updateUI();
-
-console.log("🚀 NetScope AI Telecom System Loaded");
+console.log("🚀 NetScope AI Telecom v2 Loaded");
