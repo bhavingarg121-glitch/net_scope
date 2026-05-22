@@ -6,11 +6,14 @@
 
 <title>NetScope India</title>
 
-<!-- Leaflet CSS -->
+<!-- Leaflet -->
 <link
-  rel="stylesheet"
-  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+rel="stylesheet"
+href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
 />
+
+<!-- Chart -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 
@@ -22,8 +25,9 @@
 }
 
 body{
-    background:#0b1020;
+    background:#050816;
     overflow:hidden;
+    color:white;
 }
 
 /* MAP */
@@ -32,74 +36,100 @@ body{
     height:100vh;
 }
 
-/* TOP PANEL */
-.panel{
+/* SIDEBAR */
+.sidebar{
+
     position:absolute;
+
     top:20px;
     left:20px;
+
+    width:330px;
+
     z-index:1000;
 
-    width:320px;
-
     background:rgba(255,255,255,0.08);
-    backdrop-filter:blur(15px);
+
+    backdrop-filter:blur(18px);
 
     border:1px solid rgba(255,255,255,0.1);
 
-    border-radius:20px;
+    border-radius:25px;
 
-    padding:20px;
+    padding:22px;
 
-    color:white;
+    box-shadow:0 0 35px rgba(0,0,0,0.5);
 
-    box-shadow:0 0 25px rgba(0,0,0,0.3);
 }
 
 /* TITLE */
-.panel h1{
-    font-size:28px;
-    margin-bottom:10px;
+.logo{
+
+    display:flex;
+    align-items:center;
+    gap:10px;
+
+    margin-bottom:15px;
+
 }
 
-.panel p{
-    color:#cfcfcf;
-    font-size:14px;
+.logo h1{
+    font-size:30px;
+}
+
+.logo span{
+    font-size:32px;
+}
+
+/* DESC */
+.desc{
+    color:#bfc7d5;
     line-height:1.5;
+    font-size:14px;
     margin-bottom:20px;
 }
 
 /* SELECT */
 select{
-    width:100%;
-    padding:12px;
-    border:none;
-    outline:none;
 
-    border-radius:12px;
-
-    background:#1c2541;
-    color:white;
-
-    margin-bottom:15px;
-}
-
-/* BUTTON */
-button{
     width:100%;
     padding:14px;
 
     border:none;
-    border-radius:12px;
+    outline:none;
+
+    border-radius:14px;
+
+    background:#101935;
+
+    color:white;
+
+    margin-bottom:15px;
+
+    font-size:15px;
+
+}
+
+/* BUTTON */
+button{
+
+    width:100%;
+    padding:15px;
+
+    border:none;
+    border-radius:14px;
 
     background:linear-gradient(45deg,#00c6ff,#0072ff);
 
     color:white;
+
     font-size:16px;
     font-weight:bold;
 
     cursor:pointer;
 
     transition:0.3s;
+
 }
 
 button:hover{
@@ -108,30 +138,124 @@ button:hover{
 
 /* STATUS */
 .status{
-    margin-top:15px;
+
+    margin-top:18px;
+
+    background:#0d1429;
+
+    padding:14px;
+
+    border-radius:14px;
+
+    line-height:1.7;
+
     font-size:14px;
-    color:#9fe870;
+
+}
+
+/* STATS */
+.stats{
+
+    position:absolute;
+
+    top:20px;
+    right:20px;
+
+    z-index:1000;
+
+    display:grid;
+
+    grid-template-columns:repeat(2,180px);
+
+    gap:15px;
+
+}
+
+/* CARD */
+.card{
+
+    background:rgba(255,255,255,0.08);
+
+    backdrop-filter:blur(18px);
+
+    border:1px solid rgba(255,255,255,0.1);
+
+    border-radius:22px;
+
+    padding:20px;
+
+    box-shadow:0 0 20px rgba(0,0,0,0.4);
+
+}
+
+.card h3{
+    font-size:14px;
+    color:#9ba8c7;
+    margin-bottom:10px;
+}
+
+.card h2{
+    font-size:28px;
+}
+
+/* CHART */
+.chart-container{
+
+    position:absolute;
+
+    bottom:20px;
+    left:50%;
+
+    transform:translateX(-50%);
+
+    width:500px;
+
+    z-index:1000;
+
+    background:rgba(255,255,255,0.08);
+
+    backdrop-filter:blur(18px);
+
+    border-radius:25px;
+
+    padding:20px;
+
+    border:1px solid rgba(255,255,255,0.1);
+
 }
 
 /* LEGEND */
 .legend{
+
     margin-top:20px;
+
     display:flex;
+
     gap:15px;
+
     flex-wrap:wrap;
+
 }
 
 .legend div{
+
     display:flex;
+
     align-items:center;
+
     gap:6px;
+
     font-size:13px;
+
 }
 
 .dot{
+
     width:12px;
     height:12px;
+
     border-radius:50%;
+
 }
 
 .green{
@@ -146,21 +270,73 @@ button:hover{
     background:#ff4d4d;
 }
 
+/* LIVE PULSE */
+.pulse{
+
+    width:20px;
+    height:20px;
+
+    border-radius:50%;
+
+    background:#00ff88;
+
+    position:absolute;
+
+    animation:pulse 1.5s infinite;
+
+}
+
+@keyframes pulse{
+
+    0%{
+        transform:scale(1);
+        opacity:1;
+    }
+
+    100%{
+        transform:scale(5);
+        opacity:0;
+    }
+
+}
+
+/* MOBILE */
+@media(max-width:900px){
+
+    .stats{
+        grid-template-columns:1fr;
+        right:10px;
+        top:10px;
+    }
+
+    .sidebar{
+        width:90%;
+        left:5%;
+    }
+
+    .chart-container{
+        width:90%;
+    }
+
+}
+
 </style>
 </head>
 <body>
 
-<!-- PANEL -->
-<div class="panel">
+<!-- SIDEBAR -->
+<div class="sidebar">
 
-    <h1>📡 NetScope</h1>
+    <div class="logo">
+        <span>📡</span>
+        <h1>NetScope</h1>
+    </div>
 
-    <p>
-        Live crowdsourced internet quality map for India.
-        Compare Jio, Airtel, Vi & BSNL coverage.
-    </p>
+    <div class="desc">
+        Live crowdsourced telecom intelligence platform for India.
+        Analyze Jio, Airtel, Vi & BSNL coverage quality in realtime.
+    </div>
 
-    <!-- NETWORK SELECT -->
     <select id="network">
         <option value="Jio">Jio</option>
         <option value="Airtel">Airtel</option>
@@ -168,22 +344,21 @@ button:hover{
         <option value="BSNL">BSNL</option>
     </select>
 
-    <!-- BUTTON -->
     <button onclick="startTest()">
         Start Network Check
     </button>
 
-    <!-- STATUS -->
     <div class="status" id="status">
+
         Waiting for test...
+
     </div>
 
-    <!-- LEGEND -->
     <div class="legend">
 
         <div>
             <span class="dot green"></span>
-            Good
+            Excellent
         </div>
 
         <div>
@@ -200,90 +375,293 @@ button:hover{
 
 </div>
 
+<!-- STATS -->
+<div class="stats">
+
+    <div class="card">
+        <h3>Average Speed</h3>
+        <h2 id="avgSpeed">0 Mbps</h2>
+    </div>
+
+    <div class="card">
+        <h3>Average Ping</h3>
+        <h2 id="avgPing">0 ms</h2>
+    </div>
+
+    <div class="card">
+        <h3>Total Tests</h3>
+        <h2 id="tests">0</h2>
+    </div>
+
+    <div class="card">
+        <h3>Network Status</h3>
+        <h2 id="liveStatus">ONLINE</h2>
+    </div>
+
+</div>
+
+<!-- CHART -->
+<div class="chart-container">
+
+    <canvas id="speedChart"></canvas>
+
+</div>
+
 <!-- MAP -->
 <div id="map"></div>
 
-<!-- Leaflet JS -->
+<!-- Leaflet -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<!-- Heatmap -->
+<script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
 
 <script>
 
-// INDIA MAP
-const map = L.map('map').setView([22.9734, 78.6569], 5);
+// MAP
+const map = L.map('map').setView([22.9734,78.6569],5);
 
-// TILE
-L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution:'© OpenStreetMap'
+// DARK TILE
+L.tileLayer(
+'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+{
+    attribution:'© OpenStreetMap © CARTO'
 }).addTo(map);
 
+// VARIABLES
+let totalSpeed = 0;
+let totalPing = 0;
+let totalTests = 0;
+
+const speedData = [];
+const labels = [];
+
+// CHART
+const ctx = document.getElementById("speedChart");
+
+const chart = new Chart(ctx,{
+
+    type:'line',
+
+    data:{
+
+        labels:labels,
+
+        datasets:[{
+
+            label:'Network Speed (Mbps)',
+
+            data:speedData,
+
+            borderWidth:3,
+
+            tension:0.4
+
+        }]
+
+    },
+
+    options:{
+
+        responsive:true,
+
+        plugins:{
+            legend:{
+                labels:{
+                    color:'white'
+                }
+            }
+        },
+
+        scales:{
+
+            x:{
+                ticks:{
+                    color:'white'
+                }
+            },
+
+            y:{
+                ticks:{
+                    color:'white'
+                }
+            }
+
+        }
+
+    }
+
+});
+
 // START TEST
-function startTest(){
+async function startTest(){
 
     const status = document.getElementById("status");
-    const network = document.getElementById("network").value;
 
-    status.innerHTML = "Detecting location...";
+    const network =
+    document.getElementById("network").value;
 
-    // GET LOCATION
+    status.innerHTML =
+    "Detecting location...";
+
     navigator.geolocation.getCurrentPosition(
 
-        (position)=>{
+        async(position)=>{
 
             const lat = position.coords.latitude;
             const lng = position.coords.longitude;
 
-            // RANDOM DEMO SPEED
-            const speed = Math.floor(Math.random()*100)+1;
+            // REAL CONNECTION API
+            const connection =
+            navigator.connection ||
+            navigator.mozConnection ||
+            navigator.webkitConnection;
 
-            let color = "red";
+            let speed;
+
+            if(connection){
+
+                speed =
+                connection.downlink || 10;
+
+            }else{
+
+                speed =
+                Math.floor(Math.random()*100)+1;
+
+            }
+
+            // RANDOM PING
+            const ping =
+            Math.floor(Math.random()*50)+5;
+
+            // COLOR
+            let color = "#ff4d4d";
 
             if(speed > 60){
-                color = "green";
-            }
-            else if(speed > 30){
-                color = "yellow";
+
+                color = "#00ff88";
+
+            }else if(speed > 30){
+
+                color = "#ffd000";
+
             }
 
             // MARKER
-            const marker = L.circleMarker([lat,lng],{
+            const marker = L.circleMarker(
+                [lat,lng],
+                {
 
-                radius:12,
+                    radius:12,
 
-                fillColor:color,
+                    fillColor:color,
 
-                color:"#fff",
+                    color:"#fff",
 
-                weight:2,
+                    weight:2,
 
-                fillOpacity:0.8
+                    fillOpacity:0.9
 
-            }).addTo(map);
+                }
+            ).addTo(map);
 
             // POPUP
             marker.bindPopup(`
                 <b>${network}</b><br>
-                Speed: ${speed} Mbps
+                Speed: ${speed} Mbps<br>
+                Ping: ${ping} ms
             `);
 
-            // MOVE MAP
-            map.setView([lat,lng],13);
+            // HEATMAP
+            L.heatLayer([
+                [lat,lng,speed/100]
+            ],{
+                radius:30,
+                blur:25
+            }).addTo(map);
 
-            // STATUS
+            // MOVE MAP
+            map.setView([lat,lng],12);
+
+            // UPDATE STATUS
             status.innerHTML = `
-                ${network} Speed: ${speed} Mbps
+                📶 Network: ${network}<br>
+                ⚡ Speed: ${speed} Mbps<br>
+                📡 Ping: ${ping} ms<br>
+                📍 Location Connected
             `;
+
+            // UPDATE STATS
+            totalTests++;
+
+            totalSpeed += speed;
+
+            totalPing += ping;
+
+            document.getElementById("tests")
+            .innerText = totalTests;
+
+            document.getElementById("avgSpeed")
+            .innerText =
+            Math.round(totalSpeed/totalTests)
+            + " Mbps";
+
+            document.getElementById("avgPing")
+            .innerText =
+            Math.round(totalPing/totalTests)
+            + " ms";
+
+            // UPDATE CHART
+            speedData.push(speed);
+
+            labels.push("Test "+totalTests);
+
+            chart.update();
+
+            // LIVE CONNECTION LINE
+            L.polyline(
+                [
+                    [22.9734,78.6569],
+                    [lat,lng]
+                ],
+                {
+                    color:"#00c6ff",
+                    weight:3
+                }
+            ).addTo(map);
 
         },
 
         ()=>{
 
-            status.innerHTML = "Location permission denied.";
+            status.innerHTML =
+            "❌ Location permission denied.";
 
         }
 
     );
 
 }
+
+// RANDOM DEMO POINTS
+const telecomData = [
+
+    [28.61,77.20,0.8],
+    [19.07,72.87,0.7],
+    [13.08,80.27,0.9],
+    [22.57,88.36,0.6],
+    [26.91,75.78,0.5]
+
+];
+
+// INITIAL HEATMAP
+L.heatLayer(
+telecomData,
+{
+    radius:35,
+    blur:30
+}).addTo(map);
 
 </script>
 
