@@ -87,6 +87,18 @@ L.control.layers({
 jioLayer.addTo(map);
 
 // ==========================
+async function detectISP(){
+
+    const res =
+    await fetch("https://ipapi.co/json/");
+
+    const data = await res.json();
+
+    console.log(data);
+
+    return data.org;
+
+}
 // 5G TOWER CLUSTERING
 // ==========================
 
