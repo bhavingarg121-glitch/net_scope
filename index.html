@@ -7,6 +7,8 @@
 
 <!-- TensorFlow -->
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.20.0/dist/tf.min.js"></script>
+  <script src="app.js"></script>
+<script type="module" src="firebase.js"></script>
 
 <!-- Leaflet -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
@@ -22,89 +24,132 @@ font-family:Poppins, sans-serif;
 overflow:hidden;
 }
 
+/* MAP */
 #map{
 width:100%;
 height:100vh;
 }
 
+/* GLASS PANEL */
 .panel{
 position:absolute;
 top:15px;
 left:15px;
-width:320px;
+width:340px;
 background:rgba(255,255,255,0.08);
-backdrop-filter:blur(15px);
-padding:15px;
-border-radius:15px;
+backdrop-filter:blur(18px);
+padding:18px;
+border-radius:18px;
 z-index:999;
+border:1px solid rgba(255,255,255,0.1);
 }
 
+/* BUTTON */
 .btn{
 width:100%;
-padding:10px;
+padding:12px;
 margin-top:10px;
 border:none;
-border-radius:10px;
-background:#00c6ff;
+border-radius:12px;
+background:linear-gradient(45deg,#00c6ff,#0072ff);
 color:white;
 font-weight:bold;
 cursor:pointer;
+transition:0.3s;
 }
 
+.btn:hover{
+transform:translateY(-2px);
+}
+
+/* CARDS */
 .card{
 margin-top:10px;
 padding:10px;
 background:#101935;
-border-radius:10px;
+border-radius:12px;
 font-size:13px;
+line-height:1.5;
 }
 
+/* TOP DASHBOARD */
 .topbar{
 position:absolute;
 top:15px;
 right:15px;
-display:flex;
+display:grid;
+grid-template-columns:repeat(2,140px);
 gap:10px;
 z-index:999;
 }
 
 .stat{
 background:rgba(255,255,255,0.08);
-padding:10px;
-border-radius:10px;
-min-width:120px;
+padding:12px;
+border-radius:12px;
 text-align:center;
+border:1px solid rgba(255,255,255,0.1);
+}
+
+.stat b{
+font-size:18px;
+}
+
+/* STATUS COLORS */
+.low{color:#00ff88}
+.med{color:#ffd000}
+.high{color:#ff4d4d}
+
+h3{
+margin:0;
+margin-bottom:10px;
+}
+
+.small{
+font-size:12px;
+opacity:0.7;
 }
 </style>
 </head>
 
 <body>
 
+<!-- CONTROL PANEL -->
 <div class="panel">
 <h3>📡 NetScope AI Telecom</h3>
+<div class="small">India Real-Time Network Intelligence</div>
 
-<button class="btn" onclick="startTest()">Run Network Test</button>
+<button class="btn" onclick="startTest()">🚀 Run Network Test</button>
 
-<div class="card" id="status">Waiting...</div>
-<div class="card" id="ai">AI Loading...</div>
+<div class="card" id="status">Status: Waiting for test...</div>
+<div class="card" id="ai">AI: Initializing neural network...</div>
 <div class="card" id="risk">Risk: --</div>
+
+<div class="card">
+📶 Live Signal Monitoring<br>
+🧠 AI Prediction Engine<br>
+🛰️ Satellite + Tower Fusion Layer
+</div>
 </div>
 
+<!-- DASHBOARD -->
 <div class="topbar">
-<div class="stat">Speed <br><b id="speed">0</b></div>
-<div class="stat">Ping <br><b id="ping">0</b></div>
-<div class="stat">Users <br><b id="users">500</b></div>
-<div class="stat">Outages <br><b id="outages">0</b></div>
+<div class="stat">Speed<br><b id="speed">0</b> Mbps</div>
+<div class="stat">Ping<br><b id="ping">0</b> ms</div>
+<div class="stat">Users<br><b id="users">500</b></div>
+<div class="stat">Outages<br><b id="outages">0</b></div>
 </div>
 
+<!-- MAP -->
 <div id="map"></div>
 
 <script>
 /* ================= MAP ================= */
 const map = L.map("map").setView([22.9734,78.6569],5);
 
-L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png")
-.addTo(map);
+L.tileLayer(
+"https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+).addTo(map);
 
 /* ================= TOWERS ================= */
 const towers = [
@@ -120,12 +165,24 @@ fillOpacity:0.05
 }).addTo(map);
 });
 
+/* ================= SATELLITE LAYER ================= */
+for(let i=0;i<6;i++){
+L.circle([
+20 + Math.random()*10,
+70 + Math.random()*20
+],{
+radius:200000,
+color:"#00c6ff",
+fillOpacity:0.03
+}).addTo(map);
+}
+
 /* ================= HEAT ================= */
-const heat = L.heatLayer([
+L.heatLayer([
 [28.61,77.20,0.9],
 [19.07,72.87,0.8],
 [13.08,80.27,0.7]
-]).addTo(map);
+],{radius:40}).addTo(map);
 
 /* ================= AI MODEL ================= */
 let model;
@@ -149,9 +206,10 @@ optimizer:"adam",
 loss:"binaryCrossentropy"
 });
 
-document.getElementById("ai").innerText =
-"AI Engine Ready (TF.js)";
+document.getElementById("ai").innerHTML =
+"🧠 AI Engine: Neural Network Ready";
 }
+
 initAI();
 
 /* ================= SIGNAL ================= */
@@ -161,21 +219,21 @@ towers.forEach(t=>{
 let d=Math.hypot(lat-t[0],lng-t[1]);
 s += 1/(d+0.1);
 });
-return Math.min(s*50,100);
+return Math.min(s*55,100);
 }
 
 /* ================= PREDICT ================= */
 function predict(speed,ping,users){
-const input = tf.tensor2d([[speed/100,ping/100,users/1000]]);
-const out = model.predict(input);
+const input=tf.tensor2d([[speed/100,ping/100,users/1000]]);
+const out=model.predict(input);
 return out.dataSync()[0];
 }
 
-/* ================= LIVE DATA ================= */
+/* ================= STATE ================= */
 let users=500;
 let outages=0;
 
-/* ================= TEST ================= */
+/* ================= TEST ENGINE ================= */
 function startTest(){
 
 navigator.geolocation.getCurrentPosition(pos=>{
@@ -194,18 +252,27 @@ document.getElementById("ping").innerText=Math.round(ping);
 document.getElementById("users").innerText=users;
 
 let level="LOW 🟢";
-if(risk>0.7) level="HIGH 🔴";
-else if(risk>0.4) level="MED 🟠";
+let cls="low";
 
-document.getElementById("risk").innerText=
-"Outage Risk: "+level;
+if(risk>0.7){
+level="HIGH 🔴";
+cls="high";
+}
+else if(risk>0.4){
+level="MEDIUM 🟠";
+cls="med";
+}
+
+document.getElementById("risk").innerHTML=
+`Risk: <span class="${cls}">${level}</span>`;
 
 document.getElementById("status").innerText=
 `Speed ${Math.round(speed)} Mbps | Ping ${Math.round(ping)} ms | Signal ${Math.round(sig)}`;
 
 L.circleMarker([lat,lng],{
 radius:10,
-color: risk>0.7?"red":"green"
+color: risk>0.7?"red":"#00ff88",
+fillOpacity:0.9
 }).addTo(map);
 
 map.setView([lat,lng],10);
@@ -217,7 +284,7 @@ document.getElementById("outages").innerText=outages;
 L.circle([lat,lng],{
 radius:40000,
 color:"red",
-fillOpacity:0.1
+fillOpacity:0.08
 }).addTo(map);
 }
 
@@ -225,7 +292,7 @@ fillOpacity:0.1
 
 }
 
-/* ================= SIMULATION ================= */
+/* ================= LIVE SIM ================= */
 setInterval(()=>{
 users += Math.floor(Math.random()*10);
 document.getElementById("users").innerText=users;
