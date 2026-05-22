@@ -270,3 +270,6 @@ async function startTest() {
 updateUI();
 
 console.log("🚀 NetScope AI Telecom v3 PRO Loaded");
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("sw.js");
+}
