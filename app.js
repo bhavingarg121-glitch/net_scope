@@ -1,7 +1,10 @@
 // =====================================
-// NETSCOPE INDIA - AI TELECOM ENGINE v2
+// NETSCOPE INDIA - AI TELECOM ENGINE v3 (PRO FIXED)
 // =====================================
 
+// ==========================
+// MAP INIT
+// ==========================
 const map = L.map("map").setView([22.9734, 78.6569], 5);
 
 L.tileLayer(
@@ -23,129 +26,159 @@ let history = {
 };
 
 // ==========================
-// TOWERS
+// TELECOM OPERATORS
+// ==========================
+const operators = {
+  Jio: { weight: 1.0 },
+  Airtel: { weight: 0.95 },
+  Vi: { weight: 0.85 },
+  BSNL: { weight: 0.75 }
+};
+
+// ==========================
+// TOWERS (SIMULATION GRID)
 // ==========================
 const towers = [
-  { lat: 28.61, lng: 77.20 },
-  { lat: 19.07, lng: 72.87 },
-  { lat: 13.08, lng: 80.27 },
-  { lat: 22.57, lng: 88.36 }
+  { lat: 28.61, lng: 77.20, op: "Jio" },
+  { lat: 19.07, lng: 72.87, op: "Airtel" },
+  { lat: 13.08, lng: 80.27, op: "Vi" },
+  { lat: 22.57, lng: 88.36, op: "BSNL" },
+  { lat: 26.91, lng: 75.78, op: "Jio" }
 ];
 
+// Render towers
 towers.forEach(t => {
   L.circleMarker([t.lat, t.lng], {
     radius: 8,
-    color: "#00ff88"
-  }).addTo(map);
+    color: "#00ff88",
+    fillOpacity: 0.7
+  }).addTo(map).bindPopup(`📡 ${t.op} Tower`);
 });
 
 // ==========================
-// SIGNAL MODEL (REAL PHYSICS SIM)
+// SIGNAL MODEL (REALISTIC DISTANCE LOSS)
 // ==========================
-function calculateSignal(lat, lng) {
+function calculateSignal(lat, lng, op) {
+
   let strength = 0;
 
   towers.forEach(t => {
+    if (t.op !== op) return;
+
     const d = Math.hypot(lat - t.lat, lng - t.lng);
-    strength += 1 / (d + 0.1);
+    strength += 1 / (d + 0.15);
   });
 
-  return Math.min(strength * 55, 100);
+  const boost = operators[op].weight;
+
+  return Math.min(strength * 70 * boost, 100);
 }
 
 // ==========================
-// 🧠 AI MODEL (REALISTIC LSTM PIPELINE)
+// SIMPLE AI FALLBACK MODEL (WORKS ALWAYS)
 // ==========================
-let model;
-let isReady = false;
+function fallbackAI(speed, ping, signal) {
 
-async function initAI() {
+  let score =
+    (speed * 0.4) +
+    (signal * 0.4) -
+    (ping * 0.3);
 
-  model = tf.sequential();
-
-  // LSTM expects sequence input
-  model.add(tf.layers.lstm({
-    units: 8,
-    inputShape: [5, 3],
-    returnSequences: false
-  }));
-
-  model.add(tf.layers.dense({
-    units: 1,
-    activation: "sigmoid"
-  }));
-
-  model.compile({
-    optimizer: "adam",
-    loss: "binaryCrossentropy"
-  });
-
-  // fake warm training (IMPORTANT)
-  const xs = tf.randomNormal([20, 5, 3]);
-  const ys = tf.randomUniform([20, 1]);
-
-  await model.fit(xs, ys, {
-    epochs: 3,
-    verbose: 0
-  });
-
-  isReady = true;
-  console.log("🧠 AI READY (Warm Trained)");
-}
-
-initAI();
-
-// ==========================
-// TIME SERIES BUILDER
-// ==========================
-function buildSeries() {
-  const series = [];
-
-  for (let i = 0; i < 5; i++) {
-    series.push([
-      history.speed[i] || 50,
-      history.ping[i] || 20,
-      history.users[i] || 500
-    ]);
-  }
-
-  return tf.tensor3d([series]);
-}
-
-// ==========================
-// AI PREDICTION
-// ==========================
-async function predictOutage() {
-  if (!isReady) return 0.2;
-
-  const input = buildSeries();
-  const output = model.predict(input);
-
-  const risk = output.dataSync()[0];
+  let risk = 1 - (score / 100);
 
   return Math.min(Math.max(risk, 0), 1);
 }
 
 // ==========================
-// UI
+// OPTIONAL TF MODEL (SAFE WRAPPER)
 // ==========================
-function updateUI() {
-  document.getElementById("liveUsers").innerText = liveUsers;
-  document.getElementById("testsToday").innerText = testsToday;
-  document.getElementById("outages").innerText = outages;
+let model = null;
+let tfReady = false;
+
+async function initAI() {
+
+  try {
+
+    model = tf.sequential();
+
+    model.add(tf.layers.dense({
+      units: 12,
+      inputShape: [3],
+      activation: "relu"
+    }));
+
+    model.add(tf.layers.dense({
+      units: 1,
+      activation: "sigmoid"
+    }));
+
+    model.compile({
+      optimizer: "adam",
+      loss: "binaryCrossentropy"
+    });
+
+    // warm training (safe dummy)
+    const xs = tf.randomNormal([30, 3]);
+    const ys = tf.randomUniform([30, 1]);
+
+    await model.fit(xs, ys, { epochs: 2, verbose: 0 });
+
+    tfReady = true;
+    console.log("🧠 AI MODEL READY");
+
+  } catch (e) {
+    console.warn("⚠ TF failed, using fallback AI");
+    tfReady = false;
+  }
+}
+
+initAI();
+
+// ==========================
+// AI PREDICTION
+// ==========================
+function predictRisk(speed, ping, signal) {
+
+  if (!tfReady || !model) {
+    return fallbackAI(speed, ping, signal);
+  }
+
+  const input = tf.tensor2d([[speed / 100, ping / 100, signal / 100]]);
+  const out = model.predict(input);
+
+  let risk = out.dataSync()[0];
+
+  return Math.min(Math.max(risk, 0), 1);
 }
 
 // ==========================
-// SIMULATION
+// UI SAFETY HELPERS
+// ==========================
+function setText(id, value) {
+  const el = document.getElementById(id);
+  if (el) el.innerText = value;
+}
+
+// ==========================
+// UI UPDATE
+// ==========================
+function updateUI() {
+  setText("liveUsers", liveUsers);
+  setText("testsToday", testsToday);
+  setText("outages", outages);
+}
+
+// ==========================
+// SIMULATION LOOP
 // ==========================
 setInterval(() => {
-  liveUsers += Math.floor(Math.random() * 10);
-  testsToday += Math.floor(Math.random() * 20);
+  liveUsers += Math.floor(Math.random() * 15);
+  testsToday += Math.floor(Math.random() * 25);
   updateUI();
 }, 3000);
 
 // ==========================
-// INCIDENT FEED
+// INCIDENT LOG
 // ==========================
 function incident(msg) {
   const el = document.getElementById("activityFeed");
@@ -162,33 +195,40 @@ async function startTest() {
     const lat = pos.coords.latitude;
     const lng = pos.coords.longitude;
 
+    const selectedOp =
+      document.getElementById("operator")?.value || "Jio";
+
+    // simulated metrics
     const speed = Math.random() * 100;
     const ping = Math.random() * 60;
 
-    // save history
+    // signal
+    const signal = calculateSignal(lat, lng, selectedOp);
+
+    // AI risk
+    const risk = predictRisk(speed, ping, signal);
+
+    // history
     history.speed.push(speed);
     history.ping.push(ping);
     history.users.push(liveUsers);
 
-    if (history.speed.length > 5) {
+    if (history.speed.length > 10) {
       history.speed.shift();
       history.ping.shift();
       history.users.shift();
     }
 
-    const signal = calculateSignal(lat, lng);
-    const risk = await predictOutage();
-
-    // MAP MARKER
+    // map marker
     L.circleMarker([lat, lng], {
       radius: 10,
-      color: risk > 0.7 ? "red" : "green",
+      color: risk > 0.7 ? "red" : "#00ff88",
       fillOpacity: 0.9
     }).addTo(map);
 
     map.setView([lat, lng], 10);
 
-    // OUTAGE LOGIC (AI + SIGNAL FUSION)
+    // outage logic
     if (risk > 0.7 || signal < 25) {
       outages++;
 
@@ -198,16 +238,26 @@ async function startTest() {
         fillOpacity: 0.1
       }).addTo(map);
 
-      incident("Outage detected at location");
+      incident("Weak network / outage detected");
     }
 
+    // UI updates
     updateUI();
+
+    setText("status",
+      `Speed ${speed.toFixed(1)} Mbps | Ping ${ping.toFixed(0)} ms | Signal ${signal.toFixed(1)}`
+    );
+
+    setText("ai",
+      `AI Risk: ${(risk * 100).toFixed(1)}% (${tfReady ? "TF" : "Fallback"})`
+    );
 
     console.log({
       speed: speed.toFixed(2),
       ping: ping.toFixed(2),
       signal: signal.toFixed(2),
-      risk: risk.toFixed(2)
+      risk: risk.toFixed(2),
+      operator: selectedOp
     });
 
   });
@@ -215,29 +265,8 @@ async function startTest() {
 }
 
 // ==========================
-// FIREBASE (SAFE OPTIONAL)
-// ==========================
-if (window.db) {
-  import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js")
-    .then(({ collection, onSnapshot }) => {
-
-      onSnapshot(collection(window.db, "outages"), snap => {
-
-        snap.forEach(doc => {
-          const d = doc.data();
-
-          L.circleMarker([d.lat, d.lng], {
-            radius: 10,
-            color: "red"
-          }).addTo(map);
-
-        });
-
-      });
-
-    });
-}
-
+// INIT UI
 // ==========================
 updateUI();
-console.log("🚀 NetScope AI Telecom v2 Loaded");
+
+console.log("🚀 NetScope AI Telecom v3 PRO Loaded");
