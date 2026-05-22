@@ -1,6 +1,6 @@
 // ==========================
-// NETSCOPE INDIA PRO
-// app.js
+// NETSCOPE INDIA ULTRA
+// COMPLETE app.js
 // ==========================
 
 // ==========================
@@ -9,7 +9,7 @@
 
 const map = L.map("map").setView([22.9734, 78.6569], 5);
 
-// DARK MAP TILE
+// DARK TILE
 L.tileLayer(
     "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
     {
@@ -26,7 +26,7 @@ const airtelLayer = L.layerGroup();
 const viLayer = L.layerGroup();
 const bsnlLayer = L.layerGroup();
 
-// JIO COVERAGE
+// JIO
 L.circle([28.61,77.20],{
 
     radius:50000,
@@ -37,7 +37,7 @@ L.circle([28.61,77.20],{
 
 }).addTo(jioLayer);
 
-// AIRTEL COVERAGE
+// AIRTEL
 L.circle([19.07,72.87],{
 
     radius:45000,
@@ -48,7 +48,7 @@ L.circle([19.07,72.87],{
 
 }).addTo(airtelLayer);
 
-// VI COVERAGE
+// VI
 L.circle([13.08,80.27],{
 
     radius:40000,
@@ -59,7 +59,7 @@ L.circle([13.08,80.27],{
 
 }).addTo(viLayer);
 
-// BSNL COVERAGE
+// BSNL
 L.circle([22.57,88.36],{
 
     radius:35000,
@@ -83,13 +83,27 @@ L.control.layers({
 
 }).addTo(map);
 
-// DEFAULT LAYER
+// DEFAULT
 jioLayer.addTo(map);
 
 // ==========================
-// TELECOM TOWERS
+// 5G TOWER CLUSTERING
 // ==========================
 
+// REQUIRE:
+//
+// <link rel="stylesheet"
+// href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css">
+//
+// <link rel="stylesheet"
+// href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css">
+//
+// <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+
+const towerCluster =
+L.markerClusterGroup();
+
+// 5G TOWERS
 const towers = [
 
     {
@@ -114,42 +128,109 @@ const towers = [
         lat:22.57,
         lng:88.36,
         provider:"BSNL"
+    },
+
+    {
+        lat:26.91,
+        lng:75.78,
+        provider:"Jio"
+    },
+
+    {
+        lat:23.02,
+        lng:72.57,
+        provider:"Airtel"
+    },
+
+    {
+        lat:17.38,
+        lng:78.48,
+        provider:"Jio"
+    },
+
+    {
+        lat:12.97,
+        lng:77.59,
+        provider:"Vi"
     }
 
 ];
 
+// GLOWING ICON
+const towerIcon = L.divIcon({
+
+    className:"",
+
+    html:`
+
+        <div style="
+
+            width:20px;
+            height:20px;
+
+            border-radius:50%;
+
+            background:#00ff88;
+
+            border:2px solid white;
+
+            box-shadow:
+            0 0 10px #00ff88,
+            0 0 20px #00ff88,
+            0 0 40px #00ff88;
+
+        "></div>
+
+    `,
+
+    iconSize:[20,20]
+
+});
+
 // ADD TOWERS
 towers.forEach((tower)=>{
 
-    L.circleMarker(
+    const marker =
+
+    L.marker(
 
         [tower.lat,tower.lng],
 
         {
-
-            radius:10,
-
-            fillColor:"#00ff88",
-
-            color:"#ffffff",
-
-            weight:2,
-
-            fillOpacity:0.9
-
+            icon:towerIcon
         }
 
     )
 
-    .addTo(map)
-
     .bindPopup(`
 
-        <b>📡 ${tower.provider} Tower</b>
+        <div style="font-family:Arial">
+
+            <h3>
+                📡 ${tower.provider} 5G Tower
+            </h3>
+
+            Status:
+            Active
+            <br>
+
+            Technology:
+            5G NR
+            <br>
+
+            Signal:
+            Strong
+
+        </div>
 
     `);
 
+    towerCluster.addLayer(marker);
+
 });
+
+// ADD CLUSTER
+map.addLayer(towerCluster);
 
 // ==========================
 // ISP DATA
@@ -188,6 +269,83 @@ let totalTests = 0;
 let totalSpeed = 0;
 
 let totalPing = 0;
+
+// ==========================
+// REALTIME METRICS
+// ==========================
+
+let liveUsers =
+Math.floor(Math.random()*1000)+500;
+
+let testsToday =
+Math.floor(Math.random()*8000)+2000;
+
+let activeTowers =
+towers.length;
+
+let outages =
+Math.floor(Math.random()*4);
+
+// UPDATE METRICS
+function updateMetrics(){
+
+    const liveUsersBox =
+    document.getElementById("liveUsers");
+
+    const testsTodayBox =
+    document.getElementById("testsToday");
+
+    const activeTowersBox =
+    document.getElementById("activeTowers");
+
+    const outagesBox =
+    document.getElementById("outages");
+
+    if(liveUsersBox){
+
+        liveUsersBox.innerText =
+        liveUsers;
+
+    }
+
+    if(testsTodayBox){
+
+        testsTodayBox.innerText =
+        testsToday;
+
+    }
+
+    if(activeTowersBox){
+
+        activeTowersBox.innerText =
+        activeTowers;
+
+    }
+
+    if(outagesBox){
+
+        outagesBox.innerText =
+        outages;
+
+    }
+
+}
+
+// INITIAL
+updateMetrics();
+
+// LIVE CHANGES
+setInterval(()=>{
+
+    liveUsers +=
+    Math.floor(Math.random()*10);
+
+    testsToday +=
+    Math.floor(Math.random()*20);
+
+    updateMetrics();
+
+},3000);
 
 // ==========================
 // CHART
@@ -242,19 +400,15 @@ const chart = new Chart(
             scales:{
 
                 x:{
-
                     ticks:{
                         color:"white"
                     }
-
                 },
 
                 y:{
-
                     ticks:{
                         color:"white"
                     }
-
                 }
 
             }
@@ -275,9 +429,54 @@ function calculateQuality(speed,ping){
 
     score += speed * 0.7;
 
-    score += (100 - ping) * 0.3;
+    score += (100-ping) * 0.3;
 
     return Math.round(score);
+
+}
+
+// ==========================
+// AI INSIGHTS
+// ==========================
+
+function generateAIInsight(
+    network,
+    speed,
+    ping,
+    quality
+){
+
+    let insight = "";
+
+    if(quality >= 85){
+
+        insight =
+        `🚀 ${network} is delivering excellent performance with ultra-low latency.`;
+
+    }
+
+    else if(quality >= 60){
+
+        insight =
+        `⚠ ${network} is stable but may fluctuate during peak hours.`;
+
+    }
+
+    else{
+
+        insight =
+        `❌ ${network} is experiencing congestion and unstable connectivity.`;
+
+    }
+
+    const aiBox =
+    document.getElementById("aiInsight");
+
+    if(aiBox){
+
+        aiBox.innerHTML = insight;
+
+    }
 
 }
 
@@ -296,7 +495,6 @@ function startTest(){
     status.innerHTML =
     "📍 Detecting location...";
 
-    // GEOLOCATION
     navigator.geolocation.getCurrentPosition(
 
         // SUCCESS
@@ -311,7 +509,7 @@ function startTest(){
             status.innerHTML =
             "⚡ Running network test...";
 
-            // NETWORK INFO API
+            // NETWORK API
             const connection =
 
                 navigator.connection ||
@@ -327,7 +525,9 @@ function startTest(){
                 download =
                 connection.downlink || 10;
 
-            }else{
+            }
+
+            else{
 
                 download =
                 Math.floor(Math.random()*100)+1;
@@ -343,7 +543,18 @@ function startTest(){
 
             // QUALITY
             const quality =
-            calculateQuality(download,ping);
+            calculateQuality(
+                download,
+                ping
+            );
+
+            // AI INSIGHT
+            generateAIInsight(
+                network,
+                download,
+                ping,
+                quality
+            );
 
             // QUALITY COLOR
             let color = "#ff4d4d";
@@ -353,6 +564,7 @@ function startTest(){
                 color = "#00ff88";
 
             }
+
             else if(quality > 50){
 
                 color = "#ffd000";
@@ -411,7 +623,7 @@ function startTest(){
 
             marker.openPopup();
 
-            // MAP MOVE
+            // MOVE MAP
             map.setView([lat,lng],13);
 
             // STATUS
@@ -480,7 +692,7 @@ function startTest(){
 
             ).addTo(map);
 
-            // RESULT OBJECT
+            // RESULT
             const result = {
 
                 network,
@@ -507,12 +719,11 @@ function startTest(){
                 result
             );
 
-            // ==========================
             // BACKEND API
-            // ==========================
-
             fetch(
+
                 "http://localhost:3000/save-test",
+
                 {
 
                     method:"POST",
@@ -598,3 +809,43 @@ function compareISP(){
     ).innerHTML = result;
 
 }
+
+// ==========================
+// LIVE ACTIVITY FEED
+// ==========================
+
+const activities = [
+
+    "📡 New 5G test detected in Delhi",
+
+    "⚡ Airtel latency spike detected",
+
+    "🚀 Jio speed improved in Mumbai",
+
+    "📶 BSNL tower maintenance in Kolkata",
+
+    "🌐 Vi network stable in Chennai"
+
+];
+
+setInterval(()=>{
+
+    const randomActivity =
+
+    activities[
+        Math.floor(
+            Math.random()*activities.length
+        )
+    ];
+
+    const activityBox =
+    document.getElementById("activityFeed");
+
+    if(activityBox){
+
+        activityBox.innerHTML =
+        randomActivity;
+
+    }
+
+},4000);
