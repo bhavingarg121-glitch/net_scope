@@ -16,6 +16,16 @@ onSnapshot(collection(window.db, "outages"), (snapshot) => {
 
     });
 });
+function showOutageAlert(data){
+    const bar = document.getElementById("alertBar");
+
+    bar.style.display = "block";
+    bar.innerHTML = `⚠ OUTAGE: ${data.city} | Severity: ${data.level}`;
+
+    setTimeout(() => {
+        bar.style.display = "none";
+    }, 6000);
+}
 // ==========================
 // MAP INIT
 // ==========================
