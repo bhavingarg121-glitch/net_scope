@@ -1,72 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
 <meta charset="UTF-8"/>
-
-<meta
-name="viewport"
-content="width=device-width, initial-scale=1.0"
-/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
 <title>NetScope India </title>
 
 <!-- SEO -->
-<meta
-name="description"
-content="Realtime telecom intelligence platform for India"
-/>
-
-<meta
-name="theme-color"
-content="#050816"
-/>
+<meta name="description" content="Realtime telecom intelligence platform for India"/>
+<meta name="theme-color" content="#050816"/>
 
 <!-- FAVICON -->
-<link
-rel="icon"
-href="https://cdn-icons-png.flaticon.com/512/483/483947.png"
-/>
+<link rel="icon" href="https://cdn-icons-png.flaticon.com/512/483/483947.png"/>
 
-<!-- GOOGLE FONT -->
-<link
-rel="preconnect"
-href="https://fonts.googleapis.com"
-/>
-
-<link
-rel="preconnect"
-href="https://fonts.gstatic.com"
-crossorigin
-/>
-
-<link
-href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-rel="stylesheet"
-/>
+<!-- FONT -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 
 <!-- LEAFLET -->
-<link
-rel="stylesheet"
-href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css"/>
 
-<!-- MARKER CLUSTER -->
-<link
-rel="stylesheet"
-href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css"
-/>
-
-<link
-rel="stylesheet"
-href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css"
-/>
-
-<!-- AOS ANIMATION -->
-<link
-href="https://unpkg.com/aos@2.3.4/dist/aos.css"
-rel="stylesheet"
-/>
+<!-- AOS -->
+<link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet"/>
 
 <!-- CHART -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -74,796 +30,192 @@ rel="stylesheet"
 <style>
 
 *{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:'Poppins',sans-serif;
-}
-
-html{
-    scroll-behavior:smooth;
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
 }
 
 body{
-    background:#050816;
-    overflow:hidden;
-    color:white;
+background:#050816;
+overflow:hidden;
+color:white;
 }
 
 /* MAP */
 #map{
-    width:100%;
-    height:100vh;
-    z-index:1;
+width:100%;
+height:100vh;
 }
 
-/* GLOW BACKGROUND */
-.bgGlow{
+/* AI PANEL (NEW) */
+.aiPanel{
+position:absolute;
+top:20px;
+left:20px;
+z-index:1100;
+width:300px;
+padding:15px;
+border-radius:18px;
+background:rgba(255,255,255,0.08);
+backdrop-filter:blur(15px);
+border:1px solid rgba(255,255,255,0.1);
+}
 
-    position:absolute;
+.box{
+margin-top:10px;
+padding:10px;
+border-radius:12px;
+background:#101935;
+font-size:13px;
+}
 
-    width:500px;
-    height:500px;
-
-    background:#00c6ff;
-
-    filter:blur(180px);
-
-    opacity:0.15;
-
-    top:-150px;
-    right:-150px;
-
-    z-index:0;
-
+/* STATUS PANEL (NEW) */
+.statusPanel{
+position:absolute;
+bottom:20px;
+left:20px;
+z-index:1100;
+width:300px;
+padding:15px;
+border-radius:18px;
+background:rgba(255,255,255,0.08);
+backdrop-filter:blur(15px);
 }
 
 /* SIDEBAR */
 .sidebar{
-
-    position:absolute;
-
-    top:20px;
-    left:20px;
-
-    width:350px;
-
-    z-index:1000;
-
-    background:rgba(255,255,255,0.08);
-
-    backdrop-filter:blur(18px);
-
-    border:1px solid rgba(255,255,255,0.1);
-
-    border-radius:28px;
-
-    padding:24px;
-
-    box-shadow:0 0 35px rgba(0,0,0,0.5);
-
-    overflow-y:auto;
-
-    max-height:95vh;
-
-}
-
-/* LOGO */
-.logo{
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:space-between;
-
-    margin-bottom:15px;
-
+position:absolute;
+top:20px;
+right:20px;
+width:350px;
+z-index:1100;
+background:rgba(255,255,255,0.08);
+backdrop-filter:blur(18px);
+border-radius:28px;
+padding:24px;
+border:1px solid rgba(255,255,255,0.1);
+overflow-y:auto;
+max-height:95vh;
 }
 
 .logo h1{
-
-    font-size:30px;
-
-    font-weight:700;
-
-    background:linear-gradient(
-        45deg,
-        #00c6ff,
-        #00ff88
-    );
-
-    -webkit-background-clip:text;
-
-    -webkit-text-fill-color:transparent;
-
-}
-
-/* LIVE BADGE */
-.liveBadge{
-
-    padding:6px 12px;
-
-    border-radius:30px;
-
-    background:#00ff88;
-
-    color:#000;
-
-    font-size:12px;
-
-    font-weight:bold;
-
-    animation:pulse 1.5s infinite;
-
-}
-
-@keyframes pulse{
-
-    0%{
-        transform:scale(1);
-    }
-
-    50%{
-        transform:scale(1.08);
-    }
-
-    100%{
-        transform:scale(1);
-    }
-
-}
-
-/* DESC */
-.desc{
-
-    color:#bfc7d5;
-
-    line-height:1.7;
-
-    font-size:14px;
-
-    margin-bottom:20px;
-
-}
-
-/* SELECT */
-select{
-
-    width:100%;
-
-    padding:14px;
-
-    border:none;
-
-    outline:none;
-
-    border-radius:16px;
-
-    background:#101935;
-
-    color:white;
-
-    margin-bottom:15px;
-
-    font-size:15px;
-
-}
-
-/* BUTTON */
-button{
-
-    width:100%;
-
-    padding:15px;
-
-    border:none;
-
-    border-radius:16px;
-
-    background:linear-gradient(
-        45deg,
-        #00c6ff,
-        #0072ff
-    );
-
-    color:white;
-
-    font-size:16px;
-
-    font-weight:600;
-
-    cursor:pointer;
-
-    transition:0.3s;
-
-}
-
-button:hover{
-
-    transform:translateY(-2px);
-
-    box-shadow:0 0 20px rgba(0,198,255,0.5);
-
-}
-
-/* STATUS */
-.status{
-
-    margin-top:15px;
-
-    padding:15px;
-
-    background:#0d1429;
-
-    border-radius:16px;
-
-    line-height:1.8;
-
-    font-size:14px;
-
-}
-
-/* BOX */
-.aiBox,
-.activity,
-.compareResult{
-
-    margin-top:15px;
-
-    padding:15px;
-
-    background:#101935;
-
-    border-radius:16px;
-
-    line-height:1.7;
-
-    font-size:14px;
-
-}
-
-/* AI */
-.aiBox{
-    color:#00ff88;
-}
-
-/* LEGEND */
-.legend{
-
-    margin-top:20px;
-
-    display:flex;
-
-    gap:15px;
-
-    flex-wrap:wrap;
-
-}
-
-.legend div{
-
-    display:flex;
-
-    align-items:center;
-
-    gap:8px;
-
-    font-size:13px;
-
-}
-
-.dot{
-
-    width:12px;
-
-    height:12px;
-
-    border-radius:50%;
-
-}
-
-.green{
-    background:#00ff88;
-}
-
-.yellow{
-    background:#ffd000;
-}
-
-.red{
-    background:#ff4d4d;
-}
-
-/* COMPARE */
-.compare{
-
-    margin-top:25px;
-
-    padding-top:20px;
-
-    border-top:1px solid rgba(255,255,255,0.1);
-
-}
-
-.compare h3{
-    margin-bottom:10px;
+background:linear-gradient(45deg,#00c6ff,#00ff88);
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+font-size:28px;
 }
 
 /* STATS */
 .stats{
-
-    position:absolute;
-
-    top:20px;
-    right:20px;
-
-    z-index:1000;
-
-    display:grid;
-
-    grid-template-columns:repeat(2,190px);
-
-    gap:15px;
-
+position:absolute;
+top:20px;
+left:50%;
+transform:translateX(-50%);
+display:grid;
+grid-template-columns:repeat(4,160px);
+gap:12px;
+z-index:1100;
 }
 
-/* CARD */
 .card{
-
-    background:rgba(255,255,255,0.08);
-
-    backdrop-filter:blur(18px);
-
-    border:1px solid rgba(255,255,255,0.1);
-
-    border-radius:24px;
-
-    padding:20px;
-
-    box-shadow:0 0 20px rgba(0,0,0,0.4);
-
-    transition:0.3s;
-
-}
-
-.card:hover{
-
-    transform:translateY(-4px);
-
-}
-
-.card h3{
-
-    font-size:14px;
-
-    color:#9ba8c7;
-
-    margin-bottom:10px;
-
-}
-
-.card h2{
-
-    font-size:28px;
-
-    font-weight:700;
-
+background:rgba(255,255,255,0.08);
+padding:12px;
+border-radius:14px;
+text-align:center;
 }
 
 /* CHART */
 .chart-container{
-
-    position:absolute;
-
-    bottom:20px;
-
-    left:50%;
-
-    transform:translateX(-50%);
-
-    width:550px;
-
-    z-index:1000;
-
-    background:rgba(255,255,255,0.08);
-
-    backdrop-filter:blur(18px);
-
-    border-radius:28px;
-
-    padding:20px;
-
-    border:1px solid rgba(255,255,255,0.1);
-
-}
-
-/* LOADER */
-.loader{
-
-    position:fixed;
-
-    inset:0;
-
-    background:#050816;
-
-    z-index:9999;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    flex-direction:column;
-
-    gap:20px;
-
-}
-
-.loaderCircle{
-
-    width:80px;
-    height:80px;
-
-    border-radius:50%;
-
-    border:6px solid rgba(255,255,255,0.1);
-
-    border-top:6px solid #00c6ff;
-
-    animation:spin 1s linear infinite;
-
-}
-
-@keyframes spin{
-
-    100%{
-        transform:rotate(360deg);
-    }
-
-}
-
-/* FOOTER */
-.footer{
-
-    position:absolute;
-
-    bottom:10px;
-    right:20px;
-
-    z-index:1000;
-
-    font-size:12px;
-
-    color:#aaa;
-
-}
-
-/* MOBILE */
-@media(max-width:1100px){
-
-    body{
-        overflow:auto;
-    }
-
-    .stats{
-
-        position:relative;
-
-        top:auto;
-        right:auto;
-
-        grid-template-columns:1fr 1fr;
-
-        width:90%;
-
-        margin:20px auto;
-
-    }
-
-    .sidebar{
-
-        position:relative;
-
-        width:90%;
-
-        left:auto;
-        top:auto;
-
-        margin:20px auto;
-
-    }
-
-    .chart-container{
-
-        position:relative;
-
-        width:90%;
-
-        left:auto;
-        transform:none;
-
-        bottom:auto;
-
-        margin:20px auto;
-
-    }
-
-    #map{
-        height:70vh;
-    }
-
-}
-
-@media(max-width:700px){
-
-    .stats{
-        grid-template-columns:1fr;
-    }
-
+position:absolute;
+bottom:20px;
+left:50%;
+transform:translateX(-50%);
+width:500px;
+z-index:1100;
+background:rgba(255,255,255,0.08);
+padding:15px;
+border-radius:18px;
 }
 
 </style>
-
 </head>
 
 <body>
 
-<!-- LOADER -->
-<div class="loader" id="loader">
+<!-- AI ENGINE PANEL -->
+<div class="aiPanel">
+<h3>🤖 AI NETWORK ENGINE</h3>
 
-    <div class="loaderCircle"></div>
-
-    <h2>Loading NetScope...</h2>
-
+<div class="box" id="aiRisk">AI analyzing network...</div>
+<div class="box" id="outagePredict">Outage Risk: LOW</div>
 </div>
 
-<!-- GLOW -->
-<div class="bgGlow"></div>
+<!-- STATUS PANEL -->
+<div class="statusPanel">
+<div>🟢 Live Simulation Active</div>
+<div class="box" id="activityFeed">Waiting for activity...</div>
 
-<!-- SIDEBAR -->
-<div
-class="sidebar"
-data-aos="fade-right"
->
-
-    <div class="logo">
-
-        <h1>📡 NetScope</h1>
-
-        <div class="liveBadge">
-            LIVE
-        </div>
-
-    </div>
-
-    <div class="desc">
-
-        Advanced realtime telecom intelligence platform for India with AI insights, heatmaps, speed analytics and live network monitoring.
-
-    </div>
-
-    <!-- NETWORK -->
-    <select id="network">
-
-        <option value="Jio">Jio</option>
-
-        <option value="Airtel">Airtel</option>
-
-        <option value="Vi">Vi</option>
-
-        <option value="BSNL">BSNL</option>
-
-    </select>
-
-    <!-- BUTTON -->
-    <button onclick="startTest()">
-
-        🚀 Start Network Test
-
-    </button>
-
-    <!-- STATUS -->
-    <div class="status" id="status">
-
-        Waiting for network test...
-
-    </div>
-
-    <!-- AI -->
-    <div class="aiBox" id="aiInsight">
-
-        🤖 AI analyzing telecom quality...
-
-    </div>
-
-    <!-- ACTIVITY -->
-    <div class="activity" id="activityFeed">
-
-        📡 Monitoring live telecom activity...
-
-    </div>
-
-    <!-- LEGEND -->
-    <div class="legend">
-
-        <div>
-            <span class="dot green"></span>
-            Excellent
-        </div>
-
-        <div>
-            <span class="dot yellow"></span>
-            Average
-        </div>
-
-        <div>
-            <span class="dot red"></span>
-            Poor
-        </div>
-
-    </div>
-
-    <!-- ISP COMPARE -->
-    <div class="compare">
-
-        <h3>
-            📊 ISP Compare
-        </h3>
-
-        <select id="compare1">
-
-            <option>Jio</option>
-
-            <option>Airtel</option>
-
-            <option>Vi</option>
-
-            <option>BSNL</option>
-
-        </select>
-
-        <select id="compare2">
-
-            <option>Airtel</option>
-
-            <option>Jio</option>
-
-            <option>Vi</option>
-
-            <option>BSNL</option>
-
-        </select>
-
-        <button onclick="compareISP()">
-
-            Compare Networks
-
-        </button>
-
-        <div
-        class="compareResult"
-        id="compareResult"
-        >
-
-            Compare two ISPs...
-
-        </div>
-
-    </div>
-
+<div class="box">
+Live Users: <span id="liveUsers">0</span><br/>
+Tests Today: <span id="testsToday">0</span><br/>
+Outages: <span id="outages">0</span>
+</div>
 </div>
 
 <!-- STATS -->
-<div
-class="stats"
-data-aos="fade-left"
->
+<div class="stats">
+<div class="card"><h3>Speed</h3><h2 id="avgSpeed">0</h2></div>
+<div class="card"><h3>Ping</h3><h2 id="avgPing">0</h2></div>
+<div class="card"><h3>Tests</h3><h2 id="tests">0</h2></div>
+<div class="card"><h3>Status</h3><h2 id="liveStatus">ONLINE</h2></div>
+</div>
 
-    <div class="card">
-        <h3>Average Speed</h3>
-        <h2 id="avgSpeed">0 Mbps</h2>
-    </div>
+<!-- SIDEBAR -->
+<div class="sidebar">
 
-    <div class="card">
-        <h3>Average Ping</h3>
-        <h2 id="avgPing">0 ms</h2>
-    </div>
+<div class="logo">
+<h1>📡 NetScope</h1>
+</div>
 
-    <div class="card">
-        <h3>Total Tests</h3>
-        <h2 id="tests">0</h2>
-    </div>
+<div class="box">Realtime Telecom Intelligence Platform</div>
 
-    <div class="card">
-        <h3>Live Users</h3>
-        <h2 id="liveUsers">0</h2>
-    </div>
+<select id="network">
+<option>Jio</option>
+<option>Airtel</option>
+<option>Vi</option>
+<option>BSNL</option>
+</select>
 
-    <div class="card">
-        <h3>Tests Today</h3>
-        <h2 id="testsToday">0</h2>
-    </div>
+<button onclick="startTest()">🚀 Start Test</button>
 
-    <div class="card">
-        <h3>Active Towers</h3>
-        <h2 id="activeTowers">0</h2>
-    </div>
+<div class="box" id="status">Waiting...</div>
 
-    <div class="card">
-        <h3>Outages</h3>
-        <h2 id="outages">0</h2>
-    </div>
-
-    <div class="card">
-        <h3>Status</h3>
-        <h2 id="liveStatus">ONLINE</h2>
-    </div>
+<div class="box" id="aiInsight">AI Insight...</div>
 
 </div>
 
 <!-- CHART -->
-<div
-class="chart-container"
-data-aos="fade-up"
->
-
-    <canvas id="speedChart"></canvas>
-
+<div class="chart-container">
+<canvas id="speedChart"></canvas>
 </div>
 
 <!-- MAP -->
 <div id="map"></div>
 
-<!-- FOOTER -->
-<div class="footer">
-
-    NetScope India • Powered by Firebase
-
-</div>
-
-<!-- LEAFLET -->
+<!-- LIBS -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
-<!-- HEATMAP -->
 <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
-
-<!-- MARKER CLUSTER -->
 <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
-
-<!-- AOS -->
 <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
 
-<script>
-AOS.init({
-    duration:1000,
-    once:true
-});
-</script>
+<script>AOS.init();</script>
 
 <!-- FIREBASE -->
 <script type="module" src="firebase.js"></script>
 
 <!-- APP -->
 <script src="app.js"></script>
-
-<!-- LOADER REMOVE -->
-<script>
-
-window.addEventListener("load",()=>{
-
-    setTimeout(()=>{
-
-        document.getElementById(
-            "loader"
-        ).style.display = "none";
-
-    },1500);
-
-});
-
-</script>
 
 </body>
 </html>
