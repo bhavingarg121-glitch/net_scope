@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>NetScope AI Telecom Comparator</title>
 
-<!-- Leaflet -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
@@ -28,7 +27,7 @@ height:100vh;
 position:absolute;
 top:15px;
 left:15px;
-width:320px;
+width:340px;
 background:rgba(255,255,255,0.08);
 backdrop-filter:blur(15px);
 padding:15px;
@@ -51,7 +50,6 @@ font-weight:bold;
 cursor:pointer;
 }
 
-/* RESULT BOX */
 .box{
 margin-top:10px;
 padding:10px;
@@ -60,7 +58,7 @@ border-radius:10px;
 font-size:13px;
 }
 
-/* TOP STATS */
+/* TOP */
 .top{
 position:absolute;
 top:15px;
@@ -98,7 +96,7 @@ text-align:center;
 
 <button onclick="runTest()">🚀 Start Network Test</button>
 
-<div class="box" id="status">Waiting...</div>
+<div class="box" id="status">Waiting for test...</div>
 <div class="box" id="selected">Selected: --</div>
 <div class="box" id="compare">Comparison: --</div>
 </div>
@@ -122,84 +120,115 @@ L.tileLayer(
 
 /* ================= TOWERS ================= */
 const towers = {
-"Jio":[[28.6,77.2],[19.1,72.8]],
-"Airtel":[[28.7,77.1],[13.0,80.2]],
-"Vi":[[19.0,72.9],[22.5,88.3]],
-"BSNL":[[26.9,75.8],[17.4,78.4]]
+  "Jio":[[28.6,77.2],[19.1,72.8]],
+  "Airtel":[[28.7,77.1],[13.0,80.2]],
+  "Vi":[[19.0,72.9],[22.5,88.3]],
+  "BSNL":[[26.9,75.8],[17.4,78.4]]
 };
 
-function drawTowers(){
+/* ================= DRAW TOWERS ================= */
 Object.keys(towers).forEach(op=>{
-towers[op].forEach(t=>{
-L.circle(t,{
-radius:50000,
-color:"#00ff88",
-fillOpacity:0.05
-}).addTo(map).bindPopup(op+" Tower");
+  towers[op].forEach(t=>{
+    L.circle(t,{
+      radius:50000,
+      color:"#00ff88",
+      fillOpacity:0.05
+    }).addTo(map).bindPopup(op+" Tower");
+  });
 });
-});
-}
-drawTowers();
 
-/* ================= SIGNAL MODEL ================= */
+/* ================= SIGNAL ================= */
 function signalStrength(lat,lng,op){
+  let base = 0;
 
-let base = 0;
+  towers[op].forEach(t=>{
+    let d = Math.hypot(lat-t[0], lng-t[1]);
+    base += 1/(d+0.1);
+  });
 
-towers[op].forEach(t=>{
-let d = Math.hypot(lat-t[0], lng-t[1]);
-base += 1/(d+0.1);
-});
-
-return Math.min(base*60,100);
+  return Math.min(base*60,100);
 }
 
 /* ================= QUALITY ================= */
 function quality(speed,ping,signal){
 
-let q = (speed*0.5) + (signal*0.4) - (ping*0.3);
+  let q = (speed*0.5) + (signal*0.4) - (ping*0.3);
 
-if(q>70) return {text:"EXCELLENT",cls:"good"};
-if(q>40) return {text:"GOOD",cls:"mid"};
-return {text:"POOR",cls:"bad"};
+  if(q > 70) return {text:"EXCELLENT", cls:"good"};
+  if(q > 40) return {text:"GOOD", cls:"mid"};
+  return {text:"POOR", cls:"bad"};
 }
 
-/* ================= COMPARE ================= */
+/* ================= COMPARE ALL ================= */
 function compareAll(lat,lng){
 
-let results = [];
+  let results = [];
 
-Object.keys(towers).forEach(op=>{
-let s = signalStrength(lat,lng,op);
-results.push({op,signal:s});
-});
+  Object.keys(towers).forEach(op=>{
+    let s = signalStrength(lat,lng,op);
+    results.push({op, signal:s});
+  });
 
-results.sort((a,b)=>b.signal-a.signal);
+  results.sort((a,b)=>b.signal-a.signal);
 
-return results;
+  return results;
 }
 
 /* ================= TEST ENGINE ================= */
 function runTest(){
 
-const op = document.getElementById("operator").value;
+  const op = document.getElementById("operator").value;
 
-navigator.geolocation.getCurrentPosition(pos=>{
+  if(!navigator.geolocation){
+    alert("Geolocation not supported");
+    return;
+  }
 
-const lat = pos.coords.latitude;
-const lng = pos.coords.longitude;
+  navigator.geolocation.getCurrentPosition(pos=>{
 
-/* fake but realistic values */
-const speed = Math.random()*100;
-const ping = Math.random()*60;
+    const lat = pos.coords.latitude;
+    const lng = pos.coords.longitude;
 
-const signal = signalStrength(lat,lng,op);
-const q = quality(speed,ping,signal);
+    const speed = Math.random()*100;
+    const ping = Math.random()*60;
 
-/* UI */
-document.getElementById("speed").innerText = Math.round(speed);
-document.getElementById("ping").innerText = Math.round(ping);
-document.getElementById("signal").innerText = Math.round(signal);
+    const signal = signalStrength(lat,lng,op);
+    const q = quality(speed,ping,signal);
 
-document.getElementById("quality").innerHTML =
-`<span class="${q.cls}">${q 
+    /* UI */
+    document.getElementById("speed").innerText = Math.round(speed);
+    document.getElementById("ping").innerText = Math.round(ping);
+    document.getElementById("signal").innerText = Math.round(signal);
+
+    document.getElementById("quality").innerHTML =
+      `<span class="${q.cls}">${q.text}</span>`;
+
+    document.getElementById("status").innerText =
+      `Speed ${Math.round(speed)} Mbps | Ping ${Math.round(ping)} ms | Signal ${Math.round(signal)}`;
+
+    document.getElementById("selected").innerText =
+      `Selected Operator: ${op}`;
+
+    /* COMPARE */
+    const comp = compareAll(lat,lng);
+    document.getElementById("compare").innerHTML =
+      `Best Network: ${comp[0].op} (${comp[0].signal.toFixed(1)})`;
+
+    /* MAP MARKER */
+    L.circleMarker([lat,lng],{
+      radius:10,
+      color:"#00c6ff",
+      fillOpacity:0.9
+    }).addTo(map);
+
+    map.setView([lat,lng],10);
+
+  },
+  ()=> alert("Location access denied"));
+
+}
+
+</script>
+
+</body>
+</html>
