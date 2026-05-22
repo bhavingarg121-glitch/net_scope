@@ -1,9 +1,12 @@
 // ==========================
-// NETSCOPE INDIA
+// NETSCOPE INDIA ULTRA PRO
 // firebase.js
 // ==========================
 
+// ==========================
 // FIREBASE IMPORTS
+// ==========================
+
 import {
 
     initializeApp
@@ -16,7 +19,8 @@ from
 
 import {
 
-    getAnalytics
+    getAnalytics,
+    isSupported
 
 }
 
@@ -31,6 +35,14 @@ import {
     collection,
 
     addDoc,
+
+    getDocs,
+
+    query,
+
+    orderBy,
+
+    limit,
 
     serverTimestamp
 
@@ -56,7 +68,7 @@ const firebaseConfig = {
     "netscope-e7974",
 
     storageBucket:
-    "netscope-e7974.firebasestorage.app",
+    "netscope-e7974.appspot.com",
 
     messagingSenderId:
     "813986350854",
@@ -76,13 +88,37 @@ const firebaseConfig = {
 const app =
 initializeApp(firebaseConfig);
 
-// ANALYTICS
-const analytics =
-getAnalytics(app);
+// ==========================
+// ANALYTICS SAFE INIT
+// ==========================
 
+let analytics = null;
+
+isSupported().then((yes)=>{
+
+    if(yes){
+
+        analytics =
+        getAnalytics(app);
+
+        console.log(
+            "✅ Firebase Analytics Enabled"
+        );
+
+    }
+
+});
+
+// ==========================
 // FIRESTORE DATABASE
+// ==========================
+
 const db =
 getFirestore(app);
+
+console.log(
+    "✅ Firestore Connected"
+);
 
 // ==========================
 // SAVE SPEED TEST
@@ -128,7 +164,7 @@ async function saveTestResult(data){
 }
 
 // ==========================
-// SAVE AI INSIGHTS
+// SAVE AI INSIGHT
 // ==========================
 
 async function saveAIInsight(insight){
@@ -163,7 +199,7 @@ async function saveAIInsight(insight){
     catch(error){
 
         console.error(
-            "❌ AI Error:",
+            "❌ AI Insight Error:",
             error
         );
 
@@ -216,6 +252,218 @@ async function saveActivity(activity){
 }
 
 // ==========================
+// GET LATEST TESTS
+// ==========================
+
+async function getLatestTests(){
+
+    try{
+
+        const q = query(
+
+            collection(
+                db,
+                "speedtests"
+            ),
+
+            orderBy(
+                "createdAt",
+                "desc"
+            ),
+
+            limit(10)
+
+        );
+
+        const snapshot =
+        await getDocs(q);
+
+        const tests = [];
+
+        snapshot.forEach((doc)=>{
+
+            tests.push({
+
+                id:doc.id,
+
+                ...doc.data()
+
+            });
+
+        });
+
+        return tests;
+
+    }
+
+    catch(error){
+
+        console.error(
+            "❌ Fetch Error:",
+            error
+        );
+
+        return [];
+
+    }
+
+}
+
+// ==========================
+// GET AI INSIGHTS
+// ==========================
+
+async function getAIInsights(){
+
+    try{
+
+        const q = query(
+
+            collection(
+                db,
+                "aiInsights"
+            ),
+
+            orderBy(
+                "createdAt",
+                "desc"
+            ),
+
+            limit(5)
+
+        );
+
+        const snapshot =
+        await getDocs(q);
+
+        const insights = [];
+
+        snapshot.forEach((doc)=>{
+
+            insights.push({
+
+                id:doc.id,
+
+                ...doc.data()
+
+            });
+
+        });
+
+        return insights;
+
+    }
+
+    catch(error){
+
+        console.error(
+            "❌ AI Fetch Error:",
+            error
+        );
+
+        return [];
+
+    }
+
+}
+
+// ==========================
+// GET ACTIVITIES
+// ==========================
+
+async function getActivities(){
+
+    try{
+
+        const q = query(
+
+            collection(
+                db,
+                "activities"
+            ),
+
+            orderBy(
+                "createdAt",
+                "desc"
+            ),
+
+            limit(10)
+
+        );
+
+        const snapshot =
+        await getDocs(q);
+
+        const activities = [];
+
+        snapshot.forEach((doc)=>{
+
+            activities.push({
+
+                id:doc.id,
+
+                ...doc.data()
+
+            });
+
+        });
+
+        return activities;
+
+    }
+
+    catch(error){
+
+        console.error(
+            "❌ Activity Fetch Error:",
+            error
+        );
+
+        return [];
+
+    }
+
+}
+
+// ==========================
+// NETWORK STATUS LOGGER
+// ==========================
+
+function logConnectionStatus(){
+
+    window.addEventListener(
+
+        "online",
+
+        ()=>{
+
+            console.log(
+                "🟢 Internet Connected"
+            );
+
+        }
+
+    );
+
+    window.addEventListener(
+
+        "offline",
+
+        ()=>{
+
+            console.log(
+                "🔴 Internet Disconnected"
+            );
+
+        }
+
+    );
+
+}
+
+logConnectionStatus();
+
+// ==========================
 // EXPORT FUNCTIONS
 // ==========================
 
@@ -228,4 +476,21 @@ saveAIInsight;
 window.saveActivity =
 saveActivity;
 
+window.getLatestTests =
+getLatestTests;
+
+window.getAIInsights =
+getAIInsights;
+
+window.getActivities =
+getActivities;
+
 window.db = db;
+
+// ==========================
+// READY MESSAGE
+// ==========================
+
+console.log(
+    "🚀 NetScope Firebase Ready"
+);
