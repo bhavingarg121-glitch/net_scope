@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,8 +9,6 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#050816">
 
 <style>
 body{
@@ -20,17 +19,14 @@ color:white;
 overflow:hidden;
 }
 
-/* MAP */
 #map{
 width:100%;
 height:100vh;
 }
 
-/* LEFT PANEL */
-.panel{
+.panel,.rightPanel{
 position:absolute;
 top:15px;
-left:15px;
 width:340px;
 background:rgba(255,255,255,0.08);
 backdrop-filter:blur(18px);
@@ -39,6 +35,9 @@ border-radius:16px;
 z-index:999;
 border:1px solid rgba(255,255,255,0.1);
 }
+
+.panel{left:15px;}
+.rightPanel{right:15px;width:320px;}
 
 select,button{
 width:100%;
@@ -55,32 +54,12 @@ font-weight:bold;
 cursor:pointer;
 }
 
-/* RIGHT PANEL (NEW CONTROL CENTER) */
-.rightPanel{
-position:absolute;
-top:15px;
-right:15px;
-width:320px;
-background:rgba(255,255,255,0.08);
-backdrop-filter:blur(18px);
-padding:15px;
-border-radius:16px;
-z-index:999;
-border:1px solid rgba(255,255,255,0.1);
-}
-
 .box{
 margin-top:10px;
 padding:10px;
 background:#101935;
 border-radius:10px;
 font-size:13px;
-line-height:1.5;
-}
-
-.statTitle{
-font-size:12px;
-opacity:0.7;
 }
 
 .good{color:#00ff88}
@@ -93,7 +72,7 @@ h3{margin:0}
 
 <body>
 
-<!-- LEFT CONTROL -->
+<!-- LEFT PANEL -->
 <div class="panel">
 <h3>📡 Telecom AI Comparator</h3>
 
@@ -106,42 +85,30 @@ h3{margin:0}
 
 <button onclick="runTest()">🚀 Run Network Test</button>
 
-<div class="box" id="status">Waiting for test...</div>
+<div class="box" id="status">Waiting...</div>
 <div class="box" id="best">Best Network: --</div>
 
 <canvas id="chart" height="160"></canvas>
 </div>
 
-<!-- RIGHT CONTROL CENTER -->
+<!-- RIGHT PANEL -->
 <div class="rightPanel">
-<h3>📊 Network Control Center</h3>
+<h3>📊 Control Center</h3>
 
 <div class="box">
-<div class="statTitle">Selected Operator</div>
-<div id="selectedOp">--</div>
-</div>
-
-<div class="box">
-<div class="statTitle">Speed (Mbps)</div>
-<div id="speedVal">0</div>
-
-<div class="statTitle">Ping (ms)</div>
-<div id="pingVal">0</div>
-
-<div class="statTitle">Signal Strength</div>
-<div id="signalVal">0</div>
-
-<div class="statTitle">Quality Score</div>
-<div id="qualityVal">--</div>
+Selected: <b id="selectedOp">--</b><br>
+Speed: <span id="speedVal">0</span> Mbps<br>
+Ping: <span id="pingVal">0</span> ms<br>
+Signal: <span id="signalVal">0</span><br>
+Quality Score: <b id="qualityVal">--</b>
 </div>
 
 <div class="box">
-<div class="statTitle">Best Comparison Result</div>
-<div id="compareBox">Run test to compare networks</div>
+Best Network:
+<div id="compareBox">Run test</div>
 </div>
 </div>
 
-<!-- MAP -->
 <div id="map"></div>
 
 <script>
@@ -151,7 +118,7 @@ L.tileLayer(
 "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
 ).addTo(map);
 
-/* ================= NETWORK TOWERS ================= */
+/* ================= TOWERS ================= */
 const towers = {
 Jio:[[28.6,77.2],[19.1,72.8]],
 Airtel:[[28.7,77.1],[13.0,80.2]],
@@ -169,13 +136,9 @@ s+=1/(d+0.1);
 return Math.min(s*60,100);
 }
 
-/* ================= QUALITY ================= */
-function quality(speed,ping,signal){
-let q = (speed*0.5)+(signal*0.4)-(ping*0.3);
-
-if(q>70) return {text:"EXCELLENT",cls:"good"};
-if(q>40) return {text:"GOOD",cls:"mid"};
-return {text:"POOR",cls:"bad"};
+/* ================= REAL QUALITY SCORE ================= */
+function score(speed,ping,signal){
+return (speed*0.5)+(signal*0.4)-(ping*0.3);
 }
 
 /* ================= CHART ================= */
@@ -184,20 +147,17 @@ type:"bar",
 data:{
 labels:["Jio","Airtel","Vi","BSNL"],
 datasets:[{
-label:"Network Score",
+label:"Score",
 data:[0,0,0,0],
 backgroundColor:["#00ff88","#00c6ff","#ffd000","#ff4d4d"]
 }]
 },
-options:{
-plugins:{legend:{display:false}},
-responsive:true
-}
+options:{plugins:{legend:{display:false}}}
 });
 
-/* ================= UPDATE CHART ================= */
-function updateChart(j,a,v,b){
-chart.data.datasets[0].data=[j,a,v,b];
+/* ================= UPDATE ================= */
+function updateChart(data){
+chart.data.datasets[0].data=data;
 chart.update();
 }
 
@@ -212,44 +172,42 @@ const lng=pos.coords.longitude;
 const speed=Math.random()*100;
 const ping=Math.random()*60;
 
-/* operator */
 const op=document.getElementById("operator").value;
 
-const sig = signal(lat,lng,op);
-const q = quality(speed,ping,sig);
+/* SCORES */
+const jio = score(speed,ping,signal(lat,lng,"Jio"));
+const airtel = score(speed,ping,signal(lat,lng,"Airtel"));
+const vi = score(speed,ping,signal(lat,lng,"Vi"));
+const bsnl = score(speed,ping,signal(lat,lng,"BSNL"));
 
-/* ALL SCORES */
-const jio = quality(speed,ping,signal(lat,lng,"Jio")).text==="EXCELLENT"?90:60;
-const airtel = quality(speed,ping,signal(lat,lng,"Airtel")).text==="EXCELLENT"?88:55;
-const vi = quality(speed,ping,signal(lat,lng,"Vi")).text==="EXCELLENT"?80:50;
-const bsnl = quality(speed,ping,signal(lat,lng,"BSNL")).text==="EXCELLENT"?70:45;
-
-/* BEST */
+/* BEST NETWORK */
 let best="Jio";
 let max=jio;
 
 if(airtel>max){max=airtel;best="Airtel";}
 if(vi>max){max=vi;best="Vi";}
-if(bsnl>max){best="BSNL";}
+if(bsnl>max){max=bsnl;best="BSNL";}
 
-/* UI LEFT */
+/* UI */
 document.getElementById("status").innerHTML=
-`Speed: ${speed.toFixed(1)} Mbps<br>
-Ping: ${ping.toFixed(1)} ms<br>
-Signal: ${sig.toFixed(1)}`;
+`Speed: ${speed.toFixed(1)} Mbps<br>Ping: ${ping.toFixed(1)} ms`;
 
 document.getElementById("best").innerHTML=
 "🏆 Best Network: <b>"+best+"</b>";
 
-updateChart(jio,airtel,vi,bsnl);
-
-/* RIGHT PANEL */
 document.getElementById("selectedOp").innerText=op;
 document.getElementById("speedVal").innerText=speed.toFixed(1);
 document.getElementById("pingVal").innerText=ping.toFixed(1);
-document.getElementById("signalVal").innerText=sig.toFixed(1);
-document.getElementById("qualityVal").innerHTML=
-`<span class="${q.cls}">${q.text}</span>`;
+document.getElementById("signalVal").innerText=signal(lat,lng,op).toFixed(1);
+document.getElementById("qualityVal").innerText=score(speed,ping,signal(lat,lng,op)).toFixed(1);
+
+/* CHART */
+updateChart([
+jio.toFixed(1),
+airtel.toFixed(1),
+vi.toFixed(1),
+bsnl.toFixed(1)
+]);
 
 /* MAP */
 L.circleMarker([lat,lng],{
