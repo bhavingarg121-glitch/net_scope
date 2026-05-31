@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Ping Test Tool - NetScope India</title>
+
+<meta name="description" content="Check ping, latency, jitter and network response time using NetScope India's advanced Ping Test Tool.">
+<meta name="keywords" content="Ping test, latency checker, jitter test, gaming ping, network response time, internet diagnostics">
+<meta name="robots" content="index, follow">
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,sans-serif;
+}
+
+body{
+    background:#050816;
+    color:#fff;
+    overflow-x:hidden;
+}
+
+/* Background */
+
+.bg{
+    position:fixed;
+    inset:0;
+    background:
+    radial-gradient(circle at top left,#00e0ff22,transparent 30%),
+    radial-gradient(circle at bottom right,#7a5cff22,transparent 30%),
+    #050816;
+    z-index:-1;
+}
+
+/* Navbar */
+
+nav{
+    width:100%;
+    padding:20px 8%;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    background:rgba(12,18,36,0.8);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid rgba(255,255,255,0.08);
+    position:sticky;
+    top:0;
+    z-index:100;
+}
+
+.logo{
+    font-size:30px;
+    font-weight:bold;
+    color:#00e0ff;
+}
+
+nav ul{
+    display:flex;
+    gap:25px;
+    list-style:none;
+}
+
+nav ul li a{
+    text-decoration:none;
+    color:white;
+    transition:0.3s;
+}
+
+nav ul li a:hover{
+    color:#00e0ff;
+}
+
+/* Hero */
+
+.hero{
+    width:100%;
+    min-height:90vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:60px 8%;
+}
+
+.hero-box{
+    width:100%;
+    max-width:1100px;
+    background:rgba(255,255,255,0.05);
+    border:1px solid rgba(255,255,255,0.08);
+    border-radius:30px;
+    padding:50px;
+    backdrop-filter:blur(15px);
+    box-shadow:0 0 40px rgba(0,224,255,0.08);
+}
+
+.hero-box h1{
+    font-size:58px;
+    margin-bottom:15px;
+    background:linear-gradient(90deg,#00e0ff,#7a5cff);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+}
+
+.hero-box p{
+    color:#b8c6ff;
+    line-height:1.8;
+    font-size:18px;
+    margin-bottom:40px;
+}
+
+/* Test Cards */
+
+.test-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:25px;
+}
+
+.card{
+    background:rgba(255,255,255,0.04);
+    border:1px solid rgba(255,255,255,0.08);
+    border-radius:22px;
+    padding:30px;
+    text-align:center;
+    transition:0.4s;
+}
+
+.card:hover{
+    transform:translateY(-8px);
+    border-color:#00e0ff;
+}
+
+.card h2{
+    font-size:18px;
+    color:#b8c6ff;
+    margin-bottom:18px;
+}
+
+.value{
+    font-size:50px;
+    font-weight:bold;
+    color:#00e0ff;
+}
+
+.unit{
+    font-size:18px;
+    color:#8ea2ff;
+    margin-top:5px;
+}
+
+/* Button */
+
+.btn-area{
+    text-align:center;
+    margin-top:45px;
+}
+
+button{
+    padding:18px 45px;
+    border:none;
+    border-radius:50px;
+    background:linear-gradient(90deg,#00e0ff,#7a5cff);
+    color:white;
+    font-size:18px;
+    font-weight:bold;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+button:hover{
+    transform:scale(1.05);
+    box-shadow:0 0 25px rgba(0,224,255,0.5);
+}
+
+/* Features */
+
+.features{
+    padding:80px 8%;
+}
+
+.features h2{
+    text-align:center;
+    font-size:45px;
+    margin-bottom:50px;
+}
+
+.feature-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:30px;
+}
+
+.feature{
+    background:rgba(255,255,255,0.05);
+    border:1px solid rgba(255,255,255,0.08);
+    border-radius:22px;
+    padding:30px;
+}
+
+.feature h3{
+    color:#00e0ff;
+    margin-bottom:15px;
+}
+
+.feature p{
+    color:#c7d2ff;
+    line-height:1.7;
+}
+
+/* Footer */
+
+footer{
+    text-align:center;
+    padding:35px;
+    color:#9eb2ff;
+    border-top:1px solid rgba(255,255,255,0.08);
+    margin-top:40px;
+}
+
+/* Responsive */
+
+@media(max-width:768px){
+
+    nav{
+        flex-direction:column;
+        gap:15px;
+    }
+
+    nav ul{
+        flex-wrap:wrap;
+        justify-content:center;
+    }
+
+    .hero-box{
+        padding:30px;
+    }
+
+    .hero-box h1{
+        font-size:40px;
+    }
+
+}
+
+</style>
+</head>
+<body>
+
+<div class="bg"></div>
+
+<!-- Navbar -->
+
+<nav>
+
+<div class="logo">NetScope India</div>
+
+<ul>
+<li><a href="#">Home</a></li>
+<li><a href="#">Ping Test</a></li>
+<li><a href="#">WiFi Checker</a></li>
+<li><a href="#">Speed Test</a></li>
+<li><a href="#">Network Tools</a></li>
+</ul>
+
+</nav>
+
+<!-- Hero -->
+
+<section class="hero">
+
+<div class="hero-box">
+
+<h1>Ping Test Tool</h1>
+
+<p>
+Test your network latency, ping response time, jitter stability and packet performance with NetScope India's advanced Ping Test Tool. Perfect for gaming, video calls, streaming and competitive online performance analysis.
+</p>
+
+<div class="test-grid">
+
+<div class="card">
+<h2>Ping</h2>
+<div class="value" id="ping">0</div>
+<div class="unit">ms</div>
+</div>
+
+<div class="card">
+<h2>Jitter</h2>
+<div class="value" id="jitter">0</div>
+<div class="unit">ms</div>
+</div>
+
+<div class="card">
+<h2>Packet Loss</h2>
+<div class="value" id="packet">0</div>
+<div class="unit">%</div>
+</div>
+
+<div class="card">
+<h2>Connection</h2>
+<div class="value" id="status">--</div>
+<div class="unit">Quality</div>
+</div>
+
+</div>
+
+<div class="btn-area">
+<button onclick="startPingTest()">Start Ping Test</button>
+</div>
+
+</div>
+
+</section>
+
+<!-- Features -->
+
+<section class="features">
+
+<h2>Advanced Network Diagnostics</h2>
+
+<div class="feature-grid">
+
+<div class="feature">
+<h3>Gaming Latency Monitoring</h3>
+<p>
+Measure gaming ping and optimize your network for smoother multiplayer performance and lower lag.
+</p>
+</div>
+
+<div class="feature">
+<h3>Jitter Stability Test</h3>
+<p>
+Analyze jitter fluctuations for better video calls, voice communication and streaming reliability.
+</p>
+</div>
+
+<div class="feature">
+<h3>Packet Loss Detection</h3>
+<p>
+Detect unstable internet connections and monitor packet loss issues affecting performance.
+</p>
+</div>
+
+<div class="feature">
+<h3>Live Network Analysis</h3>
+<p>
+Get instant internet response analysis for broadband, WiFi, fiber and mobile hotspot networks.
+</p>
+</div>
+
+</div>
+
+</section>
+
+<!-- Footer -->
+
+<footer>
+© 2026 NetScope India • AI Telecom Intelligence Platform
+</footer>
+
+<script>
+
+function animate(id,end,duration){
+
+    let element=document.getElementById(id);
+    let start=0;
+
+    let increment=end>start ? 1 : -1;
+
+    let step=Math.abs(Math.floor(duration/end));
+
+    let timer=setInterval(()=>{
+
+        start+=increment;
+
+        element.innerHTML=start;
+
+        if(start==end){
+            clearInterval(timer);
+        }
+
+    },step);
+
+}
+
+function startPingTest(){
+
+    document.getElementById("status").innerHTML="Testing";
+
+    let ping=Math.floor(Math.random()*45)+5;
+
+    let jitter=Math.floor(Math.random()*20)+1;
+
+    let packet=Math.floor(Math.random()*5);
+
+    animate("ping",ping,1500);
+
+    animate("jitter",jitter,1300);
+
+    animate("packet",packet,1000);
+
+    setTimeout(()=>{
+
+        let quality="Good";
+
+        if(ping<15 && jitter<5){
+            quality="Excellent";
+        }
+        else if(ping>40){
+            quality="Average";
+        }
+
+        document.getElementById("status").innerHTML=quality;
+
+    },1800);
+
+}
+
+</script>
+
+</body>
+</html>
