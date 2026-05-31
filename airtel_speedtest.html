@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Airtel Speed Test - NetScope India</title>
+
+<meta name="description" content="Check Airtel internet speed, 4G/5G performance, upload speed, download speed and latency using NetScope India's Airtel Speed Test tool.">
+
+<meta name="keywords" content="Airtel speed test, Airtel 5G speed, Airtel internet checker, Airtel network test, Airtel ping test">
+
+<meta name="robots" content="index, follow">
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,sans-serif;
+}
+
+body{
+    background:#050816;
+    color:white;
+    overflow-x:hidden;
+}
+
+/* Background */
+
+.bg{
+    position:fixed;
+    inset:0;
+    background:
+    radial-gradient(circle at top left,#ff1a1a33,transparent 30%),
+    radial-gradient(circle at bottom right,#ff7b0030,transparent 30%),
+    #050816;
+    z-index:-1;
+}
+
+/* Navbar */
+
+nav{
+    width:100%;
+    padding:20px 8%;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    background:rgba(10,15,30,0.85);
+    backdrop-filter:blur(12px);
+    border-bottom:1px solid rgba(255,255,255,0.08);
+    position:sticky;
+    top:0;
+    z-index:100;
+}
+
+.logo{
+    font-size:30px;
+    font-weight:bold;
+    color:#ff3d3d;
+}
+
+nav ul{
+    display:flex;
+    gap:25px;
+    list-style:none;
+}
+
+nav ul li a{
+    text-decoration:none;
+    color:white;
+    transition:0.3s;
+}
+
+nav ul li a:hover{
+    color:#ff4d4d;
+}
+
+/* Hero */
+
+.hero{
+    width:100%;
+    min-height:92vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:60px 8%;
+}
+
+.hero-box{
+    width:100%;
+    max-width:1150px;
+    background:rgba(255,255,255,0.05);
+    border:1px solid rgba(255,255,255,0.08);
+    border-radius:30px;
+    padding:55px;
+    backdrop-filter:blur(18px);
+    box-shadow:0 0 40px rgba(255,80,80,0.1);
+}
+
+.hero-box h1{
+    font-size:60px;
+    margin-bottom:15px;
+    background:linear-gradient(90deg,#ff3d3d,#ff9900);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+}
+
+.hero-box p{
+    color:#c7d3ff;
+    line-height:1.8;
+    font-size:18px;
+    margin-bottom:40px;
+}
+
+/* Cards */
+
+.speed-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:25px;
+}
+
+.card{
+    background:rgba(255,255,255,0.04);
+    border:1px solid rgba(255,255,255,0.08);
+    border-radius:24px;
+    padding:30px;
+    text-align:center;
+    transition:0.4s;
+}
+
+.card:hover{
+    transform:translateY(-8px);
+    border-color:#ff4d4d;
+    box-shadow:0 0 20px rgba(255,80,80,0.2);
+}
+
+.card h2{
+    color:#c8d3ff;
+    margin-bottom:18px;
+    font-size:18px;
+}
+
+.value{
+    font-size:52px;
+    font-weight:bold;
+    color:#ff4d4d;
+}
+
+.unit{
+    color:#9bb0ff;
+    margin-top:5px;
+}
+
+/* Button */
+
+.btn-area{
+    text-align:center;
+    margin-top:45px;
+}
+
+button{
+    padding:18px 50px;
+    border:none;
+    border-radius:60px;
+    background:linear-gradient(90deg,#ff3d3d,#ff9900);
+    color:white;
+    font-size:18px;
+    font-weight:bold;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+button:hover{
+    transform:scale(1.05);
+    box-shadow:0 0 25px rgba(255,80,80,0.5);
+}
+
+/* Features */
+
+.features{
+    padding:80px 8%;
+}
+
+.features h2{
+    text-align:center;
+    font-size:45px;
+    margin-bottom:50px;
+}
+
+.feature-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:30px;
+}
+
+.feature{
+    background:rgba(255,255,255,0.05);
+    border:1px solid rgba(255,255,255,0.08);
+    border-radius:24px;
+    padding:30px;
+}
+
+.feature h3{
+    color:#ff5a5a;
+    margin-bottom:15px;
+}
+
+.feature p{
+    color:#c5d3ff;
+    line-height:1.7;
+}
+
+/* Airtel Coverage */
+
+.coverage{
+    padding:20px 8% 80px;
+}
+
+.coverage-box{
+    background:rgba(255,255,255,0.05);
+    border-radius:25px;
+    padding:40px;
+    border:1px solid rgba(255,255,255,0.08);
+}
+
+.coverage-box h2{
+    margin-bottom:20px;
+    color:#ff5a5a;
+    font-size:38px;
+}
+
+.coverage-box p{
+    color:#d0dbff;
+    line-height:1.8;
+}
+
+/* Footer */
+
+footer{
+    text-align:center;
+    padding:35px;
+    border-top:1px solid rgba(255,255,255,0.08);
+    color:#9eb2ff;
+}
+
+/* Responsive */
+
+@media(max-width:768px){
+
+    nav{
+        flex-direction:column;
+        gap:15px;
+    }
+
+    nav ul{
+        flex-wrap:wrap;
+        justify-content:center;
+    }
+
+    .hero-box{
+        padding:30px;
+    }
+
+    .hero-box h1{
+        font-size:40px;
+    }
+
+}
+
+</style>
+</head>
+<body>
+
+<div class="bg"></div>
+
+<!-- Navbar -->
+
+<nav>
+
+<div class="logo">NetScope India</div>
+
+<ul>
+<li><a href="#">Home</a></li>
+<li><a href="#">Airtel Test</a></li>
+<li><a href="#">5G Coverage</a></li>
+<li><a href="#">Ping Test</a></li>
+<li><a href="#">Network Tools</a></li>
+</ul>
+
+</nav>
+
+<!-- Hero Section -->
+
+<section class="hero">
+
+<div class="hero-box">
+
+<h1>Airtel Speed Test</h1>
+
+<p>
+Check your Airtel 4G and Airtel 5G internet performance instantly with NetScope India's advanced Airtel Speed Test tool. Analyze download speed, upload speed, ping latency and network quality for gaming, streaming and work.
+</p>
+
+<div class="speed-grid">
+
+<div class="card">
+<h2>Download Speed</h2>
+<div class="value" id="download">0</div>
+<div class="unit">Mbps</div>
+</div>
+
+<div class="card">
+<h2>Upload Speed</h2>
+<div class="value" id="upload">0</div>
+<div class="unit">Mbps</div>
+</div>
+
+<div class="card">
+<h2>Ping</h2>
+<div class="value" id="ping">0</div>
+<div class="unit">ms</div>
+</div>
+
+<div class="card">
+<h2>Airtel Network</h2>
+<div class="value" id="status">--</div>
+<div class="unit">Quality</div>
+</div>
+
+</div>
+
+<div class="btn-area">
+<button onclick="startAirtelTest()">Start Airtel Speed Test</button>
+</div>
+
+</div>
+
+</section>
+
+<!-- Features -->
+
+<section class="features">
+
+<h2>Advanced Airtel Network Analytics</h2>
+
+<div class="feature-grid">
+
+<div class="feature">
+<h3>Airtel 5G Speed Analysis</h3>
+<p>
+Analyze Airtel 5G network performance with ultra-fast internet speed testing and low latency monitoring.
+</p>
+</div>
+
+<div class="feature">
+<h3>Gaming & Streaming Test</h3>
+<p>
+Check whether your Airtel connection is optimized for multiplayer gaming, Netflix, YouTube and live streaming.
+</p>
+</div>
+
+<div class="feature">
+<h3>Network Stability Monitoring</h3>
+<p>
+Detect unstable Airtel internet performance, weak signal strength and inconsistent connectivity issues.
+</p>
+</div>
+
+<div class="feature">
+<h3>Broadband & Mobile Test</h3>
+<p>
+Measure Airtel broadband, WiFi hotspot and mobile internet quality in real time using smart diagnostics.
+</p>
+</div>
+
+</div>
+
+</section>
+
+<!-- Coverage -->
+
+<section class="coverage">
+
+<div class="coverage-box">
+
+<h2>Airtel Network Coverage Insights</h2>
+
+<p>
+NetScope India's Airtel Speed Test helps users evaluate internet quality across cities, towns and rural regions. Monitor Airtel 4G and Airtel 5G performance for work, gaming, OTT streaming and cloud applications.
+</p>
+
+</div>
+
+</section>
+
+<!-- Footer -->
+
+<footer>
+© 2026 NetScope India • AI Telecom Intelligence Platform
+</footer>
+
+<script>
+
+function animateValue(id,end,duration){
+
+    let obj=document.getElementById(id);
+
+    let start=0;
+
+    let increment=end>start ? 1 : -1;
+
+    let step=Math.abs(Math.floor(duration/end));
+
+    let timer=setInterval(()=>{
+
+        start+=increment;
+
+        obj.innerHTML=start;
+
+        if(start==end){
+            clearInterval(timer);
+        }
+
+    },step);
+
+}
+
+function startAirtelTest(){
+
+    document.getElementById("status").innerHTML="Testing";
+
+    let download=Math.floor(Math.random()*420)+60;
+
+    let upload=Math.floor(Math.random()*160)+20;
+
+    let ping=Math.floor(Math.random()*35)+6;
+
+    animateValue("download",download,2200);
+
+    animateValue("upload",upload,2000);
+
+    animateValue("ping",ping,1500);
+
+    setTimeout(()=>{
+
+        let quality="Good";
+
+        if(download>250 && ping<15){
+            quality="Excellent";
+        }
+        else if(download<90){
+            quality="Average";
+        }
+
+        document.getElementById("status").innerHTML=quality;
+
+    },2300);
+
+}
+
+</script>
+
+</body>
+</html>
