@@ -96,12 +96,45 @@ z-index:1;
 background:#050816;
 }
 
+/* NAVBAR */
+
+.navbar{
+position:absolute;
+top:15px;
+left:50%;
+transform:translateX(-50%);
+z-index:1000;
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+justify-content:center;
+background:rgba(255,255,255,0.08);
+padding:12px;
+border-radius:18px;
+backdrop-filter:blur(18px);
+border:1px solid rgba(255,255,255,0.1);
+}
+
+.navbar a{
+text-decoration:none;
+padding:10px 16px;
+border-radius:10px;
+background:#101935;
+color:white;
+font-size:14px;
+transition:0.3s;
+}
+
+.navbar a:hover{
+background:#00c6ff;
+}
+
 /* GLASS PANELS */
 
 .panel,
 .rightPanel{
 position:absolute;
-top:15px;
+top:90px;
 width:340px;
 background:rgba(255,255,255,0.08);
 backdrop-filter:blur(18px);
@@ -168,18 +201,62 @@ line-height:1.7;
 border:1px solid rgba(255,255,255,0.05);
 }
 
-/* STATUS COLORS */
+/* TOOLS SECTION */
 
-.good{
-color:#00ff88;
+.tools{
+padding:80px 20px;
+background:#071122;
 }
 
-.mid{
-color:#ffd000;
+.tools h2{
+text-align:center;
+font-size:40px;
+margin-bottom:50px;
 }
 
-.bad{
-color:#ff4d4d;
+.toolsGrid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+gap:25px;
+max-width:1200px;
+margin:auto;
+}
+
+.toolCard{
+background:rgba(255,255,255,0.05);
+padding:25px;
+border-radius:20px;
+backdrop-filter:blur(15px);
+border:1px solid rgba(255,255,255,0.08);
+transition:0.3s;
+text-align:center;
+}
+
+.toolCard:hover{
+transform:translateY(-8px);
+box-shadow:0 0 25px rgba(0,198,255,0.2);
+}
+
+.toolCard h3{
+margin:15px 0;
+font-size:24px;
+}
+
+.toolCard p{
+font-size:14px;
+line-height:1.7;
+color:#cccccc;
+}
+
+.toolCard a{
+display:inline-block;
+margin-top:20px;
+padding:12px 20px;
+border-radius:12px;
+background:#00c6ff;
+color:black;
+font-weight:bold;
+text-decoration:none;
 }
 
 /* MOBILE */
@@ -196,6 +273,14 @@ right:auto;
 top:auto;
 }
 
+.navbar{
+position:relative;
+top:auto;
+left:auto;
+transform:none;
+margin:15px;
+}
+
 #map{
 height:70vh;
 }
@@ -207,6 +292,22 @@ height:70vh;
 </head>
 
 <body>
+
+<!-- NAVBAR -->
+
+<div class="navbar">
+
+<a href="index.html">🏠 Home</a>
+
+<a href="jiospeedtest.html">📶 Jio Speed Test</a>
+
+<a href="airtelspeedtest.html">🚀 Airtel Speed Test</a>
+
+<a href="wifispeedchecker.html">📡 WiFi Speed Checker</a>
+
+<a href="pingtest.html">⚡ Ping Test</a>
+
+</div>
 
 <!-- LEFT PANEL -->
 
@@ -267,6 +368,91 @@ Best Network:
 <!-- MAP -->
 
 <div id="map"></div>
+
+<!-- TOOLS SECTION -->
+
+<section class="tools">
+
+<h2>⚡ Network Testing Tools</h2>
+
+<div class="toolsGrid">
+
+<div class="toolCard">
+
+<div style="font-size:60px;">📶</div>
+
+<h3>Jio Speed Test</h3>
+
+<p>
+Check Jio 4G & 5G internet speed,
+latency, upload speed,
+and network quality.
+</p>
+
+<a href="jiospeedtest.html">
+Open Tool
+</a>
+
+</div>
+
+<div class="toolCard">
+
+<div style="font-size:60px;">🚀</div>
+
+<h3>Airtel Speed Test</h3>
+
+<p>
+Analyze Airtel network speed,
+ping latency,
+and telecom performance.
+</p>
+
+<a href="airtelspeedtest.html">
+Open Tool
+</a>
+
+</div>
+
+<div class="toolCard">
+
+<div style="font-size:60px;">📡</div>
+
+<h3>WiFi Speed Checker</h3>
+
+<p>
+Test WiFi speed,
+network stability,
+download & upload performance.
+</p>
+
+<a href="wifispeedchecker.html">
+Open Tool
+</a>
+
+</div>
+
+<div class="toolCard">
+
+<div style="font-size:60px;">⚡</div>
+
+<h3>Ping Test</h3>
+
+<p>
+Measure ping,
+latency,
+jitter,
+and gaming performance.
+</p>
+
+<a href="pingtest.html">
+Open Tool
+</a>
+
+</div>
+
+</div>
+
+</section>
 
 <script>
 
