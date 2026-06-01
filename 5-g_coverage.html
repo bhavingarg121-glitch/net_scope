@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<title>5G Coverage India | NetScope India</title>
+
+<meta name="description" content="Check real-time 5G coverage across India. Jio, Airtel network analysis with AI insights and heatmap view.">
+<meta name="keywords" content="5G coverage India, Jio 5G, Airtel 5G, network checker, heatmap India 5G">
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #0b1220;
+  color: #fff;
+}
+
+header {
+  background: linear-gradient(90deg, #00c6ff, #0072ff);
+  padding: 25px;
+  text-align: center;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 28px;
+}
+
+.container {
+  max-width: 1100px;
+  margin: auto;
+  padding: 20px;
+}
+
+.card {
+  background: #121a2b;
+  padding: 18px;
+  margin-top: 20px;
+  border-radius: 12px;
+}
+
+button {
+  padding: 12px 18px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  background: #00c6ff;
+  font-weight: bold;
+}
+
+button:hover {
+  background: #00a6dd;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.box {
+  background: #0f2740;
+  padding: 15px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.good { color: #00ff99; }
+.bad { color: #ff4d4d; }
+.mid { color: #ffcc00; }
+
+#map {
+  height: 400px;
+  width: 100%;
+  border-radius: 12px;
+  margin-top: 10px;
+}
+
+.ai {
+  border-left: 4px solid #00c6ff;
+  padding: 12px;
+  background: #0f2740;
+  margin-top: 15px;
+  border-radius: 8px;
+}
+
+footer {
+  text-align: center;
+  padding: 20px;
+  opacity: 0.6;
+  margin-top: 30px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>📶 5G Coverage Intelligence System</h1>
+  <p>NetScope India – AI Network Analyzer</p>
+</header>
+
+<div class="container">
+
+  <!-- Location Section -->
+  <div class="card">
+    <h2>📍 Check Your 5G Coverage</h2>
+    <button onclick="detectNetwork()">Detect My Network</button>
+    <p id="locationText"></p>
+  </div>
+
+  <!-- Network Stats -->
+  <div class="grid">
+    <div class="box">
+      <h3>📡 Jio</h3>
+      <p id="jio">--</p>
+    </div>
+    <div class="box">
+      <h3>📡 Airtel</h3>
+      <p id="airtel">--</p>
+    </div>
+    <div class="box">
+      <h3>⚡ Speed</h3>
+      <p id="speed">-- Mbps</p>
+    </div>
+    <div class="box">
+      <h3>📶 Ping</h3>
+      <p id="ping">-- ms</p>
+    </div>
+  </div>
+
+  <!-- AI Insight -->
+  <div class="ai" id="aiBox">
+    🧠 AI Insight will appear here after detection.
+  </div>
+
+  <!-- Heatmap -->
+  <div class="card">
+    <h2>🗺️ India 5G Heatmap</h2>
+    <div id="map"></div>
+  </div>
+
+  <!-- Tower Database -->
+  <div class="card">
+    <h2>🗼 Nearby Tower Data (Simulated)</h2>
+    <div id="towers"></div>
+  </div>
+
+</div>
+
+<footer>
+  © 2026 NetScope India | 5G Coverage System
+</footer>
+
+<script>
+let map;
+
+function detectNetwork() {
+  navigator.geolocation.getCurrentPosition(success, error);
+}
+
+function success(pos) {
+  let lat = pos.coords.latitude;
+  let lon = pos.coords.longitude;
+
+  document.getElementById("locationText").innerHTML =
+    `📍 Latitude: ${lat.toFixed(4)} | Longitude: ${lon.toFixed(4)}`;
+
+  // simulate operator detection
+  let jio = Math.random() > 0.4 ? "5G Strong 🟢" : "4G 🟡";
+  let airtel = Math.random() > 0.5 ? "5G Strong 🟢" : "4G 🟡";
+
+  let speed = (20 + Math.random() * 180).toFixed(1);
+  let ping = (10 + Math.random() * 60).toFixed(0);
+
+  document.getElementById("jio").innerText = jio;
+  document.getElementById("airtel").innerText = airtel;
+  document.getElementById("speed").innerText = speed;
+  document.getElementById("ping").innerText = ping;
+
+  // AI insight
+  let insight = "";
+
+  if (speed > 100) {
+    insight = "🟢 Excellent 5G performance. Ideal for gaming & streaming.";
+  } else if (speed < 40) {
+    insight = "🔴 Weak network detected. Try moving near a window or open area.";
+  } else {
+    insight = "🟡 Moderate performance. Network congestion or distance from tower.";
+  }
+
+  document.getElementById("aiBox").innerHTML = "🧠 " + insight;
+
+  loadTowers(lat, lon);
+}
+
+function error() {
+  alert("Location access denied. Enable GPS.");
+}
+
+/* ---------------- TOWER SYSTEM ---------------- */
+function loadTowers(lat, lon) {
+  let towers = [
+    { name: "Jio Tower", dist: "1.2 km", signal: "Strong 🟢" },
+    { name: "Airtel Tower", dist: "2.8 km", signal: "Medium 🟡" },
+    { name: "Jio 5G Node", dist: "3.5 km", signal: "Weak 🔴" }
+  ];
+
+  let html = "";
+  towers.forEach(t => {
+    html += `<p>📡 ${t.name} | ${t.dist} | ${t.signal}</p>`;
+  });
+
+  document.getElementById("towers").innerHTML = html;
+}
+
+/* ---------------- GOOGLE MAP ---------------- */
+function initMap() {
+  map = new google.maps.Map(document.getElementById("map"), {
+    zoom: 5,
+    center: { lat: 20.5937, lng: 78.9629 }
+  });
+
+  // fake heatmap points (replace with real OpenCellID later)
+  const heatPoints = [
+    { lat: 28.6139, lng: 77.2090 },
+    { lat: 19.0760, lng: 72.8777 },
+    { lat: 12.9716, lng: 77.5946 },
+    { lat: 34.0837, lng: 74.7973 }
+  ];
+
+  heatPoints.forEach(p => {
+    new google.maps.Marker({
+      position: p,
+      map: map
+    });
+  });
+}
+
+window.onload = initMap;
+</script>
+
+<!-- Google Maps API (replace YOUR_API_KEY) -->
+<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=visualization"></script>
+
+</body>
+</html>
