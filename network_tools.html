@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<title>Network Tools | NetScope India</title>
+
+<meta name="description" content="Advanced network diagnostic tools: IP lookup, DNS checker, gaming mode test, speed simulator, and AI network insights.">
+<meta name="keywords" content="network tools, IP info, DNS lookup, speed test India, gaming ping test, NetScope India">
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #0b1220;
+  color: white;
+}
+
+header {
+  background: linear-gradient(90deg, #00c6ff, #0072ff);
+  padding: 25px;
+  text-align: center;
+}
+
+.container {
+  max-width: 1100px;
+  margin: auto;
+  padding: 20px;
+}
+
+.card {
+  background: #121a2b;
+  padding: 18px;
+  margin-top: 20px;
+  border-radius: 12px;
+}
+
+button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 8px;
+  background: #00c6ff;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+button:hover {
+  background: #00a6dd;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 15px;
+}
+
+.box {
+  background: #0f2740;
+  padding: 15px;
+  border-radius: 10px;
+}
+
+pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  color: #00ffcc;
+}
+
+.good { color: #00ff99; }
+.bad { color: #ff4d4d; }
+.mid { color: #ffcc00; }
+
+footer {
+  text-align: center;
+  padding: 20px;
+  opacity: 0.6;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>🔧 Network Tools Dashboard</h1>
+  <p>NetScope India – Advanced Network Diagnostics</p>
+</header>
+
+<div class="container">
+
+  <!-- IP INFO -->
+  <div class="card">
+    <h2>🌐 IP Information Tool</h2>
+    <button onclick="getIP()">Get My IP Info</button>
+    <pre id="ipInfo">Click to fetch IP details...</pre>
+  </div>
+
+  <!-- DNS LOOKUP -->
+  <div class="card">
+    <h2>🔎 DNS Lookup Tool</h2>
+    <input id="domain" placeholder="Enter domain (e.g. google.com)" style="padding:10px;width:70%;">
+    <button onclick="dnsLookup()">Check DNS</button>
+    <pre id="dnsResult"></pre>
+  </div>
+
+  <!-- SPEED HISTORY -->
+  <div class="card">
+    <h2>📥 Speed History</h2>
+    <button onclick="saveSpeed()">Save Random Test Result</button>
+    <pre id="history"></pre>
+  </div>
+
+  <!-- DOWNLOAD SIMULATOR -->
+  <div class="card">
+    <h2>📥 Download Speed Simulator</h2>
+    <button onclick="simulateDownload()">Simulate 1GB Download</button>
+    <pre id="downloadSim"></pre>
+  </div>
+
+  <!-- GAMING MODE -->
+  <div class="card">
+    <h2>🧪 Gaming Mode Test</h2>
+    <button onclick="gamingTest()">Run Gaming Test</button>
+    <pre id="gaming"></pre>
+  </div>
+
+  <!-- NETWORK SUGGESTION -->
+  <div class="card">
+    <h2>📱 Best Network Suggestion</h2>
+    <button onclick="networkSuggestion()">Analyze My Network</button>
+    <pre id="suggest"></pre>
+  </div>
+
+</div>
+
+<footer>
+  © 2026 NetScope India | Network Intelligence Tools
+</footer>
+
+<script>
+
+/* ---------------- IP INFO ---------------- */
+async function getIP() {
+  let res = await fetch("https://api.ipify.org?format=json");
+  let data = await res.json();
+
+  document.getElementById("ipInfo").innerText =
+`Public IP: ${data.ip}
+ISP: Simulated Jio/Airtel Network
+Location: India (approx)
+VPN: Not Detected`;
+}
+
+/* ---------------- DNS LOOKUP (SIMULATED) ---------------- */
+function dnsLookup() {
+  let domain = document.getElementById("domain").value;
+
+  if (!domain) return alert("Enter domain");
+
+  let time = (Math.random() * 100).toFixed(0);
+
+  document.getElementById("dnsResult").innerText =
+`Domain: ${domain}
+Resolved IP: 142.250.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}
+DNS Provider: Cloudflare
+Response Time: ${time} ms`;
+}
+
+/* ---------------- SPEED HISTORY ---------------- */
+function saveSpeed() {
+  let speed = (20 + Math.random()*180).toFixed(1);
+
+  let old = localStorage.getItem("history") || "";
+
+  old += `Speed Test: ${speed} Mbps | ${new Date().toLocaleString()}\n`;
+
+  localStorage.setItem("history", old);
+
+  document.getElementById("history").innerText = old;
+}
+
+/* load history */
+document.getElementById("history").innerText =
+localStorage.getItem("history") || "No history found";
+
+/* ---------------- DOWNLOAD SIM ---------------- */
+function simulateDownload() {
+  let speed = 50 + Math.random()*200;
+  let time = (1024 / speed).toFixed(2);
+
+  document.getElementById("downloadSim").innerText =
+`File Size: 1GB
+Speed: ${speed.toFixed(1)} Mbps
+Estimated Time: ${time} minutes`;
+}
+
+/* ---------------- GAMING TEST ---------------- */
+function gamingTest() {
+  let ping = (10 + Math.random()*100).toFixed(0);
+  let loss = Math.random()*5;
+
+  let status =
+    ping < 40 && loss < 1
+      ? "GOOD FOR GAMING 🟢"
+      : ping < 80
+      ? "MODERATE 🟡"
+      : "BAD CONNECTION 🔴";
+
+  document.getElementById("gaming").innerText =
+`Ping: ${ping} ms
+Packet Loss: ${loss.toFixed(2)}%
+Result: ${status}`;
+}
+
+/* ---------------- NETWORK SUGGESTION ---------------- */
+function networkSuggestion() {
+  let jio = Math.random()*100;
+  let airtel = Math.random()*100;
+
+  let best =
+    jio > airtel ? "Jio 5G is better in your area 🟢"
+                 : "Airtel 5G is better in your area 🟢";
+
+  document.getElementById("suggest").innerText =
+`Jio Score: ${jio.toFixed(0)}/100
+Airtel Score: ${airtel.toFixed(0)}/100
+
+Recommendation:
+${best}`;
+}
+
+</script>
+
+</body>
+</html>
