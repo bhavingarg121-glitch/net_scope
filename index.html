@@ -742,7 +742,69 @@ return "Average";
 
 /* ================= RUN TEST ================= */
 
-function runTest(){
+/* ================= REAL PING ================= */
+
+async function testPing() {
+
+  let total = 0;
+
+  for(let i=0;i<5;i++){
+
+    const start = performance.now();
+
+    await fetch(
+      "/api/ping?t=" + Date.now(),
+      {cache:"no-store"}
+    );
+
+    const end = performance.now();
+
+    total += (end - start);
+
+  }
+
+  return (total / 5).toFixed(1);
+}
+
+/* ================= REAL DOWNLOAD ================= */
+
+async function testDownload() {
+
+  const fileSize =
+    20 * 1024 * 1024;
+
+  const start =
+    performance.now();
+
+  const response =
+    await fetch(
+      "/api/download?t=" +
+      Date.now(),
+      {cache:"no-store"}
+    );
+
+  await response.arrayBuffer();
+
+  const end =
+    performance.now();
+
+  const seconds =
+    (end - start) / 1000;
+
+  const speedMbps =
+    (
+      (fileSize * 8) /
+      seconds /
+      1024 /
+      1024
+    );
+
+  return speedMbps.toFixed(2);
+}
+
+/* ================= RUN TEST ================= */
+
+async function runTest(){
 
 if(!navigator.geolocation){
 
@@ -752,9 +814,12 @@ return;
 
 }
 
+document.getElementById("status").innerHTML =
+"Running speed test...";
+
 navigator.geolocation.getCurrentPosition(
 
-(pos)=>{
+async (pos)=>{
 
 const lat = pos.coords.latitude;
 const lng = pos.coords.longitude;
@@ -762,13 +827,13 @@ const lng = pos.coords.longitude;
 const op =
 document.getElementById("operator").value;
 
-/* RANDOM SPEEDS */
+/* REAL VALUES */
 
 const speed =
-(Math.random()*100 + 20).toFixed(1);
+await testDownload();
 
 const ping =
-(Math.random()*60 + 5).toFixed(1);
+await testPing();
 
 const signalStrength =
 signal(lat,lng,op).toFixed(1);
@@ -784,29 +849,29 @@ parseFloat(signalStrength)
 
 const jio =
 score(
-Math.random()*100,
-Math.random()*50,
+parseFloat(speed),
+parseFloat(ping),
 signal(lat,lng,"Jio")
 ).toFixed(1);
 
 const airtel =
 score(
-Math.random()*100,
-Math.random()*50,
+parseFloat(speed),
+parseFloat(ping),
 signal(lat,lng,"Airtel")
 ).toFixed(1);
 
 const vi =
 score(
-Math.random()*100,
-Math.random()*50,
+parseFloat(speed),
+parseFloat(ping),
 signal(lat,lng,"Vi")
 ).toFixed(1);
 
 const bsnl =
 score(
-Math.random()*100,
-Math.random()*50,
+parseFloat(speed),
+parseFloat(ping),
 signal(lat,lng,"BSNL")
 ).toFixed(1);
 
@@ -827,7 +892,7 @@ const best = networks[0].name;
 
 document.getElementById("status").innerHTML =
 `
-📶 Speed: <b>${speed} Mbps</b><br>
+📶 Download: <b>${speed} Mbps</b><br>
 ⚡ Ping: <b>${ping} ms</b><br>
 📡 Signal: <b>${signalStrength}%</b>
 `;
@@ -837,13 +902,17 @@ document.getElementById("best").innerHTML =
 
 /* CONTROL CENTER */
 
-document.getElementById("selectedOp").innerText = op;
+document.getElementById("selectedOp").innerText =
+op;
 
-document.getElementById("speedVal").innerText = speed;
+document.getElementById("speedVal").innerText =
+speed;
 
-document.getElementById("pingVal").innerText = ping;
+document.getElementById("pingVal").innerText =
+ping;
 
-document.getElementById("signalVal").innerText = signalStrength;
+document.getElementById("signalVal").innerText =
+signalStrength;
 
 document.getElementById("qualityVal").innerText =
 qualityLabel(quality);
@@ -867,7 +936,7 @@ vi,
 bsnl
 ]);
 
-/* MAP MARKER */
+/* MAP */
 
 L.circleMarker([lat,lng],{
 
@@ -880,7 +949,7 @@ fillOpacity:1
 .addTo(map)
 .bindPopup(`
 <b>${op}</b><br>
-Speed: ${speed} Mbps<br>
+Download: ${speed} Mbps<br>
 Ping: ${ping} ms
 `)
 .openPopup();
@@ -892,7 +961,7 @@ map.setView([lat,lng],10);
 (error)=>{
 
 alert(
-"Location access denied. Please allow GPS/location access."
+"Location access denied. Please allow GPS access."
 );
 
 }
@@ -900,6 +969,8 @@ alert(
 );
 
 }
+
+
 
 /* ================= SERVICE WORKER ================= */
 
