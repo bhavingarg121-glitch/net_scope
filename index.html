@@ -746,24 +746,29 @@ return "Average";
 
 async function testPing() {
 
-  let total = 0;
+  const pings = [];
 
-  for(let i=0;i<5;i++){
+  for(let i=0;i<10;i++){
 
     const start = performance.now();
 
     await fetch(
       "/api/ping?t=" + Date.now(),
-      {cache:"no-store"}
+      {
+        cache:"no-store",
+        method:"HEAD"
+      }
     );
 
     const end = performance.now();
 
-    total += (end - start);
+    pings.push(end - start);
 
   }
 
-  return (total / 5).toFixed(1);
+  pings.sort((a,b)=>a-b);
+
+  return pings[2].toFixed(1);
 }
 
 /* ================= REAL DOWNLOAD ================= */
