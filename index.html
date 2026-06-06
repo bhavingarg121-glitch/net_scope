@@ -39,9 +39,8 @@
 <meta http-equiv="content-language" content="en-IN">
 <meta name="distribution" content="global">
 <meta name="rating" content="general">
-<h1 style="position:absolute;left:-9999px;">
-Internet Speed Test India | Jio, Airtel, Vi, BSNL | NetScope India
-     
+<h1 style="display:none;">
+NetScope India - Internet Speed Test India
 </h1>
 <!-- TWITTER -->
 <meta name="twitter:card" content="summary_large_image">
@@ -114,272 +113,309 @@ href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
  ]
 }
 </script>
-<style>
-
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:Arial,sans-serif;
+     <style>
+     /* =========================
+   GLOBAL RESET
+========================= */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
 }
 
-body{
-background:#050816;
-color:white;
-overflow-x:hidden;
+html {
+  -webkit-text-size-adjust: 100%;
 }
 
-/* MAP */
-
-#map{
-width:100%;
-height:100vh;
-z-index:1;
+body {
+  background: #050816;
+  color: white;
+  overflow-x: hidden;
+  max-width: 100vw;
 }
 
-.leaflet-container{
-background:#050816;
+/* =========================
+   MAP
+========================= */
+#map {
+  width: 100%;
+  height: 100vh;
+  z-index: 1;
 }
 
-/* NAVBAR */
-
-.navbar{
-position:absolute;
-top:15px;
-left:50%;
-transform:translateX(-50%);
-z-index:1000;
-display:flex;
-gap:10px;
-flex-wrap:wrap;
-justify-content:center;
-background:rgba(255,255,255,0.08);
-padding:12px;
-border-radius:18px;
-backdrop-filter:blur(18px);
-border:1px solid rgba(255,255,255,0.1);
+.leaflet-container {
+  background: #050816;
 }
 
-.navbar a{
-text-decoration:none;
-padding:10px 16px;
-border-radius:10px;
-background:#101935;
-color:white;
-font-size:14px;
-transition:0.3s;
+/* =========================
+   NAVBAR
+========================= */
+.navbar {
+  position: absolute;
+  top: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+
+  background: rgba(255, 255, 255, 0.08);
+  padding: 12px;
+  border-radius: 18px;
+  backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.navbar a:hover{
-background:#00c6ff;
+.navbar a {
+  text-decoration: none;
+  padding: 10px 16px;
+  border-radius: 10px;
+  background: #101935;
+  color: white;
+  font-size: 14px;
+  transition: 0.3s;
 }
 
-/* GLASS PANELS */
+.navbar a:hover {
+  background: #00c6ff;
+}
 
+/* =========================
+   GLASS PANELS
+========================= */
 .panel,
-.rightPanel{
-position:absolute;
-top:90px;
-width:340px;
-background:rgba(255,255,255,0.08);
-backdrop-filter:blur(18px);
-padding:18px;
-border-radius:18px;
-z-index:999;
-border:1px solid rgba(255,255,255,0.1);
-box-shadow:0 0 25px rgba(0,0,0,0.2);
+.rightPanel {
+  position: absolute;
+  top: 90px;
+  width: 340px;
+
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(18px);
+  padding: 18px;
+  border-radius: 18px;
+  z-index: 999;
+
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.2);
 }
 
-.panel{
-left:15px;
+.panel {
+  left: 15px;
 }
 
-.rightPanel{
-right:15px;
-width:320px;
+.rightPanel {
+  right: 15px;
+  width: 320px;
 }
 
-/* HEADINGS */
-
-h2,h3{
-margin-bottom:10px;
+/* =========================
+   HEADINGS
+========================= */
+h2, h3 {
+  margin-bottom: 10px;
 }
 
-/* FORM */
-
+/* =========================
+   FORM ELEMENTS
+========================= */
 select,
-button{
-width:100%;
-padding:12px;
-margin-top:10px;
-border:none;
-border-radius:12px;
-font-size:15px;
+button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
 }
 
-select{
-background:#101935;
-color:white;
+select {
+  background: #101935;
+  color: white;
 }
 
-button{
-background:linear-gradient(90deg,#00c6ff,#0072ff);
-color:white;
-font-weight:bold;
-cursor:pointer;
-transition:0.3s;
+button {
+  background: linear-gradient(90deg, #00c6ff, #0072ff);
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
 }
 
-button:hover{
-transform:scale(1.03);
+button:hover {
+  transform: scale(1.03);
 }
 
-/* INFO BOX */
-
-.box{
-margin-top:12px;
-padding:12px;
-background:#101935;
-border-radius:12px;
-font-size:14px;
-line-height:1.7;
-border:1px solid rgba(255,255,255,0.05);
+/* =========================
+   INFO BOX
+========================= */
+.box {
+  margin-top: 12px;
+  padding: 12px;
+  background: #101935;
+  border-radius: 12px;
+  font-size: 14px;
+  line-height: 1.7;
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-/* TOOLS SECTION */
-
-.tools{
-padding:80px 20px;
-background:#071122;
+/* =========================
+   TOOLS SECTION
+========================= */
+.tools {
+  padding: 80px 20px;
+  background: #071122;
 }
 
-.tools h2{
-text-align:center;
-font-size:40px;
-margin-bottom:50px;
+.tools h2 {
+  text-align: center;
+  font-size: 40px;
+  margin-bottom: 50px;
 }
 
-.toolsGrid{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
-gap:25px;
-max-width:1200px;
-margin:auto;
+.toolsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 25px;
+  max-width: 1200px;
+  margin: auto;
 }
 
-.toolCard{
-background:rgba(255,255,255,0.05);
-padding:25px;
-border-radius:20px;
-backdrop-filter:blur(15px);
-border:1px solid rgba(255,255,255,0.08);
-transition:0.3s;
-text-align:center;
+.toolCard {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 25px;
+  border-radius: 20px;
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: 0.3s;
+  text-align: center;
 }
 
-.toolCard:hover{
-transform:translateY(-8px);
-box-shadow:0 0 25px rgba(0,198,255,0.2);
+.toolCard:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 0 25px rgba(0, 198, 255, 0.2);
 }
 
-.toolCard h3{
-margin:15px 0;
-font-size:24px;
+.toolCard h3 {
+  margin: 15px 0;
+  font-size: 24px;
 }
 
-.toolCard p{
-font-size:14px;
-line-height:1.7;
-color:#cccccc;
+.toolCard p {
+  font-size: 14px;
+  line-height: 1.7;
+  color: #cccccc;
 }
 
-.toolCard a{
-display:inline-block;
-margin-top:20px;
-padding:12px 20px;
-border-radius:12px;
-background:#00c6ff;
-color:black;
-font-weight:bold;
-text-decoration:none;
+.toolCard a {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 12px 20px;
+  border-radius: 12px;
+  background: #00c6ff;
+  color: black;
+  font-weight: bold;
+  text-decoration: none;
 }
 
-/* MOBILE */
-
-@media(max-width:900px){
-
-.panel,
-.rightPanel{
-position:relative;
-width:92%;
-margin:15px auto;
-left:auto;
-right:auto;
-top:auto;
+/* =========================
+   FOOTER
+========================= */
+.footer {
+  background: #0f172a;
+  color: #fff;
+  padding: 50px 20px 20px;
 }
 
-.navbar{
-position:relative;
-top:auto;
-left:auto;
-transform:none;
-margin:15px;
-}
-
-#map{
-height:70vh;
-}
-
-}
-.footer{
-    background:#0f172a;
-    color:#fff;
-    padding:50px 20px 20px;
-}
-
-.footer-container{
-    max-width:1200px;
-    margin:auto;
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-    gap:30px;
+.footer-container {
+  max-width: 1200px;
+  margin: auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 30px;
 }
 
 .footer h3,
-.footer h4{
-    margin-bottom:15px;
+.footer h4 {
+  margin-bottom: 15px;
 }
 
-.footer p{
-    color:#cbd5e1;
-    line-height:1.7;
+.footer p {
+  color: #cbd5e1;
+  line-height: 1.7;
 }
 
-.footer ul{
-    list-style:none;
-    padding:0;
+.footer ul {
+  list-style: none;
+  padding: 0;
 }
 
-.footer ul li{
-    margin-bottom:10px;
+.footer ul li {
+  margin-bottom: 10px;
 }
 
-.footer a{
-    color:#cbd5e1;
-    text-decoration:none;
-    transition:0.3s;
+.footer a {
+  color: #cbd5e1;
+  text-decoration: none;
+  transition: 0.3s;
 }
 
-.footer a:hover{
-    color:#ffffff;
+.footer a:hover {
+  color: #ffffff;
 }
 
-.footer-bottom{
-    text-align:center;
-    border-top:1px solid rgba(255,255,255,0.1);
-    margin-top:40px;
-    padding-top:20px;
-    color:#94a3b8;
+.footer-bottom {
+  text-align: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  margin-top: 40px;
+  padding-top: 20px;
+  color: #94a3b8;
+}
+
+/* =========================
+   RESPONSIVE DESIGN
+========================= */
+@media (max-width: 900px) {
+
+  /* NAVBAR */
+  .navbar {
+    position: relative;
+    width: 95%;
+    margin: 10px auto;
+  }
+
+  .navbar a {
+    font-size: 12px;
+    padding: 8px 10px;
+  }
+
+  /* PANELS */
+  .panel,
+  .rightPanel {
+    position: relative;
+    width: 95%;
+    margin: 10px auto;
+    top: auto;
+    left: auto;
+    right: auto;
+  }
+
+  /* MAP */
+  #map {
+    height: 50vh;
+  }
+
+  /* TOOLS */
+  .tools h2 {
+    font-size: 28px;
+  }
+
+  .toolCard {
+    padding: 18px;
+  }
 }
 </style>
 
@@ -387,10 +423,12 @@ height:70vh;
 
 <body>
 <h1>Internet Speed Test India</h1>
-     <ins class="adsbygoogle"
-     style="display:inline-block;width:360px;height:800px"
+    <ins class="adsbygoogle"
+     style="display:block"
      data-ad-client="ca-pub-9074407414410710"
-     data-ad-slot="1314483640"></ins>
+     data-ad-slot="1314483640"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
 <!-- NAVBAR -->
 
 <div class="navbar">
@@ -601,7 +639,9 @@ Open Tool
 /* ================= MAP ================= */
 
 const map = L.map("map").setView([22.9734,78.6569],5);
-
+setTimeout(() => {
+    map.invalidateSize();
+}, 500);
 L.tileLayer(
 "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
 {
