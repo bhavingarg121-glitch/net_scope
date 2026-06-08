@@ -900,26 +900,22 @@ async function testDownload() {
 
 async function runTest(){
 
-if(!navigator.geolocation){
 
-alert("Geolocation not supported");
+  const ping = await testPing();
+  console.log("Ping:", ping);
 
-return;
+  const speed = await testDownload();
+  console.log("Download:", speed);
+
+  const uploadSpeed = await testUpload();
+  console.log("Upload:", uploadSpeed);
+
+} catch(err) {
+
+  console.error(err);
+  alert(err.message);
 
 }
-
-document.getElementById("status").innerHTML =
-"Running speed test...";
-
-navigator.geolocation.getCurrentPosition(
-
-async (pos)=>{
-
-const lat = pos.coords.latitude;
-const lng = pos.coords.longitude;
-
-const op =
-document.getElementById("operator").value;
 
 /* REAL VALUES */
 
