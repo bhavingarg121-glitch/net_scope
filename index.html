@@ -497,7 +497,7 @@ Ping:
 <span id="pingVal">0</span> ms<br>
 
 Upload:
-<span id="uploadVal">0</span> Mbps
+<span id="uploadVal">0</span> Mbps<br>
      
 Signal:
 <span id="signalVal">0</span>%<br>
@@ -899,7 +899,7 @@ async function testDownload() {
 /* ================= RUN TEST ================= */
 
 async function runTest(){
-
+try {
 
   const ping = await testPing();
   console.log("Ping:", ping);
@@ -914,6 +914,13 @@ async function runTest(){
 
   console.error(err);
   alert(err.message);
+
+} catch(err) {
+
+  console.error(err);
+
+  document.getElementById("status").innerHTML =
+    "Error: " + err.message;
 
 }
 
