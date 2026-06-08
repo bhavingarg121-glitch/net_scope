@@ -649,9 +649,10 @@ Open Tool
 <script>
 
 /* ================= MAP ================= */
-
+console.log("SCRIPT STARTED");
 const map = L.map("map").setView([22.9734,78.6569],5);
-setTimeout(() => {
+console.log("MAP STARTED");
+     setTimeout(() => {
     map.invalidateSize();
 }, 500);
 L.tileLayer(
@@ -660,6 +661,7 @@ L.tileLayer(
 attribution:"© OpenStreetMap © CARTO"
 }
 ).addTo(map);
+     
 
 /* ================= TOWERS ================= */
 
