@@ -496,6 +496,9 @@ Speed:
 Ping:
 <span id="pingVal">0</span> ms<br>
 
+Upload:
+<span id="uploadVal">0</span> Mbps
+     
 Signal:
 <span id="signalVal">0</span>%<br>
 
@@ -707,16 +710,19 @@ return Math.min(s*60,100);
 
 /* ================= QUALITY SCORE ================= */
 
-function score(speed,ping,signal){
-
-return (
-(speed*0.5) +
-(signal*0.4) -
-(ping*0.3)
-);
-
+function score(
+  download,
+  upload,
+  ping,
+  signal
+){
+  return (
+    (download * 0.4) +
+    (upload * 0.3) +
+    (signal * 0.2) -
+    (ping * 0.1)
+  );
 }
-
 /* ================= CHART ================= */
 
 const chart = new Chart(
@@ -824,36 +830,33 @@ async function testPing() {
 
 async function testDownload() {
 
-  const fileSize =
-    20 * 1024 * 1024;
+  const start = performance.now();
 
-  const start =
-    performance.now();
+  const response = await fetch(
+    "/api/download?t=" + Date.now(),
+    {
+      cache: "no-store"
+    }
+  );
 
-  const response =
-    await fetch(
-      "/api/download?t=" +
-      Date.now(),
-      {cache:"no-store"}
-    );
+  const buffer =
+    await response.arrayBuffer();
 
-  await response.arrayBuffer();
+  const end = performance.now();
 
-  const end =
-    performance.now();
+  const bytes =
+    buffer.byteLength;
 
   const seconds =
     (end - start) / 1000;
 
   const speedMbps =
-    (
-      (fileSize * 8) /
-      seconds /
-      1024 /
-      1024
-    );
+    (bytes * 8) /
+    seconds /
+    1000000;
 
   return speedMbps.toFixed(2);
+
 }
 
 /* ================= RUN TEST ================= */
@@ -883,11 +886,14 @@ document.getElementById("operator").value;
 
 /* REAL VALUES */
 
+const ping =
+await testPing();
+
 const speed =
 await testDownload();
 
-const ping =
-await testPing();
+const uploadSpeed =
+await testUpload();
 
 const signalStrength =
 signal(lat,lng,op).toFixed(1);
@@ -895,6 +901,7 @@ signal(lat,lng,op).toFixed(1);
 const quality =
 score(
 parseFloat(speed),
+parseFloat(uploadSpeed),
 parseFloat(ping),
 parseFloat(signalStrength)
 ).toFixed(1);
@@ -904,6 +911,7 @@ parseFloat(signalStrength)
 const jio =
 score(
 parseFloat(speed),
+parseFloat(uploadSpeed),
 parseFloat(ping),
 signal(lat,lng,"Jio")
 ).toFixed(1);
@@ -911,6 +919,7 @@ signal(lat,lng,"Jio")
 const airtel =
 score(
 parseFloat(speed),
+parseFloat(uploadSpeed),
 parseFloat(ping),
 signal(lat,lng,"Airtel")
 ).toFixed(1);
@@ -918,6 +927,7 @@ signal(lat,lng,"Airtel")
 const vi =
 score(
 parseFloat(speed),
+parseFloat(uploadSpeed),
 parseFloat(ping),
 signal(lat,lng,"Vi")
 ).toFixed(1);
@@ -925,6 +935,7 @@ signal(lat,lng,"Vi")
 const bsnl =
 score(
 parseFloat(speed),
+parseFloat(uploadSpeed),
 parseFloat(ping),
 signal(lat,lng,"BSNL")
 ).toFixed(1);
