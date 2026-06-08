@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <!-- PRIMARY SEO -->
-<title>Internet Speed Test India | NetScope India - Jio Airtel WiFi Ping Test</title>
+<title>Internet Speed Test India</title>
 
 
 <meta name="description" content="NetScope India - Free Internet Speed Test for Jio, Airtel, Vi, BSNL. Check WiFi speed, ping, latency and network performance in India." />
@@ -796,7 +796,44 @@ return "Average";
 }
 
 /* ================= RUN TEST ================= */
+async function testUpload() {
 
+  const size =
+    5 * 1024 * 1024;
+
+  const data =
+    new Uint8Array(size);
+
+  const start =
+    performance.now();
+
+  await fetch("/api/upload", {
+
+    method:"POST",
+
+    headers:{
+      "Content-Type":
+      "application/octet-stream"
+    },
+
+    body:data
+
+  });
+
+  const end =
+    performance.now();
+
+  const seconds =
+    (end - start) / 1000;
+
+  const speedMbps =
+    (size * 8) /
+    seconds /
+    1000000;
+
+  return speedMbps.toFixed(2);
+
+}
 /* ================= REAL PING ================= */
 
 async function testPing() {
@@ -957,13 +994,14 @@ const best = networks[0].name;
 
 document.getElementById("status").innerHTML =
 `
-📶 Download: <b>${speed} Mbps</b><br>
-⚡ Ping: <b>${ping} ms</b><br>
-📡 Signal: <b>${signalStrength}%</b>
+ Download: <b>${speed} Mbps</b><br>
+ Upload: <b>${uploadSpeed} Mbps</b><br>
+ Ping: <b>${ping} ms</b><br>
+ Signal: <b>${signalStrength}%</b>
 `;
 
 document.getElementById("best").innerHTML =
-`🏆 Best Network: <b>${best}</b>`;
+`Best Network: <b>${best}</b>`;
 
 /* CONTROL CENTER */
 
@@ -973,6 +1011,9 @@ op;
 document.getElementById("speedVal").innerText =
 speed;
 
+document.getElementById("uploadVal").innerText =
+uploadSpeed;
+     
 document.getElementById("pingVal").innerText =
 ping;
 
