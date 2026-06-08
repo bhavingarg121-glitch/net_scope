@@ -903,13 +903,13 @@ async function testDownload() {
 async function runTest(){
 try {
 
-  const ping = await testPing();
+  const ping = 20();
   console.log("Ping:", ping);
 
-  const speed = await testDownload();
+  const speed = 50();
   console.log("Download:", speed);
 
-  const uploadSpeed = await testUpload();
+  const uploadSpeed = 20();
   console.log("Upload:", uploadSpeed);
 
 } catch(err) {
