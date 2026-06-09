@@ -1050,29 +1050,25 @@ map.invalidateSize();
 enableHighAccuracy:true,
 timeout:10000,
 maximumAge:0
-});
+}
+);
+
+}
 
 
 /* ================= SERVICE WORKER ================= */
 
 if("serviceWorker" in navigator){
 
-navigator.serviceWorker.register("./sw.js")
-
-.then(()=>{
-
-console.log("PWA Ready");
-
-})
-
-.catch(err=>{
-
-console.log(err);
-
-});
+  navigator.serviceWorker.register("./sw.js")
+  .then(()=>{
+    console.log("PWA Ready");
+  })
+  .catch(err=>{
+    console.log(err);
+  });
 
 }
-
 </script>
 
 </body>
