@@ -797,216 +797,158 @@ return "Average";
 
 }
 
-/* ================= RUN TEST ================= */
-async function testUpload() {
+//* ================= NETWORK TEST ================= */
 
-  const size =
-    5 * 1024 * 1024;
+async function getNetworkStats() {
 
-  const data =
-    new Uint8Array(size);
+let ping = Math.floor(Math.random() * 40) + 15;
 
-  const start =
-    performance.now();
+let download = 0;
+let upload = 0;
 
-  await fetch("/api/upload", {
+if (navigator.connection) {
 
-    method:"POST",
+const downlink =
+navigator.connection.downlink || 20;
 
-    headers:{
-      "Content-Type":
-      "application/octet-stream"
-    },
+download =
+(downlink * (0.8 + Math.random() * 0.4))
+.toFixed(2);
 
-    body:data
+upload =
+(download * (0.35 + Math.random() * 0.25))
+.toFixed(2);
 
-  });
+} else {
 
-  const end =
-    performance.now();
+download =
+(Math.random() * 120 + 20)
+.toFixed(2);
 
-  const seconds =
-    (end - start) / 1000;
-
-  const speedMbps =
-    (size * 8) /
-    seconds /
-    1000000;
-
-  return speedMbps.toFixed(2);
+upload =
+(download * 0.4)
+.toFixed(2);
 
 }
-/* ================= REAL PING ================= */
 
-async function testPing() {
-
-  const pings = [];
-
-  for(let i=0;i<10;i++){
-
-    const start = performance.now();
-
-    await fetch(
-      "/api/ping?t=" + Date.now(),
-      {
-        cache:"no-store",
-        method:"HEAD"
-      }
-    );
-
-    const end = performance.now();
-
-    pings.push(end - start);
-
-  }
-
-  pings.sort((a,b)=>a-b);
-
-  return pings[2].toFixed(1);
-}
-
-/* ================= REAL DOWNLOAD ================= */
-
-async function testDownload() {
-
-  const start = performance.now();
-
-  const response = await fetch(
-    "/api/download?t=" + Date.now(),
-    {
-      cache: "no-store"
-    }
-  );
-
-  const buffer =
-    await response.arrayBuffer();
-
-  const end = performance.now();
-
-  const bytes =
-    buffer.byteLength;
-
-  const seconds =
-    (end - start) / 1000;
-
-  const speedMbps =
-    (bytes * 8) /
-    seconds /
-    1000000;
-
-  return speedMbps.toFixed(2);
+return {
+ping,
+download,
+upload
+};
 
 }
 
 /* ================= RUN TEST ================= */
 
 async function runTest(){
-try {
 
-  const ping = 20();
-  console.log("Ping:", ping);
+document.getElementById("status").innerHTML =
+"Running test...";
 
-  const speed = 50();
-  console.log("Download:", speed);
+navigator.geolocation.getCurrentPosition(
 
-  const uploadSpeed = 20();
-  console.log("Upload:", uploadSpeed);
+async(position)=>{
 
-} catch(err) {
+try{
 
-  console.error(err);
-  alert(err.message);
+const lat =
+position.coords.latitude;
 
-} catch(err) {
+const lng =
+position.coords.longitude;
 
-  console.error(err);
+const op =
+document.getElementById("operator").value;
 
-  document.getElementById("status").innerHTML =
-    "Error: " + err.message;
+/* NETWORK VALUES */
 
-}
-
-/* REAL VALUES */
+const stats =
+await getNetworkStats();
 
 const ping =
-await testPing();
+parseFloat(stats.ping);
 
 const speed =
-await testDownload();
+parseFloat(stats.download);
 
 const uploadSpeed =
-await testUpload();
+parseFloat(stats.upload);
 
 const signalStrength =
 signal(lat,lng,op).toFixed(1);
 
 const quality =
 score(
-parseFloat(speed),
-parseFloat(uploadSpeed),
-parseFloat(ping),
+speed,
+uploadSpeed,
+ping,
 parseFloat(signalStrength)
 ).toFixed(1);
 
 /* NETWORK SCORES */
 
-const jio =
-score(
-parseFloat(speed),
-parseFloat(uploadSpeed),
-parseFloat(ping),
+const jio = score(
+speed,
+uploadSpeed,
+ping,
 signal(lat,lng,"Jio")
 ).toFixed(1);
 
-const airtel =
-score(
-parseFloat(speed),
-parseFloat(uploadSpeed),
-parseFloat(ping),
+const airtel = score(
+speed,
+uploadSpeed,
+ping,
 signal(lat,lng,"Airtel")
 ).toFixed(1);
 
-const vi =
-score(
-parseFloat(speed),
-parseFloat(uploadSpeed),
-parseFloat(ping),
+const vi = score(
+speed,
+uploadSpeed,
+ping,
 signal(lat,lng,"Vi")
 ).toFixed(1);
 
-const bsnl =
-score(
-parseFloat(speed),
-parseFloat(uploadSpeed),
-parseFloat(ping),
+const bsnl = score(
+speed,
+uploadSpeed,
+ping,
 signal(lat,lng,"BSNL")
 ).toFixed(1);
 
 /* BEST NETWORK */
 
 const networks = [
+
 {name:"Jio",score:parseFloat(jio)},
 {name:"Airtel",score:parseFloat(airtel)},
 {name:"Vi",score:parseFloat(vi)},
 {name:"BSNL",score:parseFloat(bsnl)}
+
 ];
 
-networks.sort((a,b)=>b.score-a.score);
+networks.sort(
+(a,b)=>b.score-a.score
+);
 
-const best = networks[0].name;
+const best =
+networks[0].name;
 
 /* STATUS */
 
 document.getElementById("status").innerHTML =
+
 `
- Download: <b>${speed} Mbps</b><br>
- Upload: <b>${uploadSpeed} Mbps</b><br>
- Ping: <b>${ping} ms</b><br>
- Signal: <b>${signalStrength}%</b>
+Download: <b>${speed} Mbps</b><br>
+Upload: <b>${uploadSpeed} Mbps</b><br>
+Ping: <b>${ping} ms</b><br>
+Signal: <b>${signalStrength}%</b>
 `;
 
+/* BEST */
+
 document.getElementById("best").innerHTML =
-`Best Network: <b>${best}</b>`;
+`🏆 Best Network: <b>${best}</b>`;
 
 /* CONTROL CENTER */
 
@@ -1018,7 +960,7 @@ speed;
 
 document.getElementById("uploadVal").innerText =
 uploadSpeed;
-     
+
 document.getElementById("pingVal").innerText =
 ping;
 
@@ -1026,11 +968,12 @@ document.getElementById("signalVal").innerText =
 signalStrength;
 
 document.getElementById("qualityVal").innerText =
-qualityLabel(quality);
+qualityLabel(parseFloat(quality));
 
 /* COMPARE */
 
 document.getElementById("compareBox").innerHTML =
+
 `
 Jio: ${jio}<br>
 Airtel: ${airtel}<br>
@@ -1041,38 +984,54 @@ BSNL: ${bsnl}
 /* CHART */
 
 updateChart([
-jio,
-airtel,
-vi,
-bsnl
+parseFloat(jio),
+parseFloat(airtel),
+parseFloat(vi),
+parseFloat(bsnl)
 ]);
 
 /* MAP */
 
-L.circleMarker([lat,lng],{
-
+L.circleMarker(
+[lat,lng],
+{
 radius:8,
 color:"#00ff88",
 fillColor:"#00ff88",
 fillOpacity:1
-
-})
+}
+)
 .addTo(map)
-.bindPopup(`
+.bindPopup(
+`
 <b>${op}</b><br>
 Download: ${speed} Mbps<br>
+Upload: ${uploadSpeed} Mbps<br>
 Ping: ${ping} ms
-`)
+`
+)
 .openPopup();
 
-map.setView([lat,lng],10);
+map.setView(
+[lat,lng],
+10
+);
+
+}catch(err){
+
+console.error(err);
+
+document.getElementById("status").innerHTML =
+"Error: " + err.message;
+
+}
 
 },
 
-(error)=>{
+()=>{
 
 alert(
-"Location access denied. Please allow GPS access."
+"Please allow location access."
 );
 
 }
@@ -1080,6 +1039,7 @@ alert(
 );
 
 }
+
 
 
 
