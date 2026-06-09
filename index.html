@@ -53,7 +53,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="NetScope India">
 <meta name="twitter:description" content="Internet speed test and telecom analytics platform">
-<meta name="twitter:image" content="https://netscopeindia.com/Icon1.png">
+<meta name="twitter:image" content="https://net-scopeindia.vercel.app/Icon1.png">
      <meta name="application-name" content="NetScope India">
 <meta name="apple-mobile-web-app-title" content="NetScope India">
 <meta name="format-detection" content="telephone=no">
@@ -74,8 +74,6 @@
 rel="stylesheet"
 href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
 />
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9074407414410710"
-     crossorigin="anonymous"></script>
 <!-- LEAFLET JS -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
@@ -92,7 +90,7 @@ href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
  "url":"https://net-scopeindia.vercel.app/",
  "potentialAction":{
    "@type":"SearchAction",
-   "target":"https://netscopeindia.vercel.app/search?q={search_term_string}",
+   "target":"https://net-scopeindia.vercel.app/search?q={search_term_string}",
    "query-input":"required name=search_term_string"
  }
 }
@@ -103,7 +101,7 @@ href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
  "@type":"Organization",
  "name":"NetScope India",
  "url":"https://net-scopeindia.vercel.app/",
- "logo":"https://netscopeindia.vercel.app/Icon1.png"
+ "logo":"https://net-scopeindia.vercel.app/Icon1.png"
 }
 </script>
 <script type="application/ld+json">
@@ -755,6 +753,8 @@ backgroundColor:[
 
 options:{
 responsive:true,
+maintainAspectRatio:false,
+
 
 plugins:{
 legend:{
@@ -797,7 +797,7 @@ return "Average";
 
 }
 
-//* ================= NETWORK TEST ================= */
+/* ================= NETWORK TEST ================= */
 
 async function getNetworkStats() {
 
@@ -990,57 +990,53 @@ parseFloat(vi),
 parseFloat(bsnl)
 ]);
 
-/* MAP */
+/* MAP MARKER */
 
-L.circleMarker(
-[lat,lng],
-{
-radius:8,
-color:"#00ff88",
-fillColor:"#00ff88",
-fillOpacity:1
+if (window.userMarker) {
+    map.removeLayer(window.userMarker);
 }
+
+window.userMarker = L.circleMarker(
+    [lat, lng],
+    {
+        radius: 8,
+        color: "#00ff88",
+        fillColor: "#00ff88",
+        fillOpacity: 1
+    }
 )
 .addTo(map)
-.bindPopup(
-`
+.bindPopup(`
 <b>${op}</b><br>
 Download: ${speed} Mbps<br>
 Upload: ${uploadSpeed} Mbps<br>
 Ping: ${ping} ms
-`
-)
+`)
 .openPopup();
 
-map.setView(
-[lat,lng],
-10
-);
+map.setView([lat, lng], 10);
 
-}catch(err){
+} catch (err) {
 
-console.error(err);
+    console.error(err);
 
-document.getElementById("status").innerHTML =
-"Error: " + err.message;
+    document.getElementById("status").innerHTML =
+        "Error: " + err.message;
 
 }
 
-},
+}, (error) => {
 
-()=>{
+    console.error(error);
 
-alert(
-"Please allow location access."
-);
+    document.getElementById("status").innerHTML =
+        "Location access denied.";
+
+    alert("Please allow location access.");
+
+});
 
 }
-
-);
-
-}
-
-
 
 
 /* ================= SERVICE WORKER ================= */
