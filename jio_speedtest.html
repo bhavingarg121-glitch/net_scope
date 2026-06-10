@@ -307,19 +307,19 @@ Measure your Reliance Jio 4G and 5G internet performance instantly with NetScope
 
 <div class="card">
 <h2>Download Speed</h2>
-<div class="value" id="download">0</div>
+<div class="value" id="download">0.0</div>
 <div class="unit">Mbps</div>
 </div>
 
 <div class="card">
 <h2>Upload Speed</h2>
-<div class="value" id="upload">0</div>
+<div class="value" id="upload">0.0</div>
 <div class="unit">Mbps</div>
 </div>
 
 <div class="card">
 <h2>Ping</h2>
-<div class="value" id="ping">0</div>
+<div class="value" id="ping">0.0</div>
 <div class="unit">ms</div>
 </div>
 
@@ -400,67 +400,213 @@ NetScope India's Jio Speed Test helps users analyze mobile internet quality acro
 <footer>
 © 2026 NetScope India • AI Telecom Intelligence Platform
 </footer>
-
 <script>
 
-function animateValue(id,end,duration){
+async function testPing() {
 
-    let obj=document.getElementById(id);
+    const start = performance.now();
 
-    let start=0;
+    try {
 
-    let increment=end>start ? 1 : -1;
+        await fetch(
+            "https://www.google.com/favicon.ico?cache=" + Date.now(),
+            {
+                mode: "no-cors"
+            }
+        );
 
-    let step=Math.abs(Math.floor(duration/end));
+        return Math.round(
+            performance.now() - start
+        );
 
-    let timer=setInterval(()=>{
+    } catch {
 
-        start+=increment;
+        return 0;
 
-        obj.innerHTML=start;
-
-        if(start==end){
-            clearInterval(timer);
-        }
-
-    },step);
+    }
 
 }
 
-function startJioTest(){
+async function testDownload() {
 
-    document.getElementById("status").innerHTML="Testing";
+    const testFile =
+        "https://upload.wikimedia.org/wikipedia/commons/3/3f/Fronalpstock_big.jpg";
 
-    let download=Math.floor(Math.random()*500)+80;
+    const start = performance.now();
 
-    let upload=Math.floor(Math.random()*180)+20;
+    const response = await fetch(
+        testFile + "?cache=" + Date.now()
+    );
 
-    let ping=Math.floor(Math.random()*30)+5;
+    const blob = await response.blob();
 
-    animateValue("download",download,2200);
+    const end = performance.now();
 
-    animateValue("upload",upload,2000);
+    const duration =
+        (end - start) / 1000;
 
-    animateValue("ping",ping,1500);
+    const bitsLoaded =
+        blob.size * 8;
 
-    setTimeout(()=>{
+    const speedMbps =
+        bitsLoaded /
+        duration /
+        1024 /
+        1024;
 
-        let quality="Good";
+    return speedMbps;
 
-        if(download>300 && ping<15){
-            quality="Excellent";
+}
+
+function animateNumber(
+    id,
+    target,
+    duration = 1500
+) {
+
+    const element =
+        document.getElementById(id);
+
+    const startTime =
+        performance.now();
+
+    function update(time) {
+
+        const progress = Math.min(
+            (time - startTime) / duration,
+            1
+        );
+
+        const value =
+            progress * target;
+
+        element.textContent =
+            value.toFixed(1);
+
+        if (progress < 1) {
+
+            requestAnimationFrame(update);
+
+        } else {
+
+            element.textContent =
+                target.toFixed(1);
+
         }
-        else if(download<100){
-            quality="Average";
-        }
 
-        document.getElementById("status").innerHTML=quality;
+    }
 
-    },2300);
+    requestAnimationFrame(update);
+
+}
+
+function getQuality(
+    download,
+    ping
+) {
+
+    if (
+        download >= 300 &&
+        ping <= 15
+    ) {
+        return "Excellent";
+    }
+
+    if (
+        download >= 150 &&
+        ping <= 30
+    ) {
+        return "Good";
+    }
+
+    if (
+        download >= 50 &&
+        ping <= 60
+    ) {
+        return "Average";
+    }
+
+    return "Poor";
+
+}
+
+async function startJioTest() {
+
+    const status =
+        document.getElementById("status");
+
+    const downloadEl =
+        document.getElementById("download");
+
+    const uploadEl =
+        document.getElementById("upload");
+
+    const pingEl =
+        document.getElementById("ping");
+
+    downloadEl.textContent = "0";
+    uploadEl.textContent = "0";
+    pingEl.textContent = "0";
+
+    try {
+
+        status.textContent =
+            "Testing Ping...";
+
+        const ping =
+            await testPing();
+
+        status.textContent =
+            "Testing Download...";
+
+        const download =
+            await testDownload();
+
+        status.textContent =
+            "Estimating Upload...";
+
+        const upload =
+            download * 0.25;
+
+        animateNumber(
+            "download",
+            download,
+            2200
+        );
+
+        animateNumber(
+            "upload",
+            upload,
+            2000
+        );
+
+        animateNumber(
+            "ping",
+            ping,
+            1200
+        );
+
+        setTimeout(() => {
+
+            status.textContent =
+                getQuality(
+                    download,
+                    ping
+                );
+
+        }, 2300);
+
+    } catch (error) {
+
+        console.error(error);
+
+        status.textContent =
+            "Test Failed";
+
+    }
 
 }
 
 </script>
-
 </body>
 </html>
