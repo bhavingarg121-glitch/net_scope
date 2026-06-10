@@ -366,58 +366,209 @@ Verify if your network is capable of handling Netflix, YouTube 4K, live streamin
 
 <script>
 
-function animateValue(id, start, end, duration) {
+let isTesting = false;
 
-    let range = end - start;
-    let current = start;
-    let increment = end > start ? 1 : -1;
-    let stepTime = Math.abs(Math.floor(duration / range));
+function animateNumber(id, target, duration = 1500) {
 
-    let obj = document.getElementById(id);
+    const element = document.getElementById(id);
+    const startValue = parseFloat(element.textContent) || 0;
 
-    let timer = setInterval(function(){
+    const startTime = performance.now();
 
-        current += increment;
-        obj.innerHTML = current;
+    function update(currentTime) {
 
-        if(current == end){
-            clearInterval(timer);
+        const progress = Math.min(
+            (currentTime - startTime) / duration,
+            1
+        );
+
+        const value =
+            startValue +
+            (target - startValue) * progress;
+
+        element.textContent =
+            Number.isInteger(target)
+            ? Math.round(value)
+            : value.toFixed(1);
+
+        if (progress < 1) {
+            requestAnimationFrame(update);
         }
+    }
 
-    }, stepTime);
-
+    requestAnimationFrame(update);
 }
 
-function startTest(){
+/* ---------------- PING TEST ---------------- */
 
-    document.getElementById("quality").innerHTML = "Testing";
+async function testPing() {
 
-    let downloadSpeed = Math.floor(Math.random() * 250) + 50;
-    let uploadSpeed = Math.floor(Math.random() * 150) + 20;
-    let ping = Math.floor(Math.random() * 50) + 5;
+    const times = [];
 
-    animateValue("download",0,downloadSpeed,2000);
-    animateValue("upload",0,uploadSpeed,2000);
-    animateValue("ping",0,ping,1500);
+    for (let i = 0; i < 3; i++) {
 
-    setTimeout(()=>{
+        const start = performance.now();
 
-        let quality = "Good";
+        try {
 
-        if(downloadSpeed > 200 && ping < 15){
-            quality = "Excellent";
+            await fetch(
+                "https://www.google.com/favicon.ico?cache=" +
+                Date.now(),
+                {
+                    mode: "no-cors",
+                    cache: "no-store"
+                }
+            );
+
+            times.push(
+                performance.now() - start
+            );
+
+        } catch (e) {
+            continue;
         }
-        else if(downloadSpeed < 80){
-            quality = "Average";
+    }
+
+    if (!times.length) return 0;
+
+    return Math.round(
+        times.reduce((a, b) => a + b, 0) /
+        times.length
+    );
+}
+
+/* ---------------- DOWNLOAD TEST ---------------- */
+
+async function testDownload() {
+
+    const fileUrl =
+        "https://upload.wikimedia.org/wikipedia/commons/3/3f/Fronalpstock_big.jpg";
+
+    const start = performance.now();
+
+    const response = await fetch(
+        fileUrl + "?cache=" + Date.now(),
+        {
+            cache: "no-store"
         }
+    );
 
-        document.getElementById("quality").innerHTML = quality;
+    const blob = await response.blob();
 
-    },2200);
+    const end = performance.now();
 
+    const duration =
+        (end - start) / 1000;
+
+    const bitsLoaded =
+        blob.size * 8;
+
+    const speedMbps =
+        bitsLoaded /
+        duration /
+        1024 /
+        1024;
+
+    return Number(
+        speedMbps.toFixed(1)
+    );
+}
+
+/* ---------------- QUALITY ---------------- */
+
+function getQuality(download, ping) {
+
+    if (download >= 300 && ping <= 15)
+        return "Excellent";
+
+    if (download >= 150 && ping <= 30)
+        return "Good";
+
+    if (download >= 50 && ping <= 60)
+        return "Average";
+
+    return "Poor";
+}
+
+/* ---------------- MAIN TEST ---------------- */
+
+async function startTest() {
+
+    if (isTesting) return;
+
+    isTesting = true;
+
+    const button =
+        document.querySelector("button");
+
+    const quality =
+        document.getElementById("quality");
+
+    button.disabled = true;
+    button.textContent = "Testing...";
+
+    quality.textContent = "Testing";
+
+    document.getElementById("download").textContent = "0";
+    document.getElementById("upload").textContent = "0";
+    document.getElementById("ping").textContent = "0";
+
+    try {
+
+        const ping =
+            await testPing();
+
+        const download =
+            await testDownload();
+
+        /* Upload estimation */
+        const upload =
+            Number(
+                (download * 0.35).toFixed(1)
+            );
+
+        animateNumber(
+            "download",
+            download,
+            1800
+        );
+
+        animateNumber(
+            "upload",
+            upload,
+            1800
+        );
+
+        animateNumber(
+            "ping",
+            ping,
+            1200
+        );
+
+        quality.textContent =
+            getQuality(download, ping);
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        quality.textContent =
+            "Test Failed";
+
+    }
+
+    finally {
+
+        button.disabled = false;
+        button.textContent =
+            "Start WiFi Test";
+
+        isTesting = false;
+    }
 }
 
 </script>
-
 </body>
 </html>
