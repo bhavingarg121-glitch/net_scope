@@ -139,94 +139,434 @@ footer {
 
 <script>
 
-/* ---------------- IP INFO ---------------- */
+/* =========================
+   GLOBAL SPEED RESULTS
+========================= */
+
+let lastDownloadSpeed = 0;
+let lastPing = 0;
+
+/* =========================
+   REAL IP INFORMATION
+========================= */
+
 async function getIP() {
-  let res = await fetch("https://api.ipify.org?format=json");
-  let data = await res.json();
 
-  document.getElementById("ipInfo").innerText =
-`Public IP: ${data.ip}
-ISP: Simulated Jio/Airtel Network
-Location: India (approx)
-VPN: Not Detected`;
+    const output = document.getElementById("ipInfo");
+
+    output.innerText = "Loading...";
+
+    try {
+
+        const response = await fetch(
+            "https://ipapi.co/json/"
+        );
+
+        const data = await response.json();
+
+        output.innerText =
+`IP Address: ${data.ip}
+
+City: ${data.city}
+
+Region: ${data.region}
+
+Country: ${data.country_name}
+
+ISP: ${data.org}
+
+Timezone: ${data.timezone}`;
+
+    } catch (error) {
+
+        output.innerText =
+            "Unable to fetch IP information.";
+
+    }
+
 }
 
-/* ---------------- DNS LOOKUP (SIMULATED) ---------------- */
-function dnsLookup() {
-  let domain = document.getElementById("domain").value;
+/* =========================
+   DNS LOOKUP
+========================= */
 
-  if (!domain) return alert("Enter domain");
+async function dnsLookup() {
 
-  let time = (Math.random() * 100).toFixed(0);
+    const domain =
+        document.getElementById("domain")
+        .value.trim();
 
-  document.getElementById("dnsResult").innerText =
+    if (!domain) {
+        alert("Enter a domain name");
+        return;
+    }
+
+    const result =
+        document.getElementById("dnsResult");
+
+    result.innerText = "Resolving...";
+
+    try {
+
+        const response = await fetch(
+            `https://dns.google/resolve?name=${domain}`
+        );
+
+        const data = await response.json();
+
+        if (data.Answer && data.Answer.length > 0) {
+
+            result.innerText =
 `Domain: ${domain}
-Resolved IP: 142.250.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}
-DNS Provider: Cloudflare
-Response Time: ${time} ms`;
+
+Resolved IP:
+${data.Answer[0].data}
+
+Records Found:
+${data.Answer.length}`;
+
+        } else {
+
+            result.innerText =
+                "No DNS records found.";
+
+        }
+
+    } catch {
+
+        result.innerText =
+            "DNS lookup failed.";
+
+    }
+
 }
 
-/* ---------------- SPEED HISTORY ---------------- */
+/* =========================
+   REAL PING TEST
+========================= */
+
+async function testPing() {
+
+    const start = performance.now();
+
+    try {
+
+        await fetch(
+            "https://www.google.com/favicon.ico?cache=" +
+            Date.now(),
+            {
+                mode: "no-cors"
+            }
+        );
+
+        const end = performance.now();
+
+        return Math.round(end - start);
+
+    } catch {
+
+        return 0;
+
+    }
+
+}
+
+/* =========================
+   REAL DOWNLOAD TEST
+========================= */
+
+async function testDownload() {
+
+    const file =
+        "https://upload.wikimedia.org/wikipedia/commons/3/3f/Fronalpstock_big.jpg";
+
+    const start = performance.now();
+
+    const response = await fetch(
+        file + "?cache=" + Date.now()
+    );
+
+    const blob = await response.blob();
+
+    const end = performance.now();
+
+    const duration =
+        (end - start) / 1000;
+
+    const bitsLoaded =
+        blob.size * 8;
+
+    const speedMbps =
+        bitsLoaded /
+        duration /
+        1024 /
+        1024;
+
+    return speedMbps;
+
+}
+
+/* =========================
+   SAVE SPEED HISTORY
+========================= */
+
 function saveSpeed() {
-  let speed = (20 + Math.random()*180).toFixed(1);
 
-  let old = localStorage.getItem("history") || "";
+    if (!lastDownloadSpeed) {
 
-  old += `Speed Test: ${speed} Mbps | ${new Date().toLocaleString()}\n`;
+        alert(
+            "Run a speed test first."
+        );
 
-  localStorage.setItem("history", old);
+        return;
 
-  document.getElementById("history").innerText = old;
+    }
+
+    let history =
+        JSON.parse(
+            localStorage.getItem(
+                "speedHistory"
+            ) || "[]"
+        );
+
+    history.unshift({
+        speed:
+            lastDownloadSpeed.toFixed(2),
+        ping:
+            lastPing,
+        date:
+            new Date()
+            .toLocaleString()
+    });
+
+    history = history.slice(0, 20);
+
+    localStorage.setItem(
+        "speedHistory",
+        JSON.stringify(history)
+    );
+
+    loadHistory();
+
 }
 
-/* load history */
-document.getElementById("history").innerText =
-localStorage.getItem("history") || "No history found";
+/* =========================
+   LOAD HISTORY
+========================= */
 
-/* ---------------- DOWNLOAD SIM ---------------- */
+function loadHistory() {
+
+    const output =
+        document.getElementById(
+            "history"
+        );
+
+    const history =
+        JSON.parse(
+            localStorage.getItem(
+                "speedHistory"
+            ) || "[]"
+        );
+
+    if (history.length === 0) {
+
+        output.innerText =
+            "No history available";
+
+        return;
+
+    }
+
+    output.innerText =
+        history.map(item =>
+`Speed: ${item.speed} Mbps
+Ping: ${item.ping} ms
+Date: ${item.date}
+
+--------------------`
+        ).join("\n");
+
+}
+
+loadHistory();
+
+/* =========================
+   DOWNLOAD ESTIMATOR
+========================= */
+
 function simulateDownload() {
-  let speed = 50 + Math.random()*200;
-  let time = (1024 / speed).toFixed(2);
 
-  document.getElementById("downloadSim").innerText =
-`File Size: 1GB
-Speed: ${speed.toFixed(1)} Mbps
-Estimated Time: ${time} minutes`;
+    const output =
+        document.getElementById(
+            "downloadSim"
+        );
+
+    if (!lastDownloadSpeed) {
+
+        output.innerText =
+            "Run a speed test first.";
+
+        return;
+
+    }
+
+    const fileSizeGB = 1;
+
+    const megabits =
+        fileSizeGB * 1024 * 8;
+
+    const seconds =
+        megabits /
+        lastDownloadSpeed;
+
+    const minutes =
+        (seconds / 60)
+        .toFixed(2);
+
+    output.innerText =
+`File Size: 1 GB
+
+Current Speed:
+${lastDownloadSpeed.toFixed(2)} Mbps
+
+Estimated Time:
+${minutes} minutes`;
+
 }
 
-/* ---------------- GAMING TEST ---------------- */
-function gamingTest() {
-  let ping = (10 + Math.random()*100).toFixed(0);
-  let loss = Math.random()*5;
+/* =========================
+   GAMING TEST
+========================= */
 
-  let status =
-    ping < 40 && loss < 1
-      ? "GOOD FOR GAMING 🟢"
-      : ping < 80
-      ? "MODERATE 🟡"
-      : "BAD CONNECTION 🔴";
+async function gamingTest() {
 
-  document.getElementById("gaming").innerText =
+    const output =
+        document.getElementById(
+            "gaming"
+        );
+
+    output.innerText =
+        "Testing...";
+
+    const ping =
+        await testPing();
+
+    let result = "";
+
+    if (ping < 30) {
+
+        result =
+            "EXCELLENT 🟢";
+
+    } else if (ping < 60) {
+
+        result =
+            "GOOD 🟡";
+
+    } else {
+
+        result =
+            "POOR 🔴";
+
+    }
+
+    output.innerText =
 `Ping: ${ping} ms
-Packet Loss: ${loss.toFixed(2)}%
-Result: ${status}`;
+
+Packet Loss:
+Browser cannot measure accurately
+
+Gaming Quality:
+${result}`;
+
 }
 
-/* ---------------- NETWORK SUGGESTION ---------------- */
+/* =========================
+   NETWORK ANALYSIS
+========================= */
+
 function networkSuggestion() {
-  let jio = Math.random()*100;
-  let airtel = Math.random()*100;
 
-  let best =
-    jio > airtel ? "Jio 5G is better in your area 🟢"
-                 : "Airtel 5G is better in your area 🟢";
+    const output =
+        document.getElementById(
+            "suggest"
+        );
 
-  document.getElementById("suggest").innerText =
-`Jio Score: ${jio.toFixed(0)}/100
-Airtel Score: ${airtel.toFixed(0)}/100
+    if (!lastDownloadSpeed) {
+
+        output.innerText =
+            "Run a speed test first.";
+
+        return;
+
+    }
+
+    let recommendation;
+
+    if (
+        lastDownloadSpeed > 200 &&
+        lastPing < 20
+    ) {
+
+        recommendation =
+            "Excellent connection for gaming, streaming and remote work.";
+
+    } else if (
+        lastDownloadSpeed > 80
+    ) {
+
+        recommendation =
+            "Good connection for daily use and HD streaming.";
+
+    } else {
+
+        recommendation =
+            "Consider switching network or improving signal quality.";
+
+    }
+
+    output.innerText =
+`Download Speed:
+${lastDownloadSpeed.toFixed(2)} Mbps
+
+Ping:
+${lastPing} ms
 
 Recommendation:
-${best}`;
+${recommendation}`;
+
+}
+
+/* =========================
+   MASTER SPEED TEST
+========================= */
+
+async function runSpeedTest() {
+
+    try {
+
+        lastPing =
+            await testPing();
+
+        lastDownloadSpeed =
+            await testDownload();
+
+        alert(
+`Download: ${lastDownloadSpeed.toFixed(2)} Mbps
+
+Ping: ${lastPing} ms`
+        );
+
+    } catch (error) {
+
+        alert(
+            "Speed test failed."
+        );
+
+        console.error(error);
+
+    }
+
 }
 
 </script>
