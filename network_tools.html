@@ -532,8 +532,384 @@
 <footer>
   © 2026 NetScope India &nbsp;·&nbsp; Real network data — no simulations
 </footer>
-
 <script>
+
+/* ==========================
+   IP INFORMATION
+========================== */
+
+async function getIP() {
+
+    const box = document.getElementById("ipInfo");
+    box.innerHTML = "Loading...";
+
+    try {
+
+        const res = await fetch("https://ipapi.co/json/");
+        const data = await res.json();
+
+        box.innerHTML = `
+IP Address : ${data.ip}
+City       : ${data.city}
+Region     : ${data.region}
+Country    : ${data.country_name}
+ISP        : ${data.org}
+Timezone   : ${data.timezone}
+ASN        : ${data.asn}
+`;
+
+    } catch {
+
+        box.innerHTML = "Unable to fetch IP information.";
+
+    }
+}
+
+/* ==========================
+   GPS LOCATION
+========================== */
+
+function getLocationInfo() {
+
+    const box = document.getElementById("locationOut");
+
+    box.innerHTML = "Getting GPS location...";
+
+    if (!navigator.geolocation) {
+
+        box.innerHTML = "Geolocation not supported.";
+        return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+
+        async pos => {
+
+            const lat = pos.coords.latitude;
+            const lon = pos.coords.longitude;
+
+            try {
+
+                const res = await fetch(
+                    `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`
+                );
+
+                const data = await res.json();
+
+                box.innerHTML = `
+Latitude  : ${lat}
+Longitude : ${lon}
+
+Address:
+${data.display_name}
+`;
+
+            } catch {
+
+                box.innerHTML =
+                `Latitude : ${lat}
+Longitude : ${lon}`;
+
+            }
+
+        },
+
+        err => {
+
+            box.innerHTML = err.message;
+
+        }
+
+    );
+}
+
+/* ==========================
+   DNS LOOKUP
+========================== */
+
+let currentDnsType = "A";
+
+function dnsLookupType(type){
+
+    currentDnsType = type;
+    dnsLookup();
+}
+
+async function dnsLookup() {
+
+    const domain =
+        document.getElementById("dnsInput")
+        .value
+        .trim();
+
+    if (!domain) return;
+
+    const box =
+        document.getElementById("dnsResult");
+
+    box.innerHTML = "Looking up DNS...";
+
+    try {
+
+        const res =
+            await fetch(
+                `https://dns.google/resolve?name=${domain}&type=${currentDnsType}`
+            );
+
+        const data =
+            await res.json();
+
+        if(!data.Answer){
+
+            box.innerHTML =
+                "No records found";
+
+            return;
+        }
+
+        box.innerHTML =
+            data.Answer
+                .map(
+                    r =>
+                    `${currentDnsType} → ${r.data}`
+                )
+                .join("\n");
+
+    }
+
+    catch {
+
+        box.innerHTML =
+            "DNS lookup failed";
+
+    }
+}
+
+/* ==========================
+   GAMING TEST
+========================== */
+
+async function gamingTest() {
+
+    const box =
+        document.getElementById("pingOut");
+
+    box.innerHTML =
+        "Running latency test...";
+
+    const result =
+        await measurePing(10);
+
+    let rating = "Poor";
+
+    if(result.ping < 30)
+        rating = "Excellent";
+
+    else if(result.ping < 60)
+        rating = "Good";
+
+    else if(result.ping < 100)
+        rating = "Average";
+
+    box.innerHTML =
+`Average Ping : ${result.ping} ms
+Jitter       : ${result.jitter} ms
+Gaming Grade : ${rating}`;
+}
+
+/* ==========================
+   DOWNLOAD ESTIMATOR
+========================== */
+
+function simulateDownload() {
+
+    const box =
+        document.getElementById("downloadSim");
+
+    if(!lastDL){
+
+        box.innerHTML =
+            "Run speed test first.";
+
+        return;
+    }
+
+    const speeds =
+        lastDL * 125000;
+
+    const files = [
+
+        ["100 MB",100*1024*1024],
+        ["1 GB",1024*1024*1024],
+        ["10 GB",10*1024*1024*1024]
+
+    ];
+
+    let html = "";
+
+    files.forEach(f=>{
+
+        const seconds =
+            f[1]/speeds;
+
+        html +=
+            `${f[0]} : ${seconds.toFixed(1)} sec\n`;
+
+    });
+
+    box.innerHTML = html;
+}
+
+/* ==========================
+   NETWORK ANALYSIS
+========================== */
+
+function networkSuggestion() {
+
+    const box =
+        document.getElementById("suggest");
+
+    if(!lastDL){
+
+        box.innerHTML =
+            "Run speed test first.";
+
+        return;
+    }
+
+    let result = "";
+
+    if(lastDL > 100){
+
+        result +=
+        "✔ 4K Streaming\n";
+        result +=
+        "✔ Cloud Gaming\n";
+        result +=
+        "✔ Large Downloads\n";
+
+    }
+
+    else if(lastDL > 30){
+
+        result +=
+        "✔ HD Streaming\n";
+        result +=
+        "✔ Video Calls\n";
+        result +=
+        "✔ Multiplayer Gaming\n";
+
+    }
+
+    else{
+
+        result +=
+        "✔ Web Browsing\n";
+        result +=
+        "✔ Social Media\n";
+
+    }
+
+    box.innerHTML = result;
+}
+
+/* ==========================
+   SPEED HISTORY
+========================== */
+
+function saveSpeed() {
+
+    if(!lastDL) return;
+
+    let history =
+        JSON.parse(
+            localStorage.getItem(
+                "netscopeHistory"
+            ) || "[]"
+        );
+
+    history.unshift({
+
+        download:lastDL,
+        upload:lastUL,
+        ping:lastPing,
+        date:new Date()
+            .toLocaleString()
+
+    });
+
+    history =
+        history.slice(0,10);
+
+    localStorage.setItem(
+        "netscopeHistory",
+        JSON.stringify(history)
+    );
+
+    renderHistory();
+}
+
+function clearHistory(){
+
+    localStorage.removeItem(
+        "netscopeHistory"
+    );
+
+    renderHistory();
+}
+
+function renderHistory(){
+
+    const list =
+        document.getElementById(
+            "historyList"
+        );
+
+    const empty =
+        document.getElementById(
+            "historyEmpty"
+        );
+
+    const history =
+        JSON.parse(
+            localStorage.getItem(
+                "netscopeHistory"
+            ) || "[]"
+        );
+
+    if(history.length===0){
+
+        list.style.display =
+            "none";
+
+        empty.style.display =
+            "block";
+
+        return;
+    }
+
+    empty.style.display =
+        "none";
+
+    list.style.display =
+        "block";
+
+    list.innerHTML =
+        history.map(item => `
+<li class="history-item">
+<div>
+${item.download.toFixed(1)} Mbps
+</div>
+<div>
+${item.date}
+</div>
+</li>
+`).join("");
+}
+
+renderHistory();
+
+
 
 /* ==========================================
    GLOBAL STATE
