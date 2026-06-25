@@ -363,63 +363,127 @@ Get instant internet response analysis for broadband, WiFi, fiber and mobile hot
 
 <script>
 
-function animate(id,end,duration){
+async function measureLatency() {
 
-    let element=document.getElementById(id);
-    let start=0;
+    const samples = [];
+    let failed = 0;
 
-    let increment=end>start ? 1 : -1;
+    for (let i = 0; i < 10; i++) {
 
-    let step=Math.abs(Math.floor(duration/end));
+        const start = performance.now();
 
-    let timer=setInterval(()=>{
+        try {
 
-        start+=increment;
+            await fetch(
+                "https://www.google.com/favicon.ico?cache=" + Date.now(),
+                {
+                    mode: "no-cors",
+                    cache: "no-store"
+                }
+            );
 
-        element.innerHTML=start;
+            const latency = performance.now() - start;
+            samples.push(latency);
 
-        if(start==end){
-            clearInterval(timer);
+        } catch (e) {
+
+            failed++;
+
         }
 
-    },step);
+        await new Promise(resolve => setTimeout(resolve, 300));
+
+    }
+
+    return {
+        samples,
+        failed
+    };
+}
+
+function average(arr) {
+
+    return arr.reduce((a, b) => a + b, 0) / arr.length;
 
 }
 
-function startPingTest(){
+function calculateJitter(arr) {
 
-    document.getElementById("status").innerHTML="Testing";
+    if (arr.length < 2) return 0;
 
-    let ping=Math.floor(Math.random()*45)+5;
+    let diffs = [];
 
-    let jitter=Math.floor(Math.random()*20)+1;
+    for (let i = 1; i < arr.length; i++) {
 
-    let packet=Math.floor(Math.random()*5);
+        diffs.push(Math.abs(arr[i] - arr[i - 1]));
 
-    animate("ping",ping,1500);
+    }
 
-    animate("jitter",jitter,1300);
+    return average(diffs);
 
-    animate("packet",packet,1000);
+}
 
-    setTimeout(()=>{
+function animateValue(id, value) {
 
-        let quality="Good";
+    document.getElementById(id).innerText = value;
 
-        if(ping<15 && jitter<5){
-            quality="Excellent";
-        }
-        else if(ping>40){
-            quality="Average";
-        }
+}
 
-        document.getElementById("status").innerHTML=quality;
+async function startPingTest() {
 
-    },1800);
+    document.getElementById("status").innerHTML = "Testing";
+
+    document.getElementById("ping").innerHTML = "--";
+    document.getElementById("jitter").innerHTML = "--";
+    document.getElementById("packet").innerHTML = "--";
+
+    const result = await measureLatency();
+
+    const samples = result.samples;
+
+    if (samples.length === 0) {
+
+        document.getElementById("status").innerHTML = "Offline";
+        document.getElementById("packet").innerHTML = "100";
+
+        return;
+
+    }
+
+    const ping = Math.round(average(samples));
+
+    const jitter = Math.round(
+        calculateJitter(samples)
+    );
+
+    const packetLoss = Math.round(
+        (result.failed / 10) * 100
+    );
+
+    animateValue("ping", ping);
+    animateValue("jitter", jitter);
+    animateValue("packet", packetLoss);
+
+    let quality = "Good";
+
+    if (packetLoss > 10) {
+
+        quality = "Poor";
+
+    } else if (ping < 30 && jitter < 10) {
+
+        quality = "Excellent";
+
+    } else if (ping > 100) {
+
+        quality = "Average";
+
+    }
+
+    document.getElementById("status").innerHTML = quality;
 
 }
 
 </script>
-
 </body>
 </html>
