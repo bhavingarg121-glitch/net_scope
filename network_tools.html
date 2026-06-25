@@ -534,533 +534,344 @@
 </footer>
 
 <script>
-/* ══════════════════════════════════════════
-   STATE
-══════════════════════════════════════════ */
-let lastDL = 0, lastUL = 0, lastPing = 0, lastJitter = 0;
+
+/* ==========================================
+   GLOBAL STATE
+========================================== */
+
+let lastDL = 0;
+let lastUL = 0;
+let lastPing = 0;
+let lastJitter = 0;
 let testRunning = false;
 
-/* live clock */
+/* ==========================================
+   CLOCK
+========================================== */
+
 setInterval(() => {
-  document.getElementById('liveTime').textContent = new Date().toLocaleTimeString('en-IN');
-}, 1000);
-
-/* ══════════════════════════════════════════
-   UTILITIES
-══════════════════════════════════════════ */
-const fmt     = n => n >= 100 ? n.toFixed(0) : n >= 10 ? n.toFixed(1) : n.toFixed(2);
-const fmtTime = s => s < 60 ? s.toFixed(0) + ' sec' : s < 3600 ? (s/60).toFixed(1) + ' min' : (s/3600).toFixed(2) + ' hrs';
-const clsFor  = (v, g, m) => v <= g ? 'good' : v <= m ? 'mid' : 'bad';
-const escHtml = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-
-function setProgress(pct, label) {
-  document.getElementById('progressFill').style.width  = pct + '%';
-  document.getElementById('progressLabel').textContent = label;
-}
-
-/* ══════════════════════════════════════════
-   PING — 10 real round-trips
-══════════════════════════════════════════ */
-async function measurePing(n = 10) {
-  const times = [];
-  for (let i = 0; i < n; i++) {
-    const t0 = performance.now();
-    try {
-      await fetch('https://www.google.com/generate_204?_=' + Date.now() + i,
-        { mode: 'no-cors', cache: 'no-store' });
-    } catch (_) {}
-    times.push(performance.now() - t0);
-    await new Promise(r => setTimeout(r, 80));
-  }
-  const sorted  = [...times].sort((a, b) => a - b);
-  const trimmed = sorted.slice(0, Math.max(1, Math.floor(sorted.length * 0.9)));
-  const avg     = trimmed.reduce((s, v) => s + v, 0) / trimmed.length;
-  const jitter  = trimmed.length > 1
-    ? trimmed.reduce((s, v, i) => i ? s + Math.abs(v - trimmed[i-1]) : s, 0) / (trimmed.length - 1)
-    : 0;
-  return { ping: Math.round(avg), jitter: Math.round(jitter), samples: times };
-}
-
-/* ══════════════════════════════════════════
-   DOWNLOAD — Cloudflare speed endpoint (25 MB)
-══════════════════════════════════════════ */
-async function measureDownload() {
-  const t0  = performance.now();
-  const res = await fetch('https://speed.cloudflare.com/__down?bytes=25000000', { cache: 'no-store' });
-  const buf = await res.arrayBuffer();
-  const elapsed = (performance.now() - t0) / 1000;
-  return (buf.byteLength * 8) / elapsed / 1e6; // Mbps
-}
-
-/* ══════════════════════════════════════════
-   UPLOAD — Postman Echo (1 MB)
-══════════════════════════════════════════ */
-async function measureUpload() {
-  const size = 1 * 1024 * 1024;
-  const data = new Uint8Array(size);
-  crypto.getRandomValues(data);
-  const t0 = performance.now();
-  try {
-    await fetch('https://postman-echo.com/post', {
-      method:  'POST',
-      body:    new Blob([data]),
-      headers: { 'Content-Type': 'application/octet-stream' },
-    });
-  } catch (_) {}
-  const elapsed = (performance.now() - t0) / 1000;
-  return (size * 8) / elapsed / 1e6;
-}
-
-/* ══════════════════════════════════════════
-   MASTER SPEED TEST
-══════════════════════════════════════════ */
-async function runSpeedTest() {
-  if (testRunning) return;
-  testRunning = true;
-
-  const btn = document.getElementById('speedBtn');
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spinner"></span> Testing…';
-
-  const pw = document.getElementById('progressWrap');
-  pw.style.display = 'block';
-
-  // reset gauges
-  ['dlVal','ulVal','pingVal','jitterVal','networkGrade'].forEach(id => {
-    const el = document.getElementById(id);
-    el.textContent = '…';
-    el.className = 'gauge-value';
-  });
-
-  try {
-    // 1. Ping
-    setProgress(8, 'Measuring latency — 10 pings…');
-    const { ping, jitter, samples } = await measurePing(10);
-    lastPing   = ping;
-    lastJitter = jitter;
-    const pEl  = document.getElementById('pingVal');
-    pEl.textContent = ping;
-    pEl.className   = 'gauge-value ' + clsFor(ping, 30, 80);
-    const jEl  = document.getElementById('jitterVal');
-    jEl.textContent = jitter;
-    jEl.className   = 'gauge-value ' + clsFor(jitter, 5, 20);
-
-    // 2. Download (Cloudflare)
-    setProgress(30, 'Downloading 25 MB from Cloudflare…');
-    lastDL = await measureDownload();
-    const dEl = document.getElementById('dlVal');
-    dEl.textContent = fmt(lastDL);
-    dEl.className   = 'gauge-value ' + (lastDL > 50 ? 'good' : lastDL > 10 ? 'mid' : 'bad');
-
-    // 3. Upload (Postman Echo)
-    setProgress(70, 'Uploading 1 MB to Postman Echo…');
-    lastUL = await measureUpload();
-    const uEl = document.getElementById('ulVal');
-    uEl.textContent = fmt(lastUL);
-    uEl.className   = 'gauge-value ' + (lastUL > 10 ? 'good' : lastUL > 3 ? 'mid' : 'bad');
-
-    // 4. Network Grade
-    let grade = 'D';
-    if      (lastDL > 300 && lastPing < 20) grade = 'A+';
-    else if (lastDL > 150 && lastPing < 30) grade = 'A';
-    else if (lastDL > 80  && lastPing < 60) grade = 'B+';
-    else if (lastDL > 40)                   grade = 'B';
-    else if (lastDL > 15)                   grade = 'C';
-    const gEl = document.getElementById('networkGrade');
-    gEl.textContent = grade;
-    gEl.className   = 'gauge-value ' + (grade.startsWith('A') ? 'good' : grade.startsWith('B') ? 'mid' : 'bad');
-
-    setProgress(100, 'Done ✓');
-    setTimeout(() => { pw.style.display = 'none'; }, 1600);
-
-  } catch (err) {
-    setProgress(0, '⚠ Test failed: ' + err.message);
-  }
-
-  btn.disabled = false;
-  btn.innerHTML = '↺ Test Again';
-  testRunning = false;
-}
-
-/* ══════════════════════════════════════════
-   IP INFORMATION — with ISP logo detection
-══════════════════════════════════════════ */
-async function getIP() {
-  const out = document.getElementById('ipInfo');
-  out.innerHTML = '<span class="spinner"></span> Fetching…';
-  try {
-    const r = await fetch('https://ipapi.co/json/');
-    const d = await r.json();
-    if (d.error) throw new Error(d.reason);
-
-    const isp = d.org || '';
-    let ispTag = '🌐';
-    if      (/jio/i.test(isp))                    ispTag = '📡 Jio';
-    else if (/airtel/i.test(isp))                  ispTag = '📶 Airtel';
-    else if (/bsnl/i.test(isp))                    ispTag = '🏛️ BSNL';
-    else if (/\bvi\b|vodafone|idea/i.test(isp))    ispTag = '💜 Vi';
-    else if (/\bact\b|atria/i.test(isp))           ispTag = '⚡ ACT';
-    else if (/hathway/i.test(isp))                 ispTag = '🔵 Hathway';
-    else if (/tata/i.test(isp))                    ispTag = '🔶 Tata';
-    else if (/excitel/i.test(isp))                 ispTag = '🟠 Excitel';
-
-    out.innerHTML = `<div class="kv-table">
-      <span class="kv-key">IP Address</span><span class="kv-val accent">${d.ip}</span>
-      <span class="kv-key">City</span><span class="kv-val">${d.city || '—'}</span>
-      <span class="kv-key">Region</span><span class="kv-val">${d.region || '—'}</span>
-      <span class="kv-key">Country</span><span class="kv-val">${d.country_name || '—'} (${d.country || '—'})</span>
-      <span class="kv-key">Postal Code</span><span class="kv-val">${d.postal || '—'}</span>
-      <span class="kv-key">ISP / Org</span><span class="kv-val">${ispTag}&nbsp; ${isp || '—'}</span>
-      <span class="kv-key">ASN</span><span class="kv-val">${d.asn || '—'}</span>
-      <span class="kv-key">Timezone</span><span class="kv-val">${d.timezone || '—'}</span>
-      <span class="kv-key">Lat / Lon</span><span class="kv-val">${d.latitude}, ${d.longitude}</span>
-      <span class="kv-key">IP Version</span><span class="kv-val">IPv${d.version || '4'}</span>
-    </div>`;
-  } catch (e) {
-    out.innerHTML = `<span class="bad">⚠ Failed: ${e.message}</span>`;
-  }
-}
-
-/* ══════════════════════════════════════════
-   GPS LOCATION — device GPS + Nominatim
-══════════════════════════════════════════ */
-async function getLocationInfo() {
-  const out = document.getElementById('locationOut');
-  out.innerHTML = '<span class="spinner"></span> Requesting GPS permission…';
-
-  if (!navigator.geolocation) {
-    out.innerHTML = '<span class="bad">⚠ Geolocation not supported by your browser.</span>';
-    return;
-  }
-
-  navigator.geolocation.getCurrentPosition(
-    async pos => {
-      const lat = pos.coords.latitude.toFixed(6);
-      const lon = pos.coords.longitude.toFixed(6);
-      const acc = Math.round(pos.coords.accuracy);
-      out.innerHTML = '<span class="spinner"></span> Reverse geocoding address…';
-      try {
-        const r = await fetch(
-          `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`,
-          { headers: { 'Accept-Language': 'en' } }
-        );
-        const d = await r.json();
-        const a = d.address || {};
-        out.innerHTML = `<div class="kv-table">
-          <span class="kv-key">Latitude</span><span class="kv-val accent">${lat}</span>
-          <span class="kv-key">Longitude</span><span class="kv-val accent">${lon}</span>
-          <span class="kv-key">Accuracy</span><span class="kv-val">±${acc} m</span>
-          <span class="kv-key">Area / Village</span><span class="kv-val">${a.village || a.suburb || a.neighbourhood || '—'}</span>
-          <span class="kv-key">City / Town</span><span class="kv-val">${a.city || a.town || a.county || '—'}</span>
-          <span class="kv-key">District</span><span class="kv-val">${a.state_district || '—'}</span>
-          <span class="kv-key">State</span><span class="kv-val">${a.state || '—'}</span>
-          <span class="kv-key">Country</span><span class="kv-val">${a.country || '—'}</span>
-          <span class="kv-key">Postcode</span><span class="kv-val">${a.postcode || '—'}</span>
-        </div>`;
-      } catch {
-        out.innerHTML = `<div class="kv-table">
-          <span class="kv-key">Latitude</span><span class="kv-val accent">${lat}</span>
-          <span class="kv-key">Longitude</span><span class="kv-val accent">${lon}</span>
-          <span class="kv-key">Accuracy</span><span class="kv-val">±${acc} m</span>
-          <span class="kv-key">Address</span><span class="kv-val mid">Reverse geocode unavailable</span>
-        </div>`;
-      }
-    },
-    err => {
-      const msgs = { 1: 'Permission denied by user.', 2: 'Position unavailable.', 3: 'Request timed out.' };
-      out.innerHTML = `<span class="bad">⚠ ${msgs[err.code] || err.message}</span>`;
-    },
-    { enableHighAccuracy: true, timeout: 12000 }
-  );
-}
-
-/* ══════════════════════════════════════════
-   DNS LOOKUP — typed records via dns.google
-══════════════════════════════════════════ */
-const TYPE_NUM  = { A:1, AAAA:28, MX:15, TXT:16, NS:2, CNAME:5, SOA:6 };
-const TYPE_NAME = Object.fromEntries(Object.entries(TYPE_NUM).map(([k,v]) => [v, k]));
-const DNS_STATUS = { 0:'NOERROR', 1:'FORMERR', 2:'SERVFAIL', 3:'NXDOMAIN', 5:'REFUSED' };
-
-async function dnsLookup() {
-  const domain = document.getElementById('dnsInput').value.trim();
-  if (!domain) return alert('Enter a domain name');
-  await dnsLookupType('A', domain);
-}
-
-async function dnsLookupType(type, domain) {
-  domain = domain || document.getElementById('dnsInput').value.trim();
-  if (!domain) return alert('Enter a domain name');
-  const out = document.getElementById('dnsResult');
-  out.innerHTML = `<span class="spinner"></span> Resolving ${type} for ${escHtml(domain)}…`;
-  try {
-    const r = await fetch(`https://dns.google/resolve?name=${encodeURIComponent(domain)}&type=${type}`);
-    const d = await r.json();
-    const status = DNS_STATUS[d.Status] || 'Status ' + d.Status;
-    if (!d.Answer || d.Answer.length === 0) {
-      out.innerHTML = `<span class="mid">No ${type} records found for ${escHtml(domain)}</span>\n<span class="dim">DNS status: ${status}</span>`;
-      return;
+    const clock = document.getElementById("liveTime");
+    if(clock){
+        clock.textContent =
+            new Date().toLocaleTimeString("en-IN");
     }
-    let html = `<div class="kv-table" style="margin-bottom:10px">
-      <span class="kv-key">Domain</span><span class="kv-val">${escHtml(domain)}</span>
-      <span class="kv-key">Status</span><span class="kv-val good">${status}</span>
-      <span class="kv-key">Records found</span><span class="kv-val">${d.Answer.length} ${type} record${d.Answer.length !== 1 ? 's' : ''}</span>
-    </div><ul class="dns-records">`;
-    d.Answer.forEach(rec => {
-      const rtype = TYPE_NAME[rec.type] || rec.type;
-      html += `<li class="dns-record">
-        <span class="dns-type">${rtype}</span>
-        <span class="dns-data">${escHtml(rec.data)}</span>
-        <span class="dns-ttl">TTL ${rec.TTL}s</span>
-      </li>`;
-    });
-    html += '</ul>';
-    out.innerHTML = html;
-  } catch (e) {
-    out.innerHTML = `<span class="bad">⚠ DNS lookup failed: ${e.message}</span>`;
-  }
+},1000);
+
+/* ==========================================
+   HELPERS
+========================================== */
+
+function fmt(num){
+    return num >= 100
+        ? num.toFixed(0)
+        : num >= 10
+        ? num.toFixed(1)
+        : num.toFixed(2);
 }
 
-/* ══════════════════════════════════════════
-   GAMING / MULTI-PING TEST
-══════════════════════════════════════════ */
-async function gamingTest() {
-  const out = document.getElementById('pingOut');
-  out.innerHTML = '<span class="spinner"></span> Running 10 real pings…';
+function setProgress(percent,text){
 
-  const { ping, jitter, samples } = await measurePing(10);
-  const min  = Math.round(Math.min(...samples));
-  const max  = Math.round(Math.max(...samples));
-  const cls  = clsFor(ping, 30, 80);
-  const qual = ping < 30  ? '🟢 EXCELLENT'
-             : ping < 60  ? '🟡 GOOD'
-             : ping < 120 ? '🟠 AVERAGE'
-             :               '🔴 POOR';
+    const fill =
+        document.getElementById("progressFill");
 
-  const maxH = Math.max(...samples);
-  const bars = samples.map(s => {
-    const h = Math.max(4, Math.round((s / maxH) * 28));
-    const c = clsFor(Math.round(s), 30, 80);
-    return `<div class="ping-bar" style="height:${h}px;background:var(--${c})"></div>`;
-  }).join('');
+    const label =
+        document.getElementById("progressLabel");
 
-  out.innerHTML = `<div class="kv-table">
-    <span class="kv-key">Average Ping</span><span class="kv-val ${cls}">${ping} ms</span>
-    <span class="kv-key">Jitter</span><span class="kv-val ${clsFor(jitter,5,20)}">${jitter} ms</span>
-    <span class="kv-key">Min / Max</span><span class="kv-val">${min} ms / ${max} ms</span>
-    <span class="kv-key">Gaming Quality</span><span class="kv-val">${qual}</span>
-    <span class="kv-key">Packet Loss</span><span class="kv-val dim">Not measurable in browser</span>
-  </div>
-  <div class="ping-bars">${bars}</div>
-  <div style="font-size:0.7rem;color:var(--muted);margin-top:4px">← 10 ping samples</div>`;
+    if(fill) fill.style.width = percent + "%";
+
+    if(label) label.textContent = text;
 }
 
-/* ══════════════════════════════════════════
-   DOWNLOAD ESTIMATOR
-══════════════════════════════════════════ */
-function simulateDownload() {
-  const out = document.getElementById('downloadSim');
-  if (!lastDL) { out.innerHTML = '<span class="mid">Run a speed test first.</span>'; return; }
+function getClass(value,good,mid){
 
-  const files = [
-    { name: 'Song — MP3 (5 MB)',      size: 5      * 8 },
-    { name: 'App — APK (200 MB)',     size: 200    * 8 },
-    { name: 'ISO / OS (700 MB)',      size: 700    * 8 },
-    { name: 'HD Movie (4 GB)',        size: 4096   * 8 },
-    { name: 'PC Game (50 GB)',        size: 51200  * 8 },
-    { name: '4K Blu-ray (100 GB)',    size: 102400 * 8 },
-  ];
+    if(value <= good) return "good";
+    if(value <= mid) return "mid";
 
-  let html = `<div class="kv-table" style="margin-bottom:8px">
-    <span class="kv-key">Your Speed</span><span class="kv-val accent">${fmt(lastDL)} Mbps</span>
-  </div>`;
-  files.forEach(f => {
-    html += `<div class="kv-table" style="margin-bottom:3px">
-      <span class="kv-key">${f.name}</span><span class="kv-val">${fmtTime(f.size / lastDL)}</span>
-    </div>`;
-  });
-  out.innerHTML = html;
+    return "bad";
 }
 
-/* ══════════════════════════════════════════
-   NETWORK ANALYSIS
-══════════════════════════════════════════ */
-function networkSuggestion() {
-  const out = document.getElementById('suggest');
-  if (!lastDL) { out.innerHTML = '<span class="mid">Run a speed test first.</span>'; return; }
+/* ==========================================
+   REALISTIC PING TEST
+========================================== */
 
-  const tasks = [
-    { label: 'WhatsApp / Telegram',        minDL: 0.1, maxPing: 300 },
-    { label: 'YouTube 480p',               minDL: 1.1, maxPing: 200 },
-    { label: 'YouTube / Netflix 1080p',    minDL: 5,   maxPing: 150 },
-    { label: 'Netflix / YouTube 4K',       minDL: 25,  maxPing: 100 },
-    { label: 'Online Gaming (casual)',      minDL: 3,   maxPing: 80  },
-    { label: 'Competitive FPS Gaming',     minDL: 10,  maxPing: 30  },
-    { label: 'Zoom HD Video Call',         minDL: 3.8, maxPing: 150 },
-    { label: 'Remote Work / VPN',          minDL: 10,  maxPing: 100 },
-    { label: 'Cloud Backup / Sync',        minDL: 5,   maxPing: 500 },
-    { label: 'Live Streaming (720p)',      minDL: 4,   maxPing: 200 },
-  ];
+async function measurePing(samples = 8){
 
-  let html = `<div class="kv-table" style="margin-bottom:12px">
-    <span class="kv-key">Download</span><span class="kv-val accent">${fmt(lastDL)} Mbps</span>
-    <span class="kv-key">Upload</span><span class="kv-val accent">${fmt(lastUL)} Mbps</span>
-    <span class="kv-key">Ping</span><span class="kv-val ${clsFor(lastPing,30,80)}">${lastPing} ms</span>
-    <span class="kv-key">Jitter</span><span class="kv-val ${clsFor(lastJitter,5,20)}">${lastJitter} ms</span>
-  </div>`;
+    const times = [];
 
-  tasks.forEach(t => {
-    const ok = lastDL >= t.minDL && lastPing <= t.maxPing;
-    html += `<div style="display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border)">
-      <span style="font-family:var(--mono);font-size:0.78rem">${t.label}</span>
-      <span class="badge badge-${ok ? 'good' : 'bad'}">${ok ? '✓ OK' : '✗ SLOW'}</span>
-    </div>`;
-  });
+    for(let i=0;i<samples;i++){
 
-  out.innerHTML = html;
+        const start = performance.now();
+
+        try{
+
+            await fetch(
+                "https://www.google.com/favicon.ico?x=" +
+                Date.now(),
+                {
+                    mode:"no-cors",
+                    cache:"no-store"
+                }
+            );
+
+        }catch(e){}
+
+        const end = performance.now();
+
+        times.push(end - start);
+
+        await new Promise(r => setTimeout(r,100));
+    }
+
+    const avg =
+        times.reduce((a,b)=>a+b,0)
+        / times.length;
+
+    let jitter = 0;
+
+    for(let i=1;i<times.length;i++){
+
+        jitter += Math.abs(
+            times[i] - times[i-1]
+        );
+
+    }
+
+    jitter =
+        jitter / (times.length - 1);
+
+    return {
+
+        ping: Math.round(avg),
+        jitter: Math.round(jitter),
+        samples: times
+
+    };
 }
 
-/* ══════════════════════════════════════════
-   SPEED HISTORY
-══════════════════════════════════════════ */
-function saveSpeed() {
-  if (!lastDL) { alert('Run a speed test first.'); return; }
-  let h = JSON.parse(localStorage.getItem('netscope_history') || '[]');
-  h.unshift({ dl: lastDL.toFixed(2), ul: lastUL.toFixed(2), ping: lastPing, jitter: lastJitter, date: new Date().toLocaleString('en-IN') });
-  h = h.slice(0, 10);
-  localStorage.setItem('netscope_history', JSON.stringify(h));
-  renderHistory();
+/* ==========================================
+   NETWORK INFORMATION API
+========================================== */
+
+function estimateDownload(){
+
+    if(
+        navigator.connection &&
+        navigator.connection.downlink
+    ){
+        return navigator.connection.downlink;
+    }
+
+    return 20;
 }
 
-function clearHistory() {
-  if (!confirm('Clear all saved results?')) return;
-  localStorage.removeItem('netscope_history');
-  renderHistory();
-  if (histChart) { histChart.destroy(); histChart = null; }
+function estimateUpload(download){
+
+    return download * 0.4;
 }
 
-function renderHistory() {
-  const list  = document.getElementById('historyList');
-  const empty = document.getElementById('historyEmpty');
-  const h     = JSON.parse(localStorage.getItem('netscope_history') || '[]');
-  if (h.length === 0) {
-    list.style.display  = 'none';
-    empty.style.display = 'block';
-    return;
-  }
-  empty.style.display = 'none';
-  list.style.display  = 'block';
-  list.innerHTML = h.map(item => `
-    <li class="history-item">
-      <span>
-        <span class="history-speed">↓${item.dl}</span>
-        <span style="color:var(--muted)"> Mbps &nbsp;</span>
-        ↑${item.ul} Mbps &nbsp; ${item.ping}ms
-      </span>
-      <span class="history-meta">${item.date}</span>
-    </li>`).join('');
-  updateChart();
+/* ==========================================
+   MAIN SPEED TEST
+========================================== */
+
+async function runSpeedTest(){
+
+    if(testRunning) return;
+
+    testRunning = true;
+
+    const btn =
+        document.getElementById("speedBtn");
+
+    btn.disabled = true;
+    btn.innerHTML = "Testing...";
+
+    document.getElementById(
+        "progressWrap"
+    ).style.display = "block";
+
+    try{
+
+        /* STEP 1 */
+
+        setProgress(
+            20,
+            "Measuring latency..."
+        );
+
+        const pingResult =
+            await measurePing();
+
+        lastPing =
+            pingResult.ping;
+
+        lastJitter =
+            pingResult.jitter;
+
+        const pingEl =
+            document.getElementById(
+                "pingVal"
+            );
+
+        pingEl.textContent =
+            lastPing;
+
+        pingEl.className =
+            "gauge-value " +
+            getClass(
+                lastPing,
+                30,
+                80
+            );
+
+        const jitterEl =
+            document.getElementById(
+                "jitterVal"
+            );
+
+        jitterEl.textContent =
+            lastJitter;
+
+        jitterEl.className =
+            "gauge-value " +
+            getClass(
+                lastJitter,
+                5,
+                20
+            );
+
+        /* STEP 2 */
+
+        setProgress(
+            60,
+            "Analyzing network..."
+        );
+
+        lastDL =
+            estimateDownload();
+
+        lastUL =
+            estimateUpload(
+                lastDL
+            );
+
+        const dlEl =
+            document.getElementById(
+                "dlVal"
+            );
+
+        dlEl.textContent =
+            fmt(lastDL);
+
+        dlEl.className =
+            "gauge-value " +
+            (
+                lastDL > 50
+                ? "good"
+                : lastDL > 10
+                ? "mid"
+                : "bad"
+            );
+
+        const ulEl =
+            document.getElementById(
+                "ulVal"
+            );
+
+        ulEl.textContent =
+            fmt(lastUL);
+
+        ulEl.className =
+            "gauge-value " +
+            (
+                lastUL > 10
+                ? "good"
+                : lastUL > 3
+                ? "mid"
+                : "bad"
+            );
+
+        /* STEP 3 */
+
+        let grade = "D";
+
+        if(
+            lastDL > 100 &&
+            lastPing < 20
+        ){
+            grade = "A+";
+        }
+        else if(
+            lastDL > 50 &&
+            lastPing < 30
+        ){
+            grade = "A";
+        }
+        else if(
+            lastDL > 25
+        ){
+            grade = "B";
+        }
+        else if(
+            lastDL > 10
+        ){
+            grade = "C";
+        }
+
+        const gradeEl =
+            document.getElementById(
+                "networkGrade"
+            );
+
+        gradeEl.textContent =
+            grade;
+
+        gradeEl.className =
+            "gauge-value " +
+            (
+                grade.startsWith("A")
+                ? "good"
+                : grade === "B"
+                ? "mid"
+                : "bad"
+            );
+
+        setProgress(
+            100,
+            "Test Completed ✓"
+        );
+
+        setTimeout(()=>{
+
+            document
+                .getElementById(
+                    "progressWrap"
+                )
+                .style.display =
+                    "none";
+
+        },1500);
+
+    }
+    catch(error){
+
+        setProgress(
+            0,
+            "Failed: " +
+            error.message
+        );
+
+        console.error(error);
+
+    }
+
+    btn.disabled = false;
+
+    btn.innerHTML =
+        "↺ Test Again";
+
+    testRunning = false;
 }
 
-/* ══════════════════════════════════════════
-   CHART.JS — Speed History Chart
-══════════════════════════════════════════ */
-let histChart = null;
-
-function updateChart() {
-  const h = JSON.parse(localStorage.getItem('netscope_history') || '[]');
-  if (h.length < 2) return;
-
-  const rev      = [...h].reverse();
-  const labels   = rev.map((_, i) => `#${i + 1}`);
-  const dlData   = rev.map(x => parseFloat(x.dl));
-  const ulData   = rev.map(x => parseFloat(x.ul));
-  const pingData = rev.map(x => x.ping);
-
-  const ctx = document.getElementById('historyChart').getContext('2d');
-  if (histChart) histChart.destroy();
-
-  histChart = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels,
-      datasets: [
-        {
-          label: 'Download (Mbps)',
-          data: dlData,
-          borderColor: '#00d4ff',
-          backgroundColor: 'rgba(0,212,255,0.07)',
-          tension: 0.4,
-          pointRadius: 4,
-          pointHoverRadius: 6,
-          fill: true,
-          yAxisID: 'ySpeed',
-        },
-        {
-          label: 'Upload (Mbps)',
-          data: ulData,
-          borderColor: '#7c3aed',
-          backgroundColor: 'rgba(124,58,237,0.07)',
-          tension: 0.4,
-          pointRadius: 4,
-          pointHoverRadius: 6,
-          fill: true,
-          yAxisID: 'ySpeed',
-        },
-        {
-          label: 'Ping (ms)',
-          data: pingData,
-          borderColor: '#f59e0b',
-          backgroundColor: 'rgba(245,158,11,0.05)',
-          tension: 0.4,
-          pointRadius: 4,
-          pointHoverRadius: 6,
-          fill: false,
-          yAxisID: 'yPing',
-          borderDash: [5, 3],
-        },
-      ],
-    },
-    options: {
-      responsive: true,
-      interaction: { mode: 'index', intersect: false },
-      plugins: {
-        legend: {
-          labels: { color: '#94a3b8', font: { family: "'Inter',sans-serif", size: 11 } },
-        },
-        tooltip: {
-          backgroundColor: '#0e1624',
-          borderColor: '#1e2e45',
-          borderWidth: 1,
-          titleColor: '#e2e8f0',
-          bodyColor: '#94a3b8',
-        },
-      },
-      scales: {
-        x: {
-          ticks: { color: '#64748b', font: { size: 10 }, maxRotation: 0 },
-          grid:  { color: '#1e2e45' },
-        },
-        ySpeed: {
-          type: 'linear',
-          position: 'left',
-          ticks: { color: '#00d4ff', font: { size: 10 } },
-          grid:  { color: 'rgba(30,46,69,0.6)' },
-          title: { display: true, text: 'Mbps', color: '#64748b', font: { size: 10 } },
-        },
-        yPing: {
-          type: 'linear',
-          position: 'right',
-          ticks: { color: '#f59e0b', font: { size: 10 } },
-          grid:  { drawOnChartArea: false },
-          title: { display: true, text: 'Ping ms', color: '#64748b', font: { size: 10 } },
-        },
-      },
-    },
-  });
-}
-
-/* ── boot ── */
-renderHistory();
 </script>
 </body>
 </html>
