@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://net-scopeindia.vercel.app/sitemap.xml

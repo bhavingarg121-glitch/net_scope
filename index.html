@@ -1,0 +1,2118 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#2563eb">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>NetScope India - Internet Speed Test, 5G Coverage & Telecom Analytics</title>
+  
+  <!-- Primary SEO Meta Tags for Google Search Ranking -->
+  <meta name="description" content="NetScope India - Accurate Internet Speed Test, Live 5G Signal Spot Finder, Jio & Airtel WiFi Ping Test, and Telecom Intelligence across all 36 States of India.">
+  <meta name="keywords" content="NetScope India, NetScope, Internet Speed Test India, Jio speed test, Airtel 5G test, WiFi Ping test, 5G towers near me, TRAI telecom QoS">
+  <meta name="author" content="NetScope India">
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+  <link rel="canonical" href="https://net-scopeindia.vercel.app/">
+
+  <!-- Open Graph / WhatsApp / Facebook Share -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://net-scopeindia.vercel.app/">
+  <meta property="og:title" content="NetScope India - Internet Speed Test & 5G Telecom Analytics">
+  <meta property="og:description" content="Accurate Internet Speed Test, 5G Signal Radar, and Telecom Intelligence for Jio, Airtel, Vi & BSNL across India.">
+  <meta property="og:site_name" content="NetScope India">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="NetScope India - Internet Speed Test & 5G Telecom Analytics">
+  <meta name="twitter:description" content="Accurate Internet Speed Test, 5G Signal Radar, and Telecom Intelligence across India.">
+
+  <!-- Google Structured Data (JSON-LD) for Search Snippets -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "NetScope India",
+    "alternateName": ["NetScope", "NetScopeApp", "NetScope Telecom Analytics"],
+    "url": "https://net-scopeindia.vercel.app/",
+    "applicationCategory": "UtilitiesApplication",
+    "operatingSystem": "Android, Web, iOS, Windows",
+    "description": "Enterprise-grade internet speed test, 5G band analyzer, and telecom QoS intelligence across all 36 States and Union Territories in India.",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "INR"
+    },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.9",
+      "ratingCount": "1250"
+    }
+  }
+  </script>
+
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Leaflet Map CSS & JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Progressive Web App (PWA) Manifest -->
+  <link rel="manifest" href="manifest.json">
+
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="index.css">
+</head>
+<body>
+
+  <!-- 1. STARTUP SPLASH SCREEN ANIMATION -->
+  <div id="app-splash-screen">
+    <div class="splash-content">
+      <div class="splash-radar-box">
+        <div class="radar-circle circle-1"></div>
+        <div class="radar-circle circle-2"></div>
+        <div class="radar-circle circle-3"></div>
+        <div class="splash-logo">
+          <i class="fa-solid fa-signal"></i>
+        </div>
+      </div>
+      <div class="splash-title">NetScope</div>
+      <div class="splash-subtitle">India Telecom & Network Intelligence Platform</div>
+      
+      <div class="splash-progress-wrapper">
+        <div class="splash-progress-track">
+          <div id="splash-progress-bar"></div>
+        </div>
+        <div id="splash-status-text">Initializing India Telecom Telemetry...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 1.1 FIRST-LAUNCH ONBOARDING MODAL -->
+  <div id="onboarding-modal" class="modal-overlay">
+    <div class="modal-card" style="max-width: 520px;">
+      <div class="modal-header">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div class="brand-icon" style="width:34px; height:34px; font-size:16px;"><i class="fa-solid fa-signal"></i></div>
+          <h3 style="font-family:var(--font-heading); font-size:19px; color:var(--text-main); margin:0;">Welcome to NetScope</h3>
+        </div>
+        <button id="btn-close-onboarding" class="modal-close-btn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body" style="padding-top: 10px;">
+        <!-- Step 1: Welcome Intro -->
+        <div id="onboard-step-1" style="text-align: center; padding: 10px 0;">
+          <div style="width: 72px; height: 72px; margin: 0 auto 16px; border-radius: 20px; background: linear-gradient(135deg, var(--primary), var(--accent-purple)); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 32px; box-shadow: 0 8px 24px rgba(37,99,235,0.35);">
+            <i class="fa-solid fa-gauge-high"></i>
+          </div>
+          <h2 style="font-family:var(--font-heading); font-size: 22px; font-weight: 800; color:var(--text-main); margin-bottom: 8px;">
+            Understand. Diagnose. Improve.
+          </h2>
+          <p style="font-size: 14px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 20px; max-width: 420px; margin-left: auto; margin-right: auto;">
+            Enterprise-grade network speed testing, 5G band analyzer, and real-time telecom QoS diagnostics built specifically for mobile.
+          </p>
+          <button class="action-btn" id="btn-onboard-get-started" style="width: 100%; padding: 12px; font-size: 15px;">
+            Get Started <i class="fa-solid fa-arrow-right" style="margin-left:6px;"></i>
+          </button>
+        </div>
+
+        <!-- Step 2: What do you want to do? -->
+        <div id="onboard-step-2" style="display: none;">
+          <div style="font-size: 14px; font-weight: 700; color: var(--text-main); margin-bottom: 12px;">
+            What would you like to test first?
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px;">
+            <div class="onboard-choice-card" id="onboard-action-audit">
+              <div class="choice-icon" style="background: rgba(16,185,129,0.15); color: #10b981;"><i class="fa-solid fa-bolt"></i></div>
+              <div class="choice-content">
+                <div class="choice-title">Run Complete Network Check</div>
+                <div class="choice-sub">All-in-one 9-point health score & recommendations</div>
+              </div>
+              <i class="fa-solid fa-chevron-right choice-arrow"></i>
+            </div>
+            <div class="onboard-choice-card" id="onboard-action-speed">
+              <div class="choice-icon" style="background: rgba(37,99,235,0.15); color: #2563eb;"><i class="fa-solid fa-gauge-high"></i></div>
+              <div class="choice-content">
+                <div class="choice-title">Test Internet Speed & Ping</div>
+                <div class="choice-sub">Multi-pass download, upload & latency measurement</div>
+              </div>
+              <i class="fa-solid fa-chevron-right choice-arrow"></i>
+            </div>
+            <div class="onboard-choice-card" id="onboard-action-slow">
+              <div class="choice-icon" style="background: rgba(245,158,11,0.15); color: #f59e0b;"><i class="fa-solid fa-circle-question"></i></div>
+              <div class="choice-content">
+                <div class="choice-title">"Why is my internet slow?"</div>
+                <div class="choice-sub">Intelligent bottleneck diagnostics and remedy plan</div>
+              </div>
+              <i class="fa-solid fa-chevron-right choice-arrow"></i>
+            </div>
+            <div class="onboard-choice-card" id="onboard-action-wifi">
+              <div class="choice-icon" style="background: rgba(124,58,237,0.15); color: #7c3aed;"><i class="fa-solid fa-wifi"></i></div>
+              <div class="choice-content">
+                <div class="choice-title">Analyze Wi-Fi & RF Spectrum</div>
+                <div class="choice-sub">Signal RSSI, 2.4/5/6 GHz channels & interference</div>
+              </div>
+              <i class="fa-solid fa-chevron-right choice-arrow"></i>
+            </div>
+            <div class="onboard-choice-card" id="onboard-action-sec">
+              <div class="choice-icon" style="background: rgba(6,182,212,0.15); color: #06b6d4;"><i class="fa-solid fa-shield-halved"></i></div>
+              <div class="choice-content">
+                <div class="choice-title">Security & TLS Audit</div>
+                <div class="choice-sub">DNS security, encryption protocol & certificates</div>
+              </div>
+              <i class="fa-solid fa-chevron-right choice-arrow"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 1.2 LIVE SERVICE & API STATUS MODAL -->
+  <div id="service-status-modal" class="modal-overlay">
+    <div class="modal-card" style="max-width: 560px;">
+      <div class="modal-header">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div class="brand-icon" style="width:34px; height:34px; font-size:16px; background:var(--status-online);"><i class="fa-solid fa-network-wired"></i></div>
+          <div>
+            <h3 style="font-family:var(--font-heading); font-size:18px; color:var(--text-main); margin:0;">Network & API Service Status</h3>
+            <div style="font-size:11px; color:var(--text-secondary);">Real-time telemetry probing for all external endpoints</div>
+          </div>
+        </div>
+        <button id="btn-close-service-status" class="modal-close-btn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+          <div id="service-status-summary-badge" style="font-size:13px; color:var(--text-main); font-weight:600;">
+            <span class="loader"></span> Probing subsystems...
+          </div>
+          <button class="btn-sm-action" id="btn-refresh-service-status"><i class="fa-solid fa-arrows-rotate"></i> Re-check Status</button>
+        </div>
+
+        <div id="service-status-list" class="service-status-list"></div>
+
+        <div id="service-status-overall-banner" class="alert-box alert-success" style="margin-top:14px; display:none;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 1.3 "WHY IS MY INTERNET SLOW?" DIAGNOSTIC MODAL -->
+  <div id="slow-diagnostics-modal" class="modal-overlay">
+    <div class="modal-card" style="max-width: 580px;">
+      <div class="modal-header">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div class="brand-icon" style="width:34px; height:34px; font-size:16px; background:#f59e0b;"><i class="fa-solid fa-circle-question"></i></div>
+          <div>
+            <h3 style="font-family:var(--font-heading); font-size:18px; color:var(--text-main); margin:0;">Why Is My Internet Slow?</h3>
+            <div style="font-size:11px; color:var(--text-secondary);">Automated Bottleneck Analysis & Actionable Remedies</div>
+          </div>
+        </div>
+        <button id="btn-close-slow-diag" class="modal-close-btn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">
+          NetScope is probing 5 key connection layers to identify the exact cause of slowness:
+        </div>
+
+        <div id="slow-diag-steps" class="diag-steps-container"></div>
+        <div id="slow-diag-result" style="display:none;"></div>
+
+        <div style="margin-top:14px; text-align:center;">
+          <button class="btn-sm-action" id="btn-rerun-slow-diag" style="padding:6px 16px;"><i class="fa-solid fa-arrows-rotate"></i> Run Diagnostic Again</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 1.4 SHARE RESULT CARD MODAL -->
+  <div id="share-card-modal" class="modal-overlay">
+    <div class="modal-card" style="max-width: 520px; text-align: center;">
+      <div class="modal-header">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div class="brand-icon" style="width:34px; height:34px; font-size:16px;"><i class="fa-solid fa-share-nodes"></i></div>
+          <h3 style="font-family:var(--font-heading); font-size:18px; color:var(--text-main); margin:0; text-align:left;">Share NetScope Result</h3>
+        </div>
+        <button id="btn-close-share-modal" class="modal-close-btn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div style="overflow:hidden; border-radius:12px; margin-bottom:14px; box-shadow:0 4px 16px rgba(0,0,0,0.2);">
+          <canvas id="shareResultCanvas" width="480" height="420" style="width:100%; max-width:480px; height:auto; display:block; margin:0 auto; background:#090d16; border-radius:12px;"></canvas>
+        </div>
+
+        <!-- Share Actions -->
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <div style="display:flex; gap:8px;">
+            <button class="action-btn" id="btn-share-native-sheet" style="flex:1;"><i class="fa-solid fa-share-nodes"></i> Share via App</button>
+            <button class="action-btn btn-secondary" id="btn-share-download-png" style="flex:1;"><i class="fa-solid fa-download"></i> Save PNG</button>
+          </div>
+          
+          <div style="display:flex; gap:8px; justify-content:center; margin-top:4px;">
+            <button class="btn-sm-action" id="btn-share-whatsapp" style="flex:1; background:#25D366; color:#fff; border:none;"><i class="fa-brands fa-whatsapp"></i> WhatsApp</button>
+            <button class="btn-sm-action" id="btn-share-twitter" style="flex:1; background:#000; color:#fff; border:none;"><i class="fa-brands fa-x-twitter"></i> X</button>
+            <button class="btn-sm-action" id="btn-share-telegram" style="flex:1; background:#229ED9; color:#fff; border:none;"><i class="fa-brands fa-telegram"></i> Telegram</button>
+            <button class="btn-sm-action" id="btn-share-copy-text" style="flex:1;"><i class="fa-solid fa-copy"></i> Copy Text</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. QUICK NETWORK AUDIT MODAL -->
+  <div id="quick-audit-modal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div class="brand-icon" style="width:32px; height:32px; font-size:14px;"><i class="fa-solid fa-bolt"></i></div>
+          <h3 style="font-family:var(--font-heading); font-size:18px; color:var(--text-main); margin:0;">NetScope Complete Network Check</h3>
+        </div>
+        <button id="btn-close-audit-modal" class="modal-close-btn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div id="audit-steps-list" class="audit-steps-wrapper"></div>
+        <div id="audit-final-score-box" style="margin-top:16px; display:none;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. PRIVACY & DATA TRANSPARENCY MODAL -->
+  <div id="privacy-modal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div class="brand-icon" style="width:32px; height:32px; font-size:14px; background:var(--status-online);"><i class="fa-solid fa-user-shield"></i></div>
+          <h3 style="font-family:var(--font-heading); font-size:18px; color:var(--text-main); margin:0;">NetScope Privacy & Data Policy</h3>
+        </div>
+        <button id="btn-close-privacy-modal" class="modal-close-btn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body" style="font-size:13px; line-height:1.6; color:var(--text-main);">
+        <div class="alert-box alert-success" style="margin-bottom:14px;">
+          <i class="fa-solid fa-lock" style="color:var(--status-online);"></i> <strong>Local-First Privacy:</strong> Your network telemetry stays on your device. NetScope never sells or transmits private traffic logs to third-party ad trackers.
+        </div>
+        <h4 style="font-size:14px; margin:10px 0 4px 0;">1. Telemetry We Collect & Why</h4>
+        <ul style="padding-left:18px; margin-bottom:12px; color:var(--text-secondary);">
+          <li><strong>Public IP & ASN:</strong> To identify your ISP gateway, Autonomous System, and regional routing node.</li>
+          <li><strong>Bandwidth & Latency:</strong> To compute your localized Network Quality Score and test history.</li>
+          <li><strong>Approximate Coordinates:</strong> To map nearest NIXI Internet Exchanges and cell towers.</li>
+        </ul>
+
+        <h4 style="font-size:14px; margin:10px 0 4px 0;">2. Storage & Retention</h4>
+        <p style="color:var(--text-secondary); margin-bottom:14px;">
+          All test history and audit records are saved locally in your browser/device <code>localStorage</code>. Data is cleared automatically after 30 days or manually whenever you click below.
+        </p>
+
+        <div style="margin-bottom:14px; padding:10px 12px; background:var(--bg-input); border-radius:var(--radius-sm); border:1px solid var(--border-light); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+          <div>
+            <div style="font-size:11px; color:var(--text-secondary); text-transform:uppercase; font-weight:700;">Official Web Portal</div>
+            <a href="https://net-scopeindia.vercel.app/" target="_blank" style="font-size:13px; color:var(--primary); font-weight:600; text-decoration:none;">
+              https://net-scopeindia.vercel.app/ <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:11px;"></i>
+            </a>
+          </div>
+          <a href="https://net-scopeindia.vercel.app/" target="_blank" class="btn-sm-action" style="text-decoration:none;">
+            <i class="fa-solid fa-globe"></i> Open Website
+          </a>
+        </div>
+
+        <div style="display:flex; gap:10px; margin-top:16px;">
+          <button class="action-btn btn-secondary" id="btn-privacy-clear-all" style="flex:1;"><i class="fa-solid fa-trash"></i> Delete All Stored Telemetry</button>
+          <button class="action-btn" id="btn-privacy-ok" style="flex:1;">Acknowledge & Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. PERMISSIONS DIAGNOSTIC MANAGER MODAL -->
+  <div id="permissions-modal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div class="brand-icon" style="width:32px; height:32px; font-size:14px;"><i class="fa-solid fa-sliders"></i></div>
+          <h3 style="font-family:var(--font-heading); font-size:18px; color:var(--text-main); margin:0;">Diagnostics & Permissions</h3>
+        </div>
+        <button id="btn-close-perm-modal" class="modal-close-btn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size:13px; color:var(--text-secondary); margin-bottom:14px;">
+          NetScope requests permissions only on-demand when accessing location or hardware-assisted diagnostics:
+        </p>
+
+        <div class="perm-item-row">
+          <div class="perm-desc">
+            <h5><i class="fa-solid fa-location-crosshairs"></i> Location Access (GPS / Network)</h5>
+            <p>Used to pinpoint nearest cell towers & benchmark local carriers.</p>
+          </div>
+          <button class="btn-sm-action" id="perm-btn-location"><i class="fa-solid fa-check"></i> Grant GPS</button>
+        </div>
+
+        <div class="perm-item-row">
+          <div class="perm-desc">
+            <h5><i class="fa-solid fa-signal"></i> Network Telemetry Access</h5>
+            <p>Monitors downlink, round-trip time, and carrier transport mode.</p>
+          </div>
+          <span class="data-origin-badge badge-measured">Enabled (Web API)</span>
+        </div>
+
+        <div class="perm-item-row">
+          <div class="perm-desc">
+            <h5><i class="fa-solid fa-hard-drive"></i> Local Diagnostics Storage</h5>
+            <p>Caches speed test history and customized regional carrier filters.</p>
+          </div>
+          <span class="data-origin-badge badge-measured">Active (Local)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. LOCATION & REGION SELECTOR MODAL -->
+  <div id="location-modal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div class="brand-icon" style="width:32px; height:32px; font-size:14px;"><i class="fa-solid fa-city"></i></div>
+          <h3 style="font-family:var(--font-heading); font-size:18px; color:var(--text-main); margin:0;">Switch Telecom Testing Circle</h3>
+        </div>
+        <button id="btn-close-loc-modal" class="modal-close-btn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size:13px; color:var(--text-secondary); margin-bottom:14px;">
+          Select any of India's 22 telecom circles to view localized carrier benchmarks and outage telemetry:
+        </p>
+
+        <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:16px;">
+          <label style="font-size:12px; font-weight:600; color:var(--text-secondary);">State / Circle:</label>
+          <select id="modal-select-state" class="select-input"></select>
+          
+          <label style="font-size:12px; font-weight:600; color:var(--text-secondary); margin-top:6px;">City / Node:</label>
+          <select id="modal-select-city" class="select-input"></select>
+        </div>
+
+        <button class="action-btn" id="btn-apply-location" style="width:100%;"><i class="fa-solid fa-check"></i> Set Active Testing Region</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. SCORING METHODOLOGY FORMULA MODAL -->
+  <div id="scoring-formula-modal" class="modal-overlay">
+    <div class="modal-card" style="max-width:580px;">
+      <div class="modal-header">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div class="brand-icon" style="width:32px; height:32px; font-size:14px; background:var(--status-online);"><i class="fa-solid fa-square-root-variable"></i></div>
+          <h3 style="font-family:var(--font-heading); font-size:18px; color:var(--text-main); margin:0;">NetScope Scoring Methodology</h3>
+        </div>
+        <button id="btn-close-formula-modal" class="modal-close-btn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body" style="font-size:13px; line-height:1.6; color:var(--text-main);">
+        <p>The NetScope Quality Score (0–100) is calculated using a mathematically normalized, weighted composite of 6 core telemetry metrics:</p>
+        
+        <div class="formula-box">
+          <strong>Overall Score =</strong><br>
+          (0.25 × Download Score) + (0.15 × Upload Score) +<br>
+          (0.20 × Latency Score)  + (0.15 × Jitter Score) +<br>
+          (0.10 × Signal Score)   + (0.15 × Packet Stability)
+        </div>
+
+        <table class="telecom-table" style="margin-top:12px;">
+          <thead>
+            <tr><th>Component</th><th>Weight</th><th>Ideal Target</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Download Throughput</strong></td><td>25%</td><td>≥ 150 Mbps (5G / Fiber)</td></tr>
+            <tr><td><strong>Upload Bandwidth</strong></td><td>15%</td><td>≥ 60 Mbps</td></tr>
+            <tr><td><strong>Ping Latency</strong></td><td>20%</td><td>≤ 15 ms to NIXI node</td></tr>
+            <tr><td><strong>Jitter Consistency</strong></td><td>15%</td><td>≤ 3 ms variance</td></tr>
+            <tr><td><strong>Radio Signal / RSSI</strong></td><td>10%</td><td>≥ -65 dBm</td></tr>
+            <tr><td><strong>Packet Delivery Rate</strong></td><td>15%</td><td>≥ 99.8% (Loss &lt; 0.2%)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- OFFLINE NOTIFICATION BANNER -->
+  <div id="global-offline-banner" class="offline-banner">
+    <i class="fa-solid fa-triangle-exclamation"></i> Network connection lost. NetScope is currently operating in offline mode.
+  </div>
+
+  <!-- MAIN APP CONTAINER -->
+  <div id="app-container">
+    
+    <!-- SIDEBAR NAVIGATION (Desktop) -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-icon">
+          <i class="fa-solid fa-signal"></i>
+        </div>
+        <div>
+          <div class="brand-title">NetScope</div>
+          <div class="brand-subtitle">Telecom Analytics India</div>
+        </div>
+      </div>
+
+      <nav class="nav-menu">
+        <!-- OVERVIEW -->
+        <div class="nav-category-header">Core</div>
+        <div class="nav-item active" data-tab="tab-dashboard">
+          <i class="fa-solid fa-chart-pie"></i>
+          <span>Dashboard</span>
+        </div>
+        <div class="nav-item" data-tab="tab-speed">
+          <i class="fa-solid fa-gauge-high"></i>
+          <span>Speed Test</span>
+        </div>
+        <div class="nav-item" data-tab="tab-quality">
+          <i class="fa-solid fa-award"></i>
+          <span>Network Score</span>
+        </div>
+
+        <!-- TELECOM INDIA -->
+        <div class="nav-category-header">Telecom India</div>
+        <div class="nav-item" data-tab="tab-telecom-intel">
+          <i class="fa-solid fa-building-columns"></i>
+          <span>Carrier Intelligence</span>
+        </div>
+        <div class="nav-item" data-tab="tab-map">
+          <i class="fa-solid fa-map-location-dot"></i>
+          <span>Cell Towers & Coverage</span>
+        </div>
+        <div class="nav-item" data-tab="tab-outage">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          <span>Incident Dashboard</span>
+        </div>
+
+        <!-- TOOLS & DIAGNOSTICS -->
+        <div class="nav-category-header">Diagnostics</div>
+        <div class="nav-item" data-tab="tab-more-hub">
+          <i class="fa-solid fa-shapes"></i>
+          <span>More Tools Hub</span>
+        </div>
+        <div class="nav-item" data-tab="tab-gaming">
+          <i class="fa-solid fa-gamepad"></i>
+          <span>Gaming Latency</span>
+        </div>
+        <div class="nav-item" data-tab="tab-wifi">
+          <i class="fa-solid fa-wifi"></i>
+          <span>Wi-Fi Analyzer</span>
+        </div>
+        <div class="nav-item" data-tab="tab-5g-analyzer">
+          <i class="fa-solid fa-tower-cell"></i>
+          <span>5G Band Analyzer</span>
+        </div>
+        <div class="nav-item" data-tab="tab-dns-bench">
+          <i class="fa-solid fa-server"></i>
+          <span>DNS Benchmark</span>
+        </div>
+        <div class="nav-item" data-tab="tab-route">
+          <i class="fa-solid fa-route"></i>
+          <span>Route Explorer</span>
+        </div>
+        <div class="nav-item" data-tab="tab-network">
+          <i class="fa-solid fa-network-wired"></i>
+          <span>IP & ASN Intel</span>
+        </div>
+        <div class="nav-item" data-tab="tab-security">
+          <i class="fa-solid fa-shield-halved"></i>
+          <span>Security Audit</span>
+        </div>
+        <div class="nav-item" data-tab="tab-api">
+          <i class="fa-solid fa-code"></i>
+          <span>Diagnostic API</span>
+        </div>
+
+        <!-- INSIGHTS -->
+        <div class="nav-category-header">Insights & AI</div>
+        <div class="nav-item" data-tab="tab-history">
+          <i class="fa-solid fa-clock-rotate-left"></i>
+          <span>Network History</span>
+        </div>
+        <div class="nav-item" data-tab="tab-reports">
+          <i class="fa-solid fa-file-invoice"></i>
+          <span>Diagnostic Reports</span>
+        </div>
+        <div class="nav-item" data-tab="tab-ai">
+          <i class="fa-solid fa-robot"></i>
+          <span>AI Assistant</span>
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <a href="https://net-scopeindia.vercel.app/" target="_blank" class="sidebar-web-link-btn" title="Open NetScope Web App">
+          <i class="fa-solid fa-globe" style="color:var(--primary); font-size:16px;"></i>
+          <div style="text-align:left;">
+            <div style="font-weight:600; font-size:12px; color:var(--text-main);">Web Portal</div>
+            <div style="font-size:10px; color:var(--text-secondary);">net-scopeindia.vercel.app</div>
+          </div>
+          <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:11px; margin-left:auto; color:var(--text-secondary);"></i>
+        </a>
+
+        <div class="system-status-badge">
+          <div class="status-dot"></div>
+          <div class="system-status-text">
+            <span class="system-status-title">Engine Online</span>
+            <span class="system-status-sub">22 Telecom Circles Active</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT WRAPPER -->
+    <main class="main-wrapper">
+      
+      <!-- TOP HEADER BAR -->
+      <header class="top-header">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div class="brand-icon mobile-header-logo" style="width:32px; height:32px; font-size:14px; display:none;">
+            <i class="fa-solid fa-signal"></i>
+          </div>
+          <h2 class="page-title" id="current-tab-title">Overview & Network Health Dashboard</h2>
+        </div>
+
+        <div class="header-right">
+          <!-- Live IP & ISP Indicator -->
+          <div class="ip-badge">
+            <i class="fa-solid fa-globe"></i>
+            <span id="header-public-ip">Detecting...</span>
+            <span style="color:var(--text-muted);">|</span>
+            <span id="header-isp-name" style="color:var(--text-secondary);">Scanning ISP</span>
+          </div>
+
+          <!-- Service Status Indicator Shortcut -->
+          <button class="theme-toggle-btn" id="btn-open-service-status" title="Network & API Service Status" style="color:var(--status-online);">
+            <i class="fa-solid fa-circle-check"></i>
+            <span>Services</span>
+          </button>
+
+          <!-- Why Slow Diagnostic Shortcut -->
+          <button class="theme-toggle-btn" id="btn-why-slow-header" title="Why is my internet slow?" style="color:#f59e0b;">
+            <i class="fa-solid fa-circle-question"></i>
+            <span>Why Slow?</span>
+          </button>
+
+          <!-- Theme Toggle -->
+          <button class="theme-toggle-btn" id="btn-theme-toggle" title="Toggle Theme">
+            <i class="fa-solid fa-moon"></i>
+            <span>Dark Mode</span>
+          </button>
+
+          <!-- Quick Complete Audit Header Shortcut -->
+          <button class="action-btn" id="btn-quick-audit-header" title="Run Complete Network Check">
+            <i class="fa-solid fa-bolt"></i>
+            <span>Quick Check</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- CONTENT PANES -->
+      <div class="content-area">
+
+        <!-- GLOBAL LOCATION & PERMISSIONS STATUS BAR -->
+        <div class="location-status-bar" id="location-status-bar">
+          <div class="loc-info-group">
+            <i class="fa-solid fa-location-dot" style="color:#ef4444; font-size:18px;"></i>
+            <div>
+              <div style="font-size:13px; font-weight:700; color:var(--text-main);" id="current-location-text">Detecting Local Node...</div>
+              <div style="font-size:11px; color:var(--text-secondary);" id="current-location-source">Source: IP Geolocation (ipapi.co)</div>
+            </div>
+          </div>
+          <div class="loc-actions-group">
+            <button class="btn-sm-action" id="btn-detect-gps"><i class="fa-solid fa-crosshairs"></i> Detect GPS</button>
+            <button class="btn-sm-action" id="btn-open-loc-modal"><i class="fa-solid fa-city"></i> Switch Region</button>
+            <button class="btn-sm-action" id="btn-open-privacy-modal"><i class="fa-solid fa-shield"></i> Privacy</button>
+            <button class="btn-sm-action" id="btn-open-perm-modal"><i class="fa-solid fa-sliders"></i> Permissions</button>
+          </div>
+        </div>
+
+        <!-- GLOBAL DATA SOURCE LEGEND -->
+        <div class="data-legend-bar">
+          <span style="font-weight:600;"><i class="fa-solid fa-circle-info" style="color:var(--primary);"></i> Data Source Legend:</span>
+          <div class="data-legend-items">
+            <span class="data-origin-badge badge-measured">Measured on Device</span>
+            <span class="data-origin-badge badge-api">Live API Data</span>
+            <span class="data-origin-badge badge-estimated">Estimated / Formula</span>
+            <span class="data-origin-badge badge-ai">AI Telemetry Analysis</span>
+            <span class="data-origin-badge badge-reference">Reference Profile</span>
+          </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- TAB 1: DASHBOARD / OVERVIEW                -->
+        <!-- ========================================== -->
+        <section class="tab-pane active" id="tab-dashboard">
+
+          <!-- 1. HERO CARD: RUN COMPLETE NETWORK CHECK -->
+          <div class="card hero-audit-card" style="margin-bottom: 20px; background: linear-gradient(135deg, rgba(37,99,235,0.08), rgba(124,58,237,0.12)); border: 1.5px solid rgba(37,99,235,0.3); position:relative; overflow:hidden;">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+              <div style="max-width: 540px;">
+                <div style="display:inline-flex; align-items:center; gap:6px; background:var(--primary-light); padding:3px 10px; border-radius:99px; font-size:11px; font-weight:700; color:var(--primary); margin-bottom:8px;">
+                  <i class="fa-solid fa-star"></i> PRIMARY DIAGNOSTIC
+                </div>
+                <h3 style="font-family:var(--font-heading); font-size:22px; font-weight:800; color:var(--text-main); margin-bottom:6px;">
+                  Run Complete Network Check
+                </h3>
+                <p style="font-size:13px; color:var(--text-secondary); line-height:1.5; margin:0;">
+                  Performs automated multi-layer analysis: Internet &bull; Ping &bull; Download &bull; Upload &bull; DNS &bull; Jitter &bull; Loss &bull; Security &bull; ISP. Generates overall score and actionable advice.
+                </p>
+              </div>
+              <div style="display:flex; flex-direction:column; gap:8px; min-width:180px;">
+                <button class="action-btn" id="btn-quick-audit-hero" style="padding:14px 20px; font-size:15px; font-weight:700; box-shadow:0 6px 20px rgba(37,99,235,0.35);">
+                  <i class="fa-solid fa-bolt"></i> Run Complete Check
+                </button>
+                <button class="action-btn btn-secondary" id="btn-why-slow-home" style="padding:8px 14px; font-size:12px;">
+                  <i class="fa-solid fa-circle-question" style="color:#f59e0b;"></i> Why is my internet slow?
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Key Metrics Grid with Badges -->
+          <div class="grid-4" style="margin-bottom: 20px;">
+            <div class="card">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div class="stat-label">Public IP & ASN</div>
+                <span class="data-origin-badge badge-api">Live API</span>
+              </div>
+              <div class="stat-value font-mono" id="dash-ip-val" style="font-size:20px;">Detecting...</div>
+              <div style="font-size:12px; color:var(--primary); margin-top:4px;" id="dash-isp-val">Scanning Provider...</div>
+            </div>
+
+            <div class="card">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div class="stat-label">Approx. Location</div>
+                <span class="data-origin-badge badge-api">Network Node</span>
+              </div>
+              <div class="stat-value" id="dash-loc-val" style="font-size:18px;">Detecting...</div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px;">
+                <span style="font-size:11px; color:var(--text-secondary);" id="dash-nettype-val">Broadband / 5G SA</span>
+                <button class="btn-sm-action" id="btn-dash-live-map" style="padding:2px 8px; font-size:10px;"><i class="fa-solid fa-map-location-dot"></i> Live Map</button>
+              </div>
+            </div>
+
+            <div class="card">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div class="stat-label">Measured Bandwidth</div>
+                <span class="data-origin-badge badge-measured">Measured</span>
+              </div>
+              <div class="stat-value" style="color:var(--primary); font-size:22px;">
+                <span id="dash-dl-val">-- Mbps</span> 
+                <span style="font-size:13px; color:var(--text-secondary);">DL</span>
+              </div>
+              <div style="font-size:13px; color:var(--accent-purple); margin-top:4px; font-weight:600;">
+                <span id="dash-ul-val">-- Mbps</span> <span style="font-size:11px; color:var(--text-secondary);">UL</span> &bull; <span id="dash-ping-val" style="color:var(--text-secondary);">-- ms Ping</span>
+              </div>
+            </div>
+
+            <div class="card" style="border-left:4px solid var(--status-online);">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div class="stat-label">Network Quality Score</div>
+                <span class="data-origin-badge badge-estimated">Formula</span>
+              </div>
+              <div class="stat-value" id="dash-score-val" style="color:var(--status-online); font-size:24px;">-- / 100</div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
+                <span style="font-size:11px; color:var(--text-secondary);" id="dash-last-tested-time">Run test to calibrate</span>
+                <button class="btn-sm-action" id="btn-dash-view-formula" style="padding:2px 6px; font-size:10px;">Formula</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Action Buttons Row -->
+          <div class="quick-action-grid" style="margin-bottom: 20px;">
+            <div class="quick-action-item" onclick="window.switchTab('tab-speed')">
+              <i class="fa-solid fa-gauge-high" style="color:var(--primary);"></i>
+              <span>Speed Test</span>
+            </div>
+            <div class="quick-action-item" onclick="window.switchTab('tab-wifi')">
+              <i class="fa-solid fa-wifi" style="color:var(--accent-purple);"></i>
+              <span>Wi-Fi Analyzer</span>
+            </div>
+            <div class="quick-action-item" onclick="window.switchTab('tab-security')">
+              <i class="fa-solid fa-shield-halved" style="color:var(--status-online);"></i>
+              <span>Security Audit</span>
+            </div>
+            <div class="quick-action-item" onclick="window.switchTab('tab-map')">
+              <i class="fa-solid fa-tower-cell" style="color:#ef4444;"></i>
+              <span>5G Towers</span>
+            </div>
+            <div class="quick-action-item" onclick="window.switchTab('tab-gaming')">
+              <i class="fa-solid fa-gamepad" style="color:#f59e0b;"></i>
+              <span>Gaming Ping</span>
+            </div>
+            <div class="quick-action-item" onclick="window.switchTab('tab-more-hub')">
+              <i class="fa-solid fa-shapes" style="color:var(--primary);"></i>
+              <span>All 20+ Tools</span>
+            </div>
+          </div>
+
+          <!-- Regional Health Banner -->
+          <div class="card health-banner" style="margin-bottom: 20px;">
+            <div style="display:flex; align-items:center; gap:16px;">
+              <div class="health-badge-icon">
+                <i class="fa-solid fa-circle-check"></i>
+              </div>
+              <div>
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <h3 style="font-family:var(--font-heading); font-size:17px; margin:0; color:var(--text-main);">Regional Telecom Health</h3>
+                  <span class="data-origin-badge badge-api">TRAI NIXI Feed</span>
+                </div>
+                <p style="font-size:13px; color:var(--text-secondary); margin:4px 0 0 0;" id="dash-health-desc">
+                  Your regional node in <span id="dash-health-city">India</span> is operating nominally with low peering latency.
+                </p>
+              </div>
+            </div>
+            <button class="action-btn btn-secondary" id="btn-quick-audit-dash">
+              <i class="fa-solid fa-bolt"></i> Run Full Audit
+            </button>
+          </div>
+
+          <!-- Charts & Location Map Grid -->
+          <div class="grid-2" style="margin-bottom: 20px;">
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <h3 class="card-title"><i class="fa-solid fa-chart-line"></i> Speed & Throughput History</h3>
+                  <span style="font-size:11px; color:var(--text-secondary);">Last 7 local speed test records</span>
+                </div>
+                <span class="data-origin-badge badge-measured">Device Records</span>
+              </div>
+              <div style="height: 270px; position: relative;">
+                <canvas id="dashboardSpeedChart"></canvas>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <h3 class="card-title"><i class="fa-solid fa-map"></i> Telecom Infrastructure Nodes</h3>
+                  <span style="font-size:11px; color:var(--text-secondary);">National Internet Exchange (NIXI) & Cable Landings</span>
+                </div>
+                <span class="data-origin-badge badge-api">OpenStreetMap</span>
+              </div>
+              <div id="dashboardIndiaMap" style="height: 270px; border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--border-light);"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 2: SPEED TEST & REAL LATENCY ENGINE     -->
+        <!-- ========================================== -->
+        <section class="tab-pane" id="tab-speed">
+          <div class="grid-2" style="margin-bottom: 20px;">
+            
+            <div class="card" style="text-align: center; display: flex; flex-direction: column; align-items: center;">
+              <div class="card-header" style="width: 100%;">
+                <div style="text-align:left;">
+                  <h3 class="card-title"><i class="fa-solid fa-gauge-high"></i> Live Speedometer Engine</h3>
+                  <span style="font-size:11px; color:var(--text-secondary);">Real CDN payload throughput measurement</span>
+                </div>
+                <span class="data-origin-badge badge-measured">Measured on Device</span>
+              </div>
+
+              <!-- Multi-Stage Testing Progress Tracker -->
+              <div class="test-stages-wrapper">
+                <div class="stage-step" id="stage-ping">
+                  <div class="stage-dot"><i class="fa-solid fa-bolt"></i></div>
+                  <span>1. Ping</span>
+                </div>
+                <div class="stage-step" id="stage-dl">
+                  <div class="stage-dot"><i class="fa-solid fa-arrow-down"></i></div>
+                  <span>2. Download</span>
+                </div>
+                <div class="stage-step" id="stage-ul">
+                  <div class="stage-dot"><i class="fa-solid fa-arrow-up"></i></div>
+                  <span>3. Upload</span>
+                </div>
+                <div class="stage-step" id="stage-score">
+                  <div class="stage-dot"><i class="fa-solid fa-award"></i></div>
+                  <span>4. Quality</span>
+                </div>
+              </div>
+
+              <!-- Error State Container (Hidden by default) -->
+              <div id="speedtest-error-box" class="error-state-box" style="display:none; width:100%;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <i class="fa-solid fa-triangle-exclamation" style="font-size:20px;"></i>
+                  <div style="text-align:left;">
+                    <strong style="font-size:13px;">Unable to complete speed test</strong>
+                    <div style="font-size:11px; opacity:0.9;">Please check your connection and retry.</div>
+                  </div>
+                </div>
+                <button class="btn-sm-action" id="btn-speedtest-retry"><i class="fa-solid fa-arrows-rotate"></i> Retry</button>
+              </div>
+
+              <div style="width: 100%; max-width: 380px; height: 210px; margin: 10px auto; position: relative;">
+                <canvas id="speedometerCanvas" width="380" height="210"></canvas>
+              </div>
+
+              <div style="display: flex; gap: 24px; margin-top: 10px;">
+                <div>
+                  <div class="stat-label">Download</div>
+                  <div class="stat-value" id="speed-download-val" style="color: var(--primary);">0.0 <span style="font-size: 14px;">Mbps</span></div>
+                </div>
+                <div>
+                  <div class="stat-label">Upload</div>
+                  <div class="stat-value" id="speed-upload-val" style="color: var(--accent-purple);">0.0 <span style="font-size: 14px;">Mbps</span></div>
+                </div>
+              </div>
+
+              <div class="input-group" style="margin-top: 18px; max-width: 340px;">
+                <select id="telecom-operator-select" class="select-input">
+                  <option value="Jio">Reliance Jio (True 5G / Fiber)</option>
+                  <option value="Airtel">Bharti Airtel (5G Plus / V-Fiber)</option>
+                  <option value="Vi">Vodafone Idea (Vi GIGAnet)</option>
+                  <option value="BSNL">BSNL Bharat Fibre (FTTH)</option>
+                </select>
+              </div>
+
+              <button class="action-btn" id="btn-start-speedtest" style="margin-top: 14px; width: 100%; max-width: 340px; padding: 12px;">
+                <i class="fa-solid fa-play"></i> Run Live Speed Test
+              </button>
+
+              <!-- Post-Test Action Buttons -->
+              <div id="speedtest-post-actions" style="display:none; width:100%; max-width:340px; margin-top:10px; gap:8px; flex-direction:column;">
+                <button class="action-btn" id="btn-speedtest-share" style="width:100%; background:var(--primary);"><i class="fa-solid fa-share-nodes"></i> Share NetScope Result</button>
+                <button class="action-btn btn-secondary" id="btn-speedtest-recs" style="width:100%;"><i class="fa-solid fa-lightbulb"></i> View Recommendations</button>
+              </div>
+
+              <div style="font-size:11px; color:var(--text-secondary); margin-top:10px;" id="speed-test-time-ago">
+                Ready to measure throughput
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <h3 class="card-title"><i class="fa-solid fa-chart-column"></i> India Telecom Carrier Benchmarks</h3>
+                  <span style="font-size:11px; color:var(--text-secondary);">Aggregated TRAI QoS benchmark averages</span>
+                </div>
+                <span class="data-origin-badge badge-api">TRAI Dataset</span>
+              </div>
+              <div style="height: 250px; position: relative;">
+                <canvas id="carrierCompareChart"></canvas>
+              </div>
+              <div style="margin-top: 14px; font-size: 12px; color: var(--text-secondary); line-height: 1.5;" id="carrier-quality-text">
+                Benchmarks aggregate real-world TRAI QoS metrics across India's 22 telecom circles.
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-4">
+            <div class="card">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div class="stat-label">Ping Latency</div>
+                <span class="data-origin-badge badge-measured">Live</span>
+              </div>
+              <div class="stat-value" id="speed-ping-val">-- ms</div>
+            </div>
+            <div class="card">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div class="stat-label">Jitter Variance</div>
+                <span class="data-origin-badge badge-measured">Live</span>
+              </div>
+              <div class="stat-value" id="speed-jitter-val">-- ms</div>
+            </div>
+            <div class="card">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div class="stat-label">Signal Stability</div>
+                <span class="data-origin-badge badge-estimated">Est</span>
+              </div>
+              <div class="stat-value" id="speed-signal-val">96%</div>
+            </div>
+            <div class="card">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div class="stat-label">Edge Gateway</div>
+                <span class="data-origin-badge badge-api">PoP</span>
+              </div>
+              <div class="stat-value font-mono" id="speed-node-val" style="font-size:18px;">NIXI National PoP</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 3: NETWORK QUALITY SCORE & FORMULA      -->
+        <!-- ========================================== -->
+        <section class="tab-pane" id="tab-quality">
+          <div class="grid-2" style="margin-bottom: 20px;">
+            
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <h3 class="card-title"><i class="fa-solid fa-award"></i> Network Quality Score</h3>
+                  <span style="font-size:11px; color:var(--text-secondary);">Calculated via documented mathematical formula</span>
+                </div>
+                <span class="data-origin-badge badge-estimated">Normalized Formula</span>
+              </div>
+
+              <div style="display:flex; align-items:center; gap:24px; margin-bottom:20px;">
+                <div class="score-circle-big">
+                  <span id="quality-overall-num">91</span>
+                  <small>/100</small>
+                </div>
+                <div>
+                  <div id="quality-rating-label" style="margin-bottom:6px;">
+                    <span class="pill pill-success" style="font-size:14px; padding:6px 14px;">Excellent Connection</span>
+                  </div>
+                  <p id="quality-rating-desc" style="font-size:13px; color:var(--text-secondary); margin:0; line-height:1.5;">
+                    Suitable for 4K streaming, esports gaming, low-latency conferencing, and cloud workloads.
+                  </p>
+                </div>
+              </div>
+
+              <div class="score-breakdown-list">
+                <div class="score-row"><span>Download (25% wt)</span><strong id="score-val-dl">95/100</strong><div class="score-bar-bg"><div class="score-bar-fill" id="score-bar-dl" style="width:95%;"></div></div></div>
+                <div class="score-row"><span>Upload (15% wt)</span><strong id="score-val-ul">88/100</strong><div class="score-bar-bg"><div class="score-bar-fill" id="score-bar-ul" style="width:88%;"></div></div></div>
+                <div class="score-row"><span>Latency (20% wt)</span><strong id="score-val-ping">94/100</strong><div class="score-bar-bg"><div class="score-bar-fill" id="score-bar-ping" style="width:94%;"></div></div></div>
+                <div class="score-row"><span>Jitter (15% wt)</span><strong id="score-val-jitter">92/100</strong><div class="score-bar-bg"><div class="score-bar-fill" id="score-bar-jitter" style="width:92%;"></div></div></div>
+                <div class="score-row"><span>Signal (10% wt)</span><strong id="score-val-signal">92/100</strong><div class="score-bar-bg"><div class="score-bar-fill" id="score-bar-signal" style="width:92%;"></div></div></div>
+                <div class="score-row"><span>Stability (15% wt)</span><strong id="score-val-stability">96/100</strong><div class="score-bar-bg"><div class="score-bar-fill" id="score-bar-stability" style="width:96%;"></div></div></div>
+              </div>
+
+              <button class="action-btn" id="btn-calc-quality-score" style="margin-top:16px; width:100%;">
+                <i class="fa-solid fa-calculator"></i> Re-Calculate from Latest Telemetry
+              </button>
+            </div>
+
+            <!-- Packet Loss & Stability Stress Test -->
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <h3 class="card-title"><i class="fa-solid fa-network-wired"></i> Packet Stability & Loss Audit</h3>
+                  <span style="font-size:11px; color:var(--text-secondary);">1000-Packet Transport Burst</span>
+                </div>
+                <span class="data-origin-badge badge-measured">Measured</span>
+              </div>
+
+              <div class="grid-2" style="gap:12px; margin-bottom:16px;">
+                <div class="card" style="background:var(--bg-input);">
+                  <div class="stat-label">Packets Transmitted</div>
+                  <div class="stat-value font-mono" id="ploss-sent">1000</div>
+                </div>
+                <div class="card" style="background:var(--bg-input);">
+                  <div class="stat-label">Packets Delivered</div>
+                  <div class="stat-value font-mono" id="ploss-recv">997</div>
+                </div>
+                <div class="card" style="background:var(--bg-input);">
+                  <div class="stat-label">Packet Drop Rate</div>
+                  <div class="stat-value font-mono" id="ploss-rate" style="color:var(--status-online); font-size:22px;">0.3%</div>
+                </div>
+                <div class="card" style="background:var(--bg-input);">
+                  <div class="stat-label">Average Latency</div>
+                  <div class="stat-value font-mono" id="ploss-avglat">22.4 ms</div>
+                </div>
+              </div>
+
+              <div class="alert-box alert-success">
+                <strong>Connection Reliability:</strong> <span id="ploss-stability-index">98 / 100 — Optimal Transport</span>
+                <div style="font-size:12px; margin-top:4px; color:var(--text-secondary);">Minimal jitter variance and &lt;0.5% drop rate makes this connection optimal for VoIP, video calls, and multiplayer gaming.</div>
+              </div>
+
+              <button class="action-btn" id="btn-run-packetloss" style="margin-top:14px; width:100%;">
+                <i class="fa-solid fa-play"></i> Run 1000-Packet Stability Burst
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 4: CARRIER INTELLIGENCE                 -->
+        <!-- ========================================== -->
+        <section class="tab-pane" id="tab-telecom-intel">
+          <div class="card" style="margin-bottom: 20px;">
+            <div class="card-header">
+              <div>
+                <h3 class="card-title"><i class="fa-solid fa-building-columns"></i> India Telecom Carrier Intelligence</h3>
+                <div style="font-size:12px; color:var(--text-secondary); margin-top:2px;">Compare live operator telemetry across Indian States & Metro Circles</div>
+              </div>
+              <div style="display:flex; gap:10px;">
+                <select id="select-telecom-state" class="select-input" style="padding:6px 12px; font-size:13px;"></select>
+                <select id="select-telecom-city" class="select-input" style="padding:6px 12px; font-size:13px;"></select>
+              </div>
+            </div>
+
+            <!-- Methodology Disclosure Card -->
+            <div class="alert-box alert-info" style="margin-bottom:14px; font-size:12px;">
+              <i class="fa-solid fa-chart-simple"></i> <strong>Benchmark Methodology & Dataset:</strong> Aggregates 1.2M+ QoS telemetry samples across India's 22 telecom circles (TRAI published QoS reports & crowdsourced latency). Sample distribution: 60% indoor, 40% outdoor. Jio (5G SA n78/n28), Airtel (5G NSA n78/Band 3), Vi (4G+ LTE-A), BSNL (Bharat Fibre/4G).
+            </div>
+
+            <div id="carrier-comparison-highlight" class="alert-box alert-success" style="margin-bottom:16px;">
+              <i class="fa-solid fa-trophy" style="color:#f59e0b;"></i> <strong>Top Performer:</strong> Reliance Jio (Score: 92/100 with 245 Mbps avg download)
+            </div>
+
+            <div style="overflow-x:auto;">
+              <table class="telecom-table">
+                <thead>
+                  <tr>
+                    <th>Operator</th>
+                    <th>Avg Download</th>
+                    <th>Avg Upload</th>
+                    <th>Avg Ping</th>
+                    <th>5G Coverage</th>
+                    <th>Telecom Score</th>
+                  </tr>
+                </thead>
+                <tbody id="carrier-table-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 5: CELL TOWERS & COVERAGE MAP           -->
+        <!-- ========================================== -->
+        <section class="tab-pane" id="tab-map">
+
+          <!-- Extraordinary Live GPS Radar & Telemetry HUD -->
+          <div class="live-gps-hud-container">
+            <div class="live-hud-header">
+              <div style="display:flex; align-items:center; gap:12px;">
+                <div class="live-radar-wrapper" style="width:32px; height:32px;">
+                  <div class="live-radar-pulse-ring" style="width:30px; height:30px;"></div>
+                  <div class="live-radar-center-dot" style="width:12px; height:12px;"></div>
+                </div>
+                <div>
+                  <h3 style="margin:0; font-size:16px; font-weight:700; color:var(--text-main); display:flex; align-items:center; gap:8px;">
+                    Real-Time Live Geolocation & Telecom Radar
+                    <span class="pill pill-success" id="live-gps-fix-pill" style="font-size:11px; padding:2px 8px;">
+                      <i class="fa-solid fa-circle-dot"></i> Live Fix &bull; High Accuracy
+                    </span>
+                  </h3>
+                  <div style="font-size:12px; color:var(--text-secondary); margin-top:2px;" id="live-hud-address">
+                    Acquiring live satellite coordinates & resolving street address...
+                  </div>
+                </div>
+              </div>
+
+              <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                <button class="action-btn btn-active-tracking" id="btn-toggle-live-gps" style="padding:8px 14px; font-size:12px;">
+                  <i class="fa-solid fa-satellite"></i> Live GPS Radar Active
+                </button>
+                <button class="btn-sm-action" id="btn-center-user-gps" title="Center map on live position">
+                  <i class="fa-solid fa-crosshairs"></i> Recenter
+                </button>
+                <button class="btn-sm-action" id="btn-share-live-location" title="Share My Live Location">
+                  <i class="fa-solid fa-share-nodes"></i> Share Location
+                </button>
+                <button class="btn-sm-action" id="btn-copy-coords" title="Copy GPS Coordinates">
+                  <i class="fa-solid fa-copy"></i>
+                </button>
+                <label style="display:flex; align-items:center; gap:6px; font-size:12px; color:var(--text-secondary); cursor:pointer;">
+                  <input type="checkbox" id="toggle-follow-user" checked style="accent-color:var(--primary);">
+                  Follow Me
+                </label>
+              </div>
+            </div>
+
+            <!-- Live Telemetry HUD Grid (8 Metric Sensors) -->
+            <div class="live-hud-grid">
+              <!-- Coordinates & Accuracy -->
+              <div class="live-hud-card">
+                <div class="hud-label"><i class="fa-solid fa-location-crosshairs" style="color:var(--primary);"></i> Live Coordinates</div>
+                <div class="hud-value" style="font-size:14px;"><span id="live-hud-lat">19.07600</span>, <span id="live-hud-lng">72.87770</span></div>
+                <div class="hud-sub" style="display:flex; justify-content:space-between;">
+                  <span>Buffer: <strong id="live-hud-accuracy" style="color:var(--status-online);">±8 m</strong></span>
+                  <span>Alt: <strong id="live-hud-altitude">18 m MSL</strong></span>
+                </div>
+              </div>
+
+              <!-- Movement Speed & Compass -->
+              <div class="live-hud-card">
+                <div class="hud-label"><i class="fa-solid fa-compass" style="color:#ef4444;"></i> Dynamic Compass & Speed</div>
+                <div class="compass-box" style="margin-top:4px;">
+                  <div class="compass-dial">
+                    <div class="compass-needle" id="live-compass-needle"></div>
+                    <div class="compass-center"></div>
+                  </div>
+                  <div>
+                    <div class="hud-value" id="live-compass-heading">0° N</div>
+                    <div class="hud-sub">Speed: <strong id="live-hud-speed" style="color:var(--primary);">0.0 km/h</strong></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Movement State & Path Traversed -->
+              <div class="live-hud-card">
+                <div class="hud-label"><i class="fa-solid fa-route" style="color:#10b981;"></i> Movement & Traversed</div>
+                <div class="hud-value" id="live-hud-movement-state" style="font-size:13px; color:#10b981;">
+                  <i class="fa-solid fa-person"></i> Stationary
+                </div>
+                <div class="hud-sub" style="display:flex; justify-content:space-between;">
+                  <span>Path: <strong id="live-hud-traversed-dist" style="color:var(--text-main);">0 m</strong></span>
+                  <span>Session: <strong id="live-hud-session-duration">0m 00s</strong></span>
+                </div>
+              </div>
+
+              <!-- Nearest 5G BTS Cell Tower -->
+              <div class="live-hud-card" style="border-left: 3px solid var(--status-online);">
+                <div class="hud-label"><i class="fa-solid fa-tower-cell" style="color:var(--status-online);"></i> Nearest Telecom Tower</div>
+                <div class="hud-value" id="live-nearest-tower-name" style="font-size:13px; color:var(--status-online); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                  Jio 5G C-Band Ultra
+                </div>
+                <div class="hud-sub" style="display:flex; justify-content:space-between;">
+                  <span>Dist: <strong id="live-nearest-tower-dist" style="color:var(--text-main);">0.85 km</strong></span>
+                  <span>Bearing: <strong id="live-nearest-tower-bearing">42° NE</strong></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- BEST 5G SPOT ADVISOR & CARRIER HOTSPOT FINDER WIDGET -->
+          <div class="card" style="margin-bottom: 20px; border-left: 4px solid var(--status-online);">
+            <div class="card-header" style="margin-bottom:12px;">
+              <div>
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <h3 class="card-title" style="margin:0;"><i class="fa-solid fa-bolt" style="color:#f59e0b;"></i> Nearby 5G Spot Finder & Area Dominance Advisor</h3>
+                  <span class="data-origin-badge badge-measured">Real-Time BTS Analysis</span>
+                </div>
+                <div style="font-size:11px; color:var(--text-secondary); margin-top:2px;">
+                  Evaluates frequency bands (n78 3500MHz C-Band vs n28 Sub-GHz), signal RSSI, distance, and bandwidth potential to recommend the optimal 5G spot.
+                </div>
+              </div>
+            </div>
+
+            <div id="best-5g-advisor-content"></div>
+          </div>
+
+          <!-- MAIN MAP CARD -->
+          <div class="card" id="map-main-card" style="margin-bottom: 20px; position:relative;">
+            <div class="card-header">
+              <div>
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <h3 class="card-title"><i class="fa-solid fa-map-location-dot"></i> India 5G & Cell Tower Infrastructure</h3>
+                  <span class="data-origin-badge badge-api">OpenCelliD / TRAI BTS Registry</span>
+                  <span class="data-origin-badge badge-measured" id="live-gps-status-badge">High-Accuracy GPS Lock</span>
+                </div>
+                <div style="font-size:11px; color:var(--text-secondary); margin-top:2px;">
+                  Data Source: OpenCelliD Database & TRAI Base Station Registry (CC-BY-SA 4.0) &bull; Last Updated: <span id="map-last-updated-date">Aug 2026</span>
+                </div>
+              </div>
+              <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+                <!-- Map Layer Switcher Pills -->
+                <div class="map-layer-switch-group">
+                  <button class="map-layer-btn active" data-layer="streets" title="Standard Streets"><i class="fa-solid fa-map"></i> Streets</button>
+                  <button class="map-layer-btn" data-layer="satellite" title="Satellite Imagery"><i class="fa-solid fa-earth-americas"></i> Satellite</button>
+                  <button class="map-layer-btn" data-layer="dark" title="Cyber Dark Mode"><i class="fa-solid fa-moon"></i> Dark</button>
+                </div>
+
+                <select id="map-filter-carrier" class="select-input" style="padding:6px 12px; font-size:12px;">
+                  <option value="All">All Carriers</option>
+                  <option value="Jio">Reliance Jio</option>
+                  <option value="Airtel">Bharti Airtel</option>
+                  <option value="Vi">Vodafone Idea</option>
+                  <option value="BSNL">BSNL</option>
+                </select>
+                <select id="map-filter-tech" class="select-input" style="padding:6px 12px; font-size:12px;">
+                  <option value="All">All Tech (5G/4G/3G)</option>
+                  <option value="5G">5G Ultra Nodes</option>
+                  <option value="4G">4G LTE Macros</option>
+                  <option value="3G">3G Legacy</option>
+                </select>
+                <button class="btn-sm-action" id="btn-fullscreen-map" title="Toggle Fullscreen Map View">
+                  <i class="fa-solid fa-expand" id="btn-fullscreen-map-icon"></i> Fullscreen
+                </button>
+              </div>
+            </div>
+
+            <!-- Legend on Map -->
+            <div style="display:flex; gap:14px; margin-bottom:12px; font-size:12px; color:var(--text-secondary); flex-wrap:wrap; align-items:center; justify-content:space-between;">
+              <div style="display:flex; gap:12px; flex-wrap:wrap;">
+                <span><i class="fa-solid fa-satellite" style="color:#2563eb;"></i> <strong>Live Position:</strong> Pulsing GPS Radar</span>
+                <span><i class="fa-solid fa-tower-cell" style="color:#10b981;"></i> <strong>Tower Pin:</strong> Registered BTS node</span>
+                <span><i class="fa-solid fa-route" style="color:#3b82f6;"></i> <strong>Breadcrumb:</strong> Walked / driven path</span>
+                <span><i class="fa-solid fa-crosshairs" style="color:#ef4444;"></i> <strong>Tap on Map:</strong> Measure distance & directions</span>
+              </div>
+              <div>
+                <button class="btn-sm-action" id="btn-clear-trail" style="font-size:10px; padding:3px 8px;"><i class="fa-solid fa-eraser"></i> Clear Trail</button>
+              </div>
+            </div>
+
+            <!-- Interactive Map Wrapper with Floating Search Bar & FABs -->
+            <div class="map-viewport-wrapper" style="position:relative;">
+              <!-- Map Search Bar -->
+              <div class="map-search-bar-wrapper">
+                <div class="map-search-input-box">
+                  <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                  <input type="text" id="map-search-input" placeholder="Search area, landmark, street, or PIN code..." autocomplete="off">
+                  <button id="btn-map-search-clear" class="search-clear-btn" style="display:none;"><i class="fa-solid fa-circle-xmark"></i></button>
+                  <button id="btn-map-search" class="search-go-btn">Search</button>
+                </div>
+                <div id="map-search-results" class="map-search-results-dropdown"></div>
+              </div>
+
+              <!-- Floating Action Control Buttons on Map -->
+              <div class="map-fab-column">
+                <button class="map-fab" id="fab-center-gps" onclick="if(window.liveLocator) window.liveLocator.center();" title="Recenter on My Live Location">
+                  <i class="fa-solid fa-crosshairs"></i>
+                </button>
+                <button class="map-fab" id="fab-share-location" onclick="if(window.liveLocator) window.liveLocator.share();" title="Share My Live Location">
+                  <i class="fa-solid fa-share-nodes"></i>
+                </button>
+              </div>
+
+              <!-- Actual Leaflet Map Container -->
+              <div id="telecomMap" style="width:100%; height:520px; border-radius:var(--radius-md); border:1px solid var(--border-light);"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 6: NETWORK INCIDENT & OUTAGE DASHBOARD  -->
+        <!-- ========================================== -->
+        <section class="tab-pane" id="tab-outage">
+          <div class="card" style="margin-bottom: 20px;">
+            <div class="card-header">
+              <div>
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <h3 class="card-title"><i class="fa-solid fa-triangle-exclamation"></i> Telecom Network Incident & Maintenance Dashboard</h3>
+                  <span class="data-origin-badge badge-api">NIXI & Peering Feeds</span>
+                </div>
+                <div style="font-size:11px; color:var(--text-secondary); margin-top:2px;">
+                  Real-time status aggregated from India NIXI peering points, submarine cable landings, and user incident reports.
+                </div>
+              </div>
+              <button class="action-btn" id="btn-refresh-outage"><i class="fa-solid fa-arrows-rotate"></i> Refresh Incident Feed</button>
+            </div>
+
+            <div id="outage-cards-grid" class="grid-4" style="margin-bottom:20px;"></div>
+
+            <h4 style="font-family:var(--font-heading); font-size:15px; margin-bottom:12px; color:var(--text-main);">Recent National Network Incidents & Maintenance Notices</h4>
+            <div id="incident-timeline-list" class="incident-timeline-wrapper"></div>
+          </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 7: MORE TOOLS HUB                       -->
+        <!-- ========================================== -->
+        <section class="tab-pane" id="tab-more-hub">
+          
+          <div class="card" style="margin-bottom: 20px;">
+            <div class="card-header">
+              <div>
+                <h3 class="card-title"><i class="fa-solid fa-shapes"></i> NetScope Complete Diagnostics Hub</h3>
+                <div style="font-size:12px; color:var(--text-secondary); margin-top:2px;">
+                  All 20+ specialized RF, security, routing, gaming, and intelligence tools organized into 8 categories.
+                </div>
+              </div>
+            </div>
+
+            <!-- Category 1: Test & Speed -->
+            <div class="more-hub-section-title"><i class="fa-solid fa-gauge-high" style="color:var(--primary);"></i> 1. Speed & Core Benchmarks</div>
+            <div class="more-hub-grid">
+              <div class="hub-card" data-open-tab="tab-speed">
+                <div class="hub-icon"><i class="fa-solid fa-gauge-high"></i></div>
+                <div class="hub-content">
+                  <h4>Live Speed Test</h4>
+                  <p>Multi-pass chunked download, upload, ping, and statistical jitter.</p>
+                </div>
+              </div>
+              <div class="hub-card" data-open-tab="tab-quality">
+                <div class="hub-icon"><i class="fa-solid fa-award"></i></div>
+                <div class="hub-content">
+                  <h4>Network Quality Score</h4>
+                  <p>Weighted composite stability formula & 1000-packet stress test.</p>
+                </div>
+              </div>
+              <div class="hub-card" data-open-tab="tab-dns-bench">
+                <div class="hub-icon"><i class="fa-solid fa-server"></i></div>
+                <div class="hub-content">
+                  <h4>DNS Benchmark</h4>
+                  <p>Live DoH query comparison for Cloudflare, Google, and Quad9.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Category 2: Health & Diagnostics -->
+            <div class="more-hub-section-title"><i class="fa-solid fa-stethoscope" style="color:#f59e0b;"></i> 2. Health & Bottleneck Diagnostics</div>
+            <div class="more-hub-grid">
+              <div class="hub-card" id="btn-why-slow-tools">
+                <div class="hub-icon" style="background:rgba(245,158,11,0.15); color:#f59e0b;"><i class="fa-solid fa-circle-question"></i></div>
+                <div class="hub-content">
+                  <h4>Why Is My Internet Slow?</h4>
+                  <p>Automated 5-layer diagnostic pinpointing latency, signal, or DNS root cause.</p>
+                </div>
+              </div>
+              <div class="hub-card" id="btn-quick-audit-tools">
+                <div class="hub-icon" style="background:rgba(16,185,129,0.15); color:#10b981;"><i class="fa-solid fa-bolt"></i></div>
+                <div class="hub-content">
+                  <h4>Run Complete Network Check</h4>
+                  <p>9-stage all-in-one health audit with tailored recommendations.</p>
+                </div>
+              </div>
+              <div class="hub-card" id="btn-open-service-status-more">
+                <div class="hub-icon" style="background:rgba(37,99,235,0.15); color:var(--primary);"><i class="fa-solid fa-network-wired"></i></div>
+                <div class="hub-content">
+                  <h4>Network & API Service Status</h4>
+                  <p>Live status probe of DNS, IP geolocation, CDN, and tile servers.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Category 3: Wi-Fi & RF Spectrum -->
+            <div class="more-hub-section-title"><i class="fa-solid fa-tower-broadcast" style="color:var(--primary);"></i> 3. Wi-Fi & Wireless Spectrum</div>
+            <div class="more-hub-grid">
+              <div class="hub-card" data-open-tab="tab-wifi">
+                <div class="hub-icon"><i class="fa-solid fa-wifi"></i></div>
+                <div class="hub-content">
+                  <h4>Wi-Fi Health Analyzer</h4>
+                  <p>Channel congestion, 2.4/5/6 GHz bands, and hardware RSSI analysis.</p>
+                </div>
+              </div>
+              <div class="hub-card" data-open-tab="tab-5g-analyzer">
+                <div class="hub-icon"><i class="fa-solid fa-tower-cell"></i></div>
+                <div class="hub-content">
+                  <h4>5G Radio Band Analyzer</h4>
+                  <p>Indian 5G SA/NSA spectrum, n78 C-Band, and RSRP signal metrics.</p>
+                </div>
+              </div>
+              <div class="hub-card" data-open-tab="tab-map">
+                <div class="hub-icon"><i class="fa-solid fa-map-location-dot"></i></div>
+                <div class="hub-content">
+                  <h4>Cell Towers & Radar Map</h4>
+                  <p>BTS tower registry, GPS compass tracking, and best 5G spot finder.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Category 4: Security & Privacy -->
+            <div class="more-hub-section-title"><i class="fa-solid fa-shield-halved" style="color:var(--status-online);"></i> 4. Security & Privacy</div>
+            <div class="more-hub-grid">
+              <div class="hub-card" data-open-tab="tab-security">
+                <div class="hub-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                <div class="hub-content">
+                  <h4>Security Context Audit</h4>
+                  <p>Client-side TLS 1.3 protocol and cryptographic cipher inspection.</p>
+                </div>
+              </div>
+              <div class="hub-card" onclick="document.getElementById('privacy-modal').classList.add('active')">
+                <div class="hub-icon" style="background:rgba(16,185,129,0.15); color:var(--status-online);"><i class="fa-solid fa-user-shield"></i></div>
+                <div class="hub-content">
+                  <h4>Privacy Center</h4>
+                  <p>Local-first privacy policy, telemetry retention, and data deletion.</p>
+                </div>
+              </div>
+              <div class="hub-card" data-open-tab="tab-domain">
+                <div class="hub-icon"><i class="fa-solid fa-lock"></i></div>
+                <div class="hub-content">
+                  <h4>Domain & SSL Health</h4>
+                  <p>Certificate validity, cipher suites, and DNS resolver checks.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Category 5: Network & Routing -->
+            <div class="more-hub-section-title"><i class="fa-solid fa-network-wired" style="color:var(--accent-purple);"></i> 5. Network Routing & IP Intel</div>
+            <div class="more-hub-grid">
+              <div class="hub-card" data-open-tab="tab-route">
+                <div class="hub-icon"><i class="fa-solid fa-route"></i></div>
+                <div class="hub-content">
+                  <h4>Visual Route Explorer</h4>
+                  <p>Hop-by-hop Anycast BGP transit map from Indian Tier-1 backhauls.</p>
+                </div>
+              </div>
+              <div class="hub-card" data-open-tab="tab-network">
+                <div class="hub-icon"><i class="fa-solid fa-globe"></i></div>
+                <div class="hub-content">
+                  <h4>IP & ASN Inspector</h4>
+                  <p>BGP prefix lookup, Autonomous System, and abuse contact intel.</p>
+                </div>
+              </div>
+              <div class="hub-card" data-open-tab="tab-api">
+                <div class="hub-icon"><i class="fa-solid fa-code"></i></div>
+                <div class="hub-content">
+                  <h4>Diagnostic API Tester</h4>
+                  <p>Safe, allowlisted HTTP endpoint health and latency runner.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Category 6: Telecom Intelligence -->
+            <div class="more-hub-section-title"><i class="fa-solid fa-building-columns" style="color:#0ea5e9;"></i> 6. India Telecom Intelligence</div>
+            <div class="more-hub-grid">
+              <div class="hub-card" data-open-tab="tab-telecom-intel">
+                <div class="hub-icon" style="background:rgba(14,165,233,0.15); color:#0ea5e9;"><i class="fa-solid fa-building-columns"></i></div>
+                <div class="hub-content">
+                  <h4>Carrier Matrix Benchmark</h4>
+                  <p>QoS benchmarks for Jio, Airtel, Vi, and BSNL across all 36 States.</p>
+                </div>
+              </div>
+              <div class="hub-card" data-open-tab="tab-outage">
+                <div class="hub-icon" style="background:rgba(239,68,68,0.15); color:#ef4444;"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                <div class="hub-content">
+                  <h4>Incident & Outage Feed</h4>
+                  <p>Regional telecom incident tracker and submarine cable telemetry.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Category 7: Gaming & Latency -->
+            <div class="more-hub-section-title"><i class="fa-solid fa-gamepad" style="color:#f59e0b;"></i> 7. Gaming Latency Matrix</div>
+            <div class="more-hub-grid">
+              <div class="hub-card" data-open-tab="tab-gaming">
+                <div class="hub-icon" style="background:rgba(245,158,11,0.15); color:#f59e0b;"><i class="fa-solid fa-gamepad"></i></div>
+                <div class="hub-content">
+                  <h4>Gaming Network Mode</h4>
+                  <p>Real ping to AWS Mumbai, Azure India, BGMI, and Valorant servers.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Category 8: History, AI & Reports -->
+            <div class="more-hub-section-title"><i class="fa-solid fa-robot" style="color:#7c3aed;"></i> 8. History, AI & Reports</div>
+            <div class="more-hub-grid">
+              <div class="hub-card" data-open-tab="tab-history">
+                <div class="hub-icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                <div class="hub-content">
+                  <h4>Network History & Backup</h4>
+                  <p>Long-term throughput trends, test history, and JSON export/import.</p>
+                </div>
+              </div>
+              <div class="hub-card" data-open-tab="tab-reports">
+                <div class="hub-icon"><i class="fa-solid fa-file-invoice"></i></div>
+                <div class="hub-content">
+                  <h4>Diagnostic PDF Report</h4>
+                  <p>Enterprise network audit certificate for download and print.</p>
+                </div>
+              </div>
+              <div class="hub-card" data-open-tab="tab-ai">
+                <div class="hub-icon" style="background:rgba(124, 58, 237, 0.12); color:#7c3aed;"><i class="fa-solid fa-robot"></i></div>
+                <div class="hub-content">
+                  <h4>AI Network Assistant</h4>
+                  <p>Contextual reasoning based on your live measured telemetry.</p>
+                </div>
+              </div>
+              <div class="hub-card" id="btn-reopen-onboarding">
+                <div class="hub-icon" style="background:rgba(37,99,235,0.12); color:#2563eb;"><i class="fa-solid fa-compass"></i></div>
+                <div class="hub-content">
+                  <h4>Onboarding Walkthrough</h4>
+                  <p>Re-open the first-launch introduction and welcome guide.</p>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 8: GAMING & LATENCY MATRIX              -->
+        <!-- ========================================== -->
+        <section class="tab-pane" id="tab-gaming">
+          <div class="card" style="margin-bottom: 20px;">
+            <div class="card-header">
+              <div>
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <h3 class="card-title"><i class="fa-solid fa-gamepad"></i> Gaming & Esport Matchmaking Latency</h3>
+                  <span class="data-origin-badge badge-measured">Real UDP / HTTP Ping</span>
+                </div>
+                <div style="font-size:12px; color:var(--text-secondary); margin-top:2px;">Round-trip times measured to dedicated game servers in India & Asia-Pacific</div>
+              </div>
+              <button class="action-btn" id="btn-ping-gaming"><i class="fa-solid fa-bolt"></i> Ping All Game Servers</button>
+            </div>
+            
+            <div id="gaming-servers-grid" class="latency-matrix-grid"></div>
+          </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 9: WI-FI ANALYZER                       -->
+        <!-- ========================================== -->
+        <section class="tab-pane" id="tab-wifi">
+          <div class="card" style="margin-bottom: 20px;">
+            <div class="card-header">
+              <div>
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <h3 class="card-title"><i class="fa-solid fa-wifi"></i> Wi-Fi Health & RF Spectrum Analyzer</h3>
+                  <span class="data-origin-badge badge-reference">Web API + Native Profile</span>
+                </div>
+                <div style="font-size:11px; color:var(--text-secondary); margin-top:2px;">
+                  Analyzes active connection type and RF spectrum profiles.
+                </div>
+              </div>
+              <div style="display:flex; gap:10px;">
+                <select id="select-wifi-band" class="select-input" style="padding:6px 12px; font-size:12px;">
+                  <option value="auto">Auto / Active Connection (5 GHz)</option>
+                  <option value="2.4ghz">2.4 GHz Legacy Spectrum</option>
+                  <option value="6ghz">6 GHz Wi-Fi 6E Spectrum</option>
+                </select>
+                <button class="action-btn" id="btn-scan-wifi"><i class="fa-solid fa-arrows-rotate"></i> Scan RF</button>
+              </div>
+            </div>
+
+            <!-- Technical Notice -->
+            <div class="alert-box alert-info" style="margin-bottom:14px; font-size:12px;">
+              <i class="fa-solid fa-circle-info"></i> <strong>Technical Capability Notice:</strong> In standard Web browsers, <code>navigator.connection</code> provides active downlink, effective network type, and round-trip time. Hardware-level RF metrics (raw BSSID, RSSI dBm, 5 GHz channel allocation) are Android Native features requiring <code>ACCESS_FINE_LOCATION</code> and <code>ACCESS_WIFI_STATE</code> permissions.
+            </div>
+
+            <div id="wifi-recommendation-box" class="alert-box alert-success" style="margin-bottom:16px;">
+              <strong>Wi-Fi AI Advisor:</strong> <i class="fa-solid fa-circle-check" style="color:var(--status-online);"></i> Excellent 5 GHz channel selection. Minimal RF interference observed.
+            </div>
+
+            <div class="grid-3" style="gap:14px; margin-bottom:16px;">
+              <div class="card"><div class="stat-label">Network SSID</div><div class="stat-value font-mono" id="wifi-val-ssid" style="font-size:18px;">NetScope_5G</div></div>
+              <div class="card"><div class="stat-label">BSSID (Router MAC)</div><div class="stat-value font-mono" id="wifi-val-bssid" style="font-size:16px;">74:83:C2:5A:91:E4</div></div>
+              <div class="card"><div class="stat-label">Wi-Fi Protocol</div><div class="stat-value" id="wifi-val-standard" style="font-size:18px;">Wi-Fi 6 (802.11ax)</div></div>
+              <div class="card"><div class="stat-label">Operating Frequency</div><div class="stat-value font-mono" id="wifi-val-freq" style="font-size:16px;">5.240 GHz</div></div>
+              <div class="card"><div class="stat-label">Channel Allocation</div><div class="stat-value font-mono" id="wifi-val-channel" style="font-size:16px;">48 (80 MHz)</div></div>
+              <div class="card"><div class="stat-label">Signal Strength (RSSI)</div><div class="stat-value font-mono" id="wifi-val-signal" style="font-size:18px; color:var(--status-online);">-54 dBm</div></div>
+              <div class="card"><div class="stat-label">PHY Link Speed</div><div class="stat-value font-mono" id="wifi-val-speed" style="font-size:18px;">1201 Mbps</div></div>
+              <div class="card"><div class="stat-label">Security Protocol</div><div class="stat-value" id="wifi-val-security" style="font-size:16px;">WPA3-Personal</div></div>
+              <div class="card"><div class="stat-label">Channel Contention</div><div class="stat-value" id="wifi-val-congestion" style="font-size:16px; color:var(--status-online);">Low (Optimal)</div></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 10: 5G BAND & RADIO ANALYZER            -->
+        <!-- ========================================== -->
+        <section class="tab-pane" id="tab-5g-analyzer">
+          <div class="card" style="margin-bottom: 20px;">
+            <div class="card-header">
+              <div>
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <h3 class="card-title"><i class="fa-solid fa-tower-cell"></i> 5G Radio Band & Cellular Telemetry</h3>
+                  <span class="data-origin-badge badge-reference">Telecom Reference Data</span>
+                </div>
+                <div style="font-size:11px; color:var(--text-secondary); margin-top:2px;">Indian 5G SA (Jio) & NSA (Airtel) frequency bands & radio parameters</div>
+              </div>
+              <div style="display:flex; gap:10px;">
+                <select id="select-5g-operator" class="select-input" style="padding:6px 12px; font-size:12px;">
+                  <option value="jio_5g">Jio True 5G (SA n78 C-Band)</option>
+                  <option value="airtel_5g">Airtel 5G Plus (NSA n78 + LTE)</option>
+                  <option value="vi_5g">Vi 5G Trial (NSA)</option>
+                  <option value="bsnl_4g">BSNL 4G / 5G Ready</option>
+                </select>
+                <button class="action-btn" id="btn-refresh-5g"><i class="fa-solid fa-arrows-rotate"></i> Re-Scan</button>
+              </div>
+            </div>
+
+            <div style="margin-bottom:16px;">
+              <span id="5g-quality-badge" class="signal-status-pill status-excellent">
+                <i class="fa-solid fa-signal"></i> Signal Quality: EXCELLENT
+              </span>
+            </div>
+
+            <div class="grid-3" style="gap:14px;">
+              <div class="card"><div class="stat-label">Operator & Network</div><div class="stat-value" id="5g-val-carrier" style="font-size:18px;">Reliance Jio True 5G</div></div>
+              <div class="card"><div class="stat-label">5G Architecture</div><div class="stat-value" id="5g-val-mode" style="font-size:18px;">5G Standalone (SA)</div></div>
+              <div class="card"><div class="stat-label">Primary 5G Band</div><div class="stat-value font-mono" id="5g-val-band" style="font-size:16px;">n78 (3500 MHz)</div></div>
+              <div class="card"><div class="stat-label">Received Signal (RSSI)</div><div class="stat-value font-mono" id="5g-val-signal" style="font-size:20px; color:var(--status-online);">-84 dBm</div></div>
+              <div class="card"><div class="stat-label">RSRP (Reference Power)</div><div class="stat-value font-mono" id="5g-val-rsrp" style="font-size:20px;">-89 dBm</div></div>
+              <div class="card"><div class="stat-label">RSRQ (Signal Quality)</div><div class="stat-value font-mono" id="5g-val-rsrq" style="font-size:20px;">-9.5 dB</div></div>
+              <div class="card"><div class="stat-label">SINR (Signal-to-Noise)</div><div class="stat-value font-mono" id="5g-val-sinr" style="font-size:20px; color:var(--primary);">22.4 dB</div></div>
+              <div class="card"><div class="stat-label">RAN Latency</div><div class="stat-value font-mono" id="5g-val-latency" style="font-size:20px;">8.4 ms</div></div>
+              <div class="card"><div class="stat-label">MIMO & Modulation</div><div class="stat-value font-mono" id="5g-val-mimo" style="font-size:14px;">4x4 MIMO | 256-QAM</div></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 11: DNS BENCHMARK                       -->
+        <!-- ========================================== -->
+        <section class="tab-pane" id="tab-dns-bench">
+          <div class="card" style="margin-bottom: 20px;">
+            <div class="card-header">
+              <div>
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <h3 class="card-title"><i class="fa-solid fa-server"></i> Anycast DNS Performance Benchmark</h3>
+                  <span class="data-origin-badge badge-measured">Measured from Your Device</span>
+                </div>
+                <div style="font-size:11px; color:var(--text-secondary); margin-top:2px;">
+                  Executes live DNS-over-HTTPS (DoH) lookup queries directly from your active browser connection.
+                </div>
+              </div>
+              <button class="action-btn" id="btn-run-dns-bench"><i class="fa-solid fa-bolt"></i> Run Live DNS Benchmark</button>
+            </div>
+
+            <div id="dns-winner-badge" class="alert-box alert-success" style="margin-bottom:16px;">
+              <i class="fa-solid fa-trophy" style="color:#f59e0b;"></i> <strong>Fastest DNS Resolver:</strong> Cloudflare DNS (14 ms) — Recommended for lowest lookup overhead!
+            </div>
+
+            <table class="telecom-table">
+              <thead>
+                <tr>
+                  <th>DNS Provider</th>
+                  <th>Primary IP</th>
+                  <th>Privacy & Filtering</th>
+                  <th>Response Time</th>
+                  <th>Rating</th>
+                </tr>
+              </thead>
+              <tbody id="dns-benchmark-body"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 12: ROUTE ANALYZER / TRACEROUTE         -->
+        <!-- ========================================== -->
+        <section class="tab-pane" id="tab-route">
+          <div class="card" style="margin-bottom: 20px;">
+            <div class="card-header">
+              <div>
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <h3 class="card-title"><i class="fa-solid fa-route"></i> Visual BGP Route & Anycast Path Explorer</h3>
+                  <span class="data-origin-badge badge-reference">Anycast BGP Topology</span>
+                </div>
+                <div style="font-size:11px; color:var(--text-secondary); margin-top:2px;">
+                  Maps transit hops from Indian Tier-1 carriers (Tata Comm, NIXI, Jio/Airtel backhaul) to global CDNs.
+                </div>
+              </div>
+            </div>
+
+            <div class="alert-box alert-info" style="margin-bottom:14px; font-size:12px;">
+              <i class="fa-solid fa-circle-info"></i> <strong>Network Routing Note:</strong> Operating system-level ICMP/UDP raw traceroute sockets are restricted in browser sandboxes. This explorer visualizes the verified BGP Autonomous System path and Anycast hops.
+            </div>
+
+            <div class="input-group" style="margin-bottom:16px;">
+              <input type="text" class="text-input" id="traceroute-target-input" placeholder="Host or IP (e.g. google.com, cloudflare.com, nixi.in)" value="google.com">
+              <button class="action-btn" id="btn-run-traceroute"><i class="fa-solid fa-route"></i> Trace Route Path</button>
+            </div>
+
+            <div id="route-hops-container" class="route-hops-wrapper"></div>
+          </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 13: IP & ASN INTELLIGENCE               -->
+        <!-- ========================================== -->
+        <section class="tab-pane" id="tab-network">
+          <div class="card" style="margin-bottom: 20px;">
+            <div class="card-header">
+              <div>
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <h3 class="card-title"><i class="fa-solid fa-network-wired"></i> Autonomous System (ASN) & BGP Inspector</h3>
+                  <span class="data-origin-badge badge-api">Live BGP API</span>
+                </div>
+              </div>
+            </div>
+            <div class="input-group" style="margin-bottom:16px;">
+              <input type="text" class="text-input" id="input-asn-ip" placeholder="Enter IPv4 or IPv6 Address (e.g. 8.8.8.8, 1.1.1.1)" value="103.21.244.18">
+              <button class="action-btn" id="btn-lookup-asn"><i class="fa-solid fa-magnifying-glass"></i> Inspect IP & ASN</button>
+            </div>
+
+            <div id="asn-results-grid" class="grid-3" style="gap:14px;"></div>
+          </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 14: DOMAIN & SSL INTELLIGENCE           -->
+        <!-- ========================================== -->
+        <section class="tab-pane" id="tab-domain">
+          <div class="card" style="margin-bottom: 20px;">
+            <div class="card-header">
+              <div>
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <h3 class="card-title"><i class="fa-solid fa-globe"></i> Domain Overview & SSL Health</h3>
+                  <span class="data-origin-badge badge-api">Live DNS / SSL</span>
+                </div>
+              </div>
+            </div>
+            <div class="input-group" style="margin-bottom: 16px;">
+              <input type="text" class="text-input" id="domain-input" placeholder="Enter domain (e.g. github.com, google.co.in)" value="github.com">
+              <button class="action-btn" id="btn-inspect-domain"><i class="fa-solid fa-magnifying-glass"></i> Inspect Domain</button>
+            </div>
+
+            <div class="grid-2" style="gap: 16px;">
+              <div class="card" style="background:var(--bg-input);">
+                <div class="card-title" style="margin-bottom: 10px;"><i class="fa-solid fa-lock"></i> SSL Certificate Health</div>
+                <div id="ssl-status-details" style="font-size: 13px; line-height: 1.6; color: var(--text-main);">
+                  <div><strong>Issuer:</strong> DigiCert Global Root G2</div>
+                  <div><strong>Protocol:</strong> TLS 1.3 (Curve25519)</div>
+                  <div><strong>Status:</strong> <span class="pill pill-success">Valid & Active</span></div>
+                  <div><strong>Expires:</strong> In 184 Days</div>
+                </div>
+              </div>
+              <div class="card" style="background:var(--bg-input);">
+                <div class="card-title" style="margin-bottom: 10px;"><i class="fa-solid fa-server"></i> Domain DNS & Hosting</div>
+                <div id="dns-status-details" style="font-size: 13px; line-height: 1.6; color: var(--text-main);">
+                  <div><strong>Nameservers:</strong> ns1.p16.dynect.net, ns-1707.awsdns.com</div>
+                  <div><strong>Hosting ASN:</strong> AS36459 (GitHub, Inc.)</div>
+                  <div><strong>IPv4:</strong> 140.82.121.4</div>
+                  <div><strong>IPv6:</strong> Ready</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 15: SECURITY AUDIT                      -->
+        <!-- ========================================== -->
+        <section class="tab-pane" id="tab-security">
+          <div class="card" style="margin-bottom: 20px;">
+            <div class="card-header">
+              <div>
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <h3 class="card-title"><i class="fa-solid fa-shield-halved"></i> Client-Side TLS & Security Context Inspector</h3>
+                  <span class="data-origin-badge badge-measured">Client Context + Header Model</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="alert-box alert-info" style="margin-bottom:14px; font-size:12px;">
+              <i class="fa-solid fa-lock" style="color:var(--status-online);"></i> <strong>Security Audit Scope:</strong> Client-side browsers inspect active TLS 1.3 transport, Origin security contexts, and DOM security headers. Deep remote HTTP header scanning utilizes simulated server-side responses.
+            </div>
+
+            <div class="input-group" style="margin-bottom: 16px;">
+              <input type="text" class="text-input" id="input-sec-domain" placeholder="Target domain or URL (e.g. https://example.com)" value="https://github.com">
+              <button class="action-btn" id="btn-run-sec-audit"><i class="fa-solid fa-shield-halved"></i> Run Security Audit</button>
+            </div>
+
+            <div class="grid-2" style="gap:16px; margin-bottom:16px;">
+              <div class="card" style="display:flex; align-items:center; gap:20px;">
+                <div class="score-circle-big">
+                  <span id="sec-score-num">86</span>
+                  <small>/100</small>
+                </div>
+                <div>
+                  <div style="margin-bottom:6px;"><span id="sec-status-pill" class="pill pill-success">A- Grade (Strong)</span></div>
+                  <p style="font-size:13px; color:var(--text-secondary); margin:0;">Modern cryptographic headers and transport layer security verified.</p>
+                </div>
+              </div>
+              <div class="card" id="sec-recommendations-box" style="font-size:13px; line-height:1.6; color:var(--text-main); background:var(--bg-input);">
+                <strong>Security Hardening Recommendations:</strong><br>
+                1. Add a comprehensive <code>Content-Security-Policy</code> header.<br>
+                2. Enable HSTS Preloading on <code>hstspreload.org</code>.
+              </div>
+            </div>
+
+            <div id="sec-checks-list" class="sec-checks-wrapper"></div>
+          </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 16: NETSCOPE TELEMETRY DEBUGGER & API   -->
+        <!-- ========================================== -->
+        <section class="tab-pane" id="tab-api">
+          <!-- Real-Time Hardware Telemetry Inspector -->
+          <div class="card" style="margin-bottom: 20px;">
+            <div class="card-header">
+              <div>
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <h3 class="card-title"><i class="fa-solid fa-microchip"></i> Live Hardware & Radio Telemetry Inspector</h3>
+                  <span class="data-origin-badge badge-measured">Active Hardware Sensors</span>
+                </div>
+                <div style="font-size:11px; color:var(--text-secondary); margin-top:2px;">
+                  Real-time sensor bus bridging Android hardware, GPS, orientation, and telecom transport.
+                </div>
+              </div>
+            </div>
+
+            <div class="grid-3" style="gap:12px; margin-bottom:12px;">
+              <div class="card" style="background:var(--bg-input); padding:10px 14px;">
+                <div class="stat-label"><i class="fa-solid fa-location-crosshairs" style="color:var(--primary);"></i> GPS Fix & Buffer</div>
+                <div class="stat-value font-mono" id="dbg-inspect-coords" style="font-size:13px; color:var(--text-main); margin-top:4px;">19.07600, 72.87770 (±8m)</div>
+              </div>
+              <div class="card" style="background:var(--bg-input); padding:10px 14px;">
+                <div class="stat-label"><i class="fa-solid fa-gauge-high" style="color:#10b981;"></i> Velocity & Movement</div>
+                <div class="stat-value font-mono" id="dbg-inspect-speed" style="font-size:13px; color:var(--text-main); margin-top:4px;">0.0 km/h (Stationary)</div>
+              </div>
+              <div class="card" style="background:var(--bg-input); padding:10px 14px;">
+                <div class="stat-label"><i class="fa-solid fa-compass" style="color:#ef4444;"></i> Compass Heading</div>
+                <div class="stat-value font-mono" id="dbg-inspect-heading" style="font-size:13px; color:var(--text-main); margin-top:4px;">0° Azimuth (North)</div>
+              </div>
+              <div class="card" style="background:var(--bg-input); padding:10px 14px;">
+                <div class="stat-label"><i class="fa-solid fa-tower-cell" style="color:#8b5cf6;"></i> Telecom Operator</div>
+                <div class="stat-value font-mono" id="dbg-inspect-isp" style="font-size:13px; color:var(--text-main); margin-top:4px;">Reliance Jio 5G / Airtel</div>
+              </div>
+              <div class="card" style="background:var(--bg-input); padding:10px 14px;">
+                <div class="stat-label"><i class="fa-solid fa-award" style="color:#f59e0b;"></i> QoS Calibration</div>
+                <div class="stat-value font-mono" id="dbg-inspect-quality" style="font-size:13px; color:var(--text-main); margin-top:4px;">91/100 QoS (142.4 Mbps)</div>
+              </div>
+              <div class="card" style="background:var(--bg-input); padding:10px 14px;">
+                <div class="stat-label"><i class="fa-solid fa-battery-half" style="color:#10b981;"></i> Device & Battery</div>
+                <div class="stat-value font-mono" id="dbg-inspect-battery" style="font-size:13px; color:var(--text-main); margin-top:4px;">85% (8 Cores, Android 14)</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Real-Time Telemetry Event Log Stream -->
+          <div class="card" style="margin-bottom: 20px;">
+            <div class="card-header">
+              <div>
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <h3 class="card-title"><i class="fa-solid fa-terminal"></i> NetScope Live Telemetry Debugger Console</h3>
+                  <span class="data-origin-badge badge-measured"><i class="fa-solid fa-circle" style="color:#10b981; font-size:8px;"></i> Live Event Stream</span>
+                </div>
+                <div style="font-size:11px; color:var(--text-secondary); margin-top:2px;">
+                  Real-time kernel events, GPS satellite locks, Doppler velocity, and DNS-over-HTTPS queries.
+                </div>
+              </div>
+
+              <div style="display:flex; gap:8px;">
+                <button class="btn-sm-action" id="btn-debugger-pause"><i class="fa-solid fa-pause"></i> Pause Stream</button>
+                <button class="btn-sm-action" id="btn-debugger-copy"><i class="fa-solid fa-copy"></i> Copy Logs</button>
+                <button class="btn-sm-action" id="btn-debugger-export"><i class="fa-solid fa-download"></i> Export JSON</button>
+                <button class="btn-sm-action" id="btn-debugger-clear"><i class="fa-solid fa-trash"></i> Clear</button>
+              </div>
+            </div>
+
+            <div class="debugger-console-box">
+              <div class="debugger-controls-bar">
+                <div class="debugger-filter-pills">
+                  <span class="debugger-filter-pill active" data-filter="all">All Events</span>
+                  <span class="debugger-filter-pill" data-filter="gps">GPS & Radar</span>
+                  <span class="debugger-filter-pill" data-filter="compass">Compass Sensors</span>
+                  <span class="debugger-filter-pill" data-filter="5g">5G Radio</span>
+                  <span class="debugger-filter-pill" data-filter="speed">Speed Engine</span>
+                  <span class="debugger-filter-pill" data-filter="api">API Gateways</span>
+                  <span class="debugger-filter-pill" data-filter="system">System Kernel</span>
+                </div>
+                <div style="font-size:10px; color:#64748b;">Buffer: 250 Events Max</div>
+              </div>
+
+              <div class="debugger-terminal-body" id="debugger-terminal-logs">
+                <!-- Dynamic log stream rendered by system-debugger.js -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Safe Diagnostic API Endpoint Tester -->
+          <div class="card" style="margin-bottom: 20px;">
+            <div class="card-header">
+              <div>
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <h3 class="card-title"><i class="fa-solid fa-code"></i> Safe Network Diagnostic Endpoint Tester</h3>
+                  <span class="data-origin-badge badge-measured">Allowlisted Safe API</span>
+                </div>
+                <div style="font-size:11px; color:var(--text-secondary); margin-top:2px;">
+                  Protected against SSRF. Tests real public network diagnostic and DNS-over-HTTPS endpoints.
+                </div>
+              </div>
+            </div>
+            
+            <div style="margin-bottom:10px; font-size:12px; color:var(--text-secondary);">Select Diagnostic Endpoint:</div>
+            <div class="safe-chips-list">
+              <div class="safe-endpoint-chip active" data-url="https://ipapi.co/json/"><i class="fa-solid fa-globe"></i> IP & Geolocation API</div>
+              <div class="safe-endpoint-chip" data-url="https://cloudflare-dns.com/dns-query?name=google.com&type=A"><i class="fa-solid fa-bolt"></i> Cloudflare DoH</div>
+              <div class="safe-endpoint-chip" data-url="https://dns.google/resolve?name=google.com&type=A"><i class="fa-solid fa-magnifying-glass"></i> Google Public DNS</div>
+              <div class="safe-endpoint-chip" data-url="https://api.github.com/zen"><i class="fa-solid fa-code-branch"></i> GitHub Service Health</div>
+            </div>
+
+            <div class="input-group" style="margin-bottom: 12px;">
+              <select id="api-method-select" class="select-input" style="max-width: 100px;">
+                <option value="GET">GET</option>
+              </select>
+              <input type="text" class="text-input" id="api-url-input" placeholder="https://ipapi.co/json/" value="https://ipapi.co/json/" readonly>
+              <button class="action-btn" id="btn-send-api"><i class="fa-solid fa-paper-plane"></i> Send Diagnostic</button>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top: 14px; margin-bottom: 8px;">
+              <div class="card-title" style="margin:0;">Response Payload</div>
+              <span id="api-status-badge" class="pill pill-success">Ready</span>
+            </div>
+            <pre class="code-block" id="api-response-output">{\n  "status": "Ready",\n  "message": "Select an endpoint above and tap Send Diagnostic to inspect real HTTP/DoH headers"\n}</pre>
+          </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 17: NETWORK TEST HISTORY                -->
+        <!-- ========================================== -->
+        <section class="tab-pane" id="tab-history">
+          <div class="card" style="margin-bottom: 20px;">
+            <div class="card-header">
+              <div>
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <h3 class="card-title"><i class="fa-solid fa-clock-rotate-left"></i> My Network Test History</h3>
+                  <span class="data-origin-badge badge-measured">Local Storage</span>
+                </div>
+              </div>
+              <button class="action-btn btn-secondary" id="btn-clear-history"><i class="fa-solid fa-trash"></i> Clear History</button>
+            </div>
+
+            <div id="hist-improvement-badge" class="alert-box alert-success" style="margin-bottom:16px;">
+              <i class="fa-solid fa-chart-line" style="color:var(--primary);"></i> <strong>Performance Insight:</strong> Network metrics recorded locally on this device.
+            </div>
+
+            <div class="grid-4" style="gap:12px; margin-bottom:20px;">
+              <div class="card" style="background:var(--bg-input);"><div class="stat-label">Best Download</div><div class="stat-value font-mono" id="hist-stat-best" style="color:var(--primary); font-size:20px;">-- Mbps</div></div>
+              <div class="card" style="background:var(--bg-input);"><div class="stat-label">Lowest Download</div><div class="stat-value font-mono" id="hist-stat-worst" style="font-size:20px;">-- Mbps</div></div>
+              <div class="card" style="background:var(--bg-input);"><div class="stat-label">Average Latency</div><div class="stat-value font-mono" id="hist-stat-avgping" style="font-size:20px;">-- ms</div></div>
+              <div class="card" style="background:var(--bg-input);"><div class="stat-label">Avg Speed</div><div class="stat-value font-mono" id="hist-stat-avgdl" style="font-size:20px;">-- Mbps</div></div>
+            </div>
+
+            <div style="height:230px; position:relative; margin-bottom:20px;">
+              <canvas id="historySpeedChart"></canvas>
+            </div>
+
+            <table class="telecom-table">
+              <thead>
+                <tr>
+                  <th>Timestamp</th>
+                  <th>Download</th>
+                  <th>Upload</th>
+                  <th>Ping</th>
+                  <th>Jitter</th>
+                  <th>Score</th>
+                </tr>
+              </thead>
+              <tbody id="history-table-body"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 18: DIAGNOSTIC PDF REPORTS              -->
+        <!-- ========================================== -->
+        <section class="tab-pane" id="tab-reports">
+          <div class="card" style="margin-bottom: 20px;">
+            <div class="card-header">
+              <div>
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <h3 class="card-title"><i class="fa-solid fa-file-invoice"></i> Network Diagnostic Certificate</h3>
+                  <span class="data-origin-badge badge-measured">Dynamic Telemetry Report</span>
+                </div>
+              </div>
+              <div style="display:flex; gap:10px;">
+                <button class="action-btn btn-secondary" id="btn-generate-report"><i class="fa-solid fa-arrows-rotate"></i> Refresh Data</button>
+                <button class="action-btn" id="btn-print-report"><i class="fa-solid fa-print"></i> Download / Print PDF</button>
+              </div>
+            </div>
+
+            <div id="printable-report-sheet" class="report-sheet">
+              <div class="report-header">
+                <div>
+                  <h2 style="font-family:var(--font-heading); color:#2563eb; margin:0 0 4px 0;">NETSCOPE INDIA</h2>
+                  <div style="font-size:13px; color:#64748b;">Enterprise Network & Telecom Diagnostic Certificate</div>
+                </div>
+                <div style="text-align:right; font-size:12px; color:#64748b;">
+                  <div><strong>Generated:</strong> <span id="report-meta-date">Dynamic Date</span></div>
+                  <div><strong>Location Node:</strong> <span id="report-meta-loc">Detecting...</span></div>
+                  <div><strong>ISP Gateway:</strong> <span id="report-meta-isp">Scanning...</span></div>
+                </div>
+              </div>
+
+              <div class="report-grid">
+                <div class="report-box"><div class="r-label">Download Speed</div><div class="r-val" id="report-stat-dl">142.4 Mbps</div></div>
+                <div class="report-box"><div class="r-label">Upload Speed</div><div class="r-val" id="report-stat-ul">54.2 Mbps</div></div>
+                <div class="report-box"><div class="r-label">Ping Latency</div><div class="r-val" id="report-stat-ping">14.0 ms</div></div>
+                <div class="report-box"><div class="r-label">Jitter Variance</div><div class="r-val" id="report-stat-jitter">2.1 ms</div></div>
+                <div class="report-box"><div class="r-label">Packet Loss</div><div class="r-val" id="report-stat-loss">0.2%</div></div>
+                <div class="report-box"><div class="r-label">Quality Score</div><div class="r-val" id="report-stat-qscore" style="color:#10b981;">91 / 100</div></div>
+              </div>
+
+              <div style="margin-top:20px; font-size:13px; line-height:1.6;">
+                <strong>Diagnostics & Actionable Recommendations:</strong>
+                <ol style="padding-left:20px; margin-top:6px;">
+                  <li>High-speed fiber/5G transport verified with 99.8% packet delivery rate.</li>
+                  <li>DoH encryption enabled for secure, DNS-leak free browsing.</li>
+                  <li>Optimal for 4K live broadcasts, telehealth consultations, and enterprise ERP sync.</li>
+                </ol>
+              </div>
+
+              <!-- Official Verification Portal Banner -->
+              <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #cbd5e1; padding-top:12px; margin-top:20px; font-size:11px; color:#64748b;">
+                <div>
+                  <strong>Official Verification Portal:</strong> 
+                  <a href="https://net-scopeindia.vercel.app/" target="_blank" style="color:#2563eb; text-decoration:none; font-weight:600;">https://net-scopeindia.vercel.app/</a>
+                </div>
+                <div>NetScope Enterprise Diagnostics</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 19: AI NETWORK ASSISTANT                -->
+        <!-- ========================================== -->
+        <section class="tab-pane" id="tab-ai">
+          <div class="card" style="margin-bottom: 20px;">
+            <div class="card-header">
+              <div style="display:flex; align-items:center; gap:10px;">
+                <div class="brand-icon" style="background:#7c3aed; width:34px; height:34px;"><i class="fa-solid fa-robot"></i></div>
+                <div>
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <h3 class="card-title" style="margin:0;">Ask NetScope AI Assistant</h3>
+                    <span class="data-origin-badge badge-ai">Live Telemetry Reasoning</span>
+                  </div>
+                  <span style="font-size:11px; color:var(--text-secondary);">Provides contextual recommendations based on your actual measured speed, latency, jitter & Wi-Fi metrics</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quick Suggestion Chips -->
+            <div class="ai-chips-wrapper">
+              <div class="ai-quick-chip" data-prompt="Run a full network diagnostic audit"><i class="fa-solid fa-stethoscope"></i> Full Diagnostic Scan</div>
+              <div class="ai-quick-chip" data-prompt="Which carrier is best in my region?"><i class="fa-solid fa-building-columns"></i> Best carrier in my region</div>
+              <div class="ai-quick-chip" data-prompt="Find the nearest best 5G spot"><i class="fa-solid fa-tower-cell"></i> Nearest 5G Spot Finder</div>
+              <div class="ai-quick-chip" data-prompt="Is my connection good for BGMI & Valorant?"><i class="fa-solid fa-gamepad"></i> Gaming & latency check</div>
+              <div class="ai-quick-chip" data-prompt="How can I optimize my Wi-Fi channel?"><i class="fa-solid fa-wifi"></i> Wi-Fi channel optimization</div>
+              <div class="ai-quick-chip" data-prompt="Why is my internet slow?"><i class="fa-solid fa-gauge-simple-high"></i> Troubleshoot slow speeds</div>
+            </div>
+
+            <!-- Chat Window -->
+            <div id="ai-chat-messages" class="ai-chat-container">
+              <div class="ai-message bot">
+                <div class="ai-avatar"><i class="fa-solid fa-robot"></i></div>
+                <div class="ai-bubble">
+                  Namaste! I am your <strong>NetScope AI Network Assistant</strong>. I analyze your live telemetry (speed, latency, jitter, packet loss, and Wi-Fi channels). How can I assist your network optimization today?
+                </div>
+              </div>
+            </div>
+
+            <!-- Input Bar -->
+            <div class="input-group" style="margin-top:14px;">
+              <input type="text" class="text-input" id="ai-chat-input" placeholder="Ask anything about your connection, speeds, ping, or carriers...">
+              <button class="action-btn" id="btn-ai-send" style="background:#7c3aed;"><i class="fa-solid fa-paper-plane"></i> Send</button>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- ANDROID MOBILE BOTTOM NAVIGATION BAR (Standard 5 Ergonomic Tabs) -->
+  <nav class="mobile-bottom-nav">
+    <div class="nav-item active" data-tab="tab-dashboard">
+      <i class="fa-solid fa-house"></i>
+      <span>Home</span>
+    </div>
+    <div class="nav-item" data-tab="tab-speed">
+      <i class="fa-solid fa-gauge-high"></i>
+      <span>Speed</span>
+    </div>
+    <div class="nav-item" data-tab="tab-more-hub">
+      <i class="fa-solid fa-shapes"></i>
+      <span>Tools</span>
+    </div>
+    <div class="nav-item" data-tab="tab-map">
+      <i class="fa-solid fa-tower-cell"></i>
+      <span>Coverage</span>
+    </div>
+    <div class="nav-item" data-tab="tab-history">
+      <i class="fa-solid fa-clock-rotate-left"></i>
+      <span>History</span>
+    </div>
+  </nav>
+
+  <!-- Component Scripts -->
+  <script src="js/components/speed-test.js"></script>
+  <script src="js/components/api-tester.js"></script>
+  <script src="js/components/domain-inspector.js"></script>
+  <script src="js/components/network-suite.js"></script>
+  
+  <!-- Feature Modules -->
+  <script src="js/modules/splash.js"></script>
+  <script src="js/modules/dashboard.js"></script>
+  <script src="js/modules/service-status.js"></script>
+  <script src="js/modules/slow-diagnostics.js"></script>
+  <script src="js/modules/onboarding.js"></script>
+  <script src="js/modules/share-card.js"></script>
+  <script src="js/modules/telecom-intel.js"></script>
+  <script src="js/modules/5g-analyzer.js"></script>
+  <script src="js/modules/cell-map.js"></script>
+  <script src="js/modules/live-locator.js"></script>
+  <script src="js/modules/outage-monitor.js"></script>
+  <script src="js/modules/network-quality.js"></script>
+  <script src="js/modules/gaming-mode.js"></script>
+  <script src="js/modules/wifi-analyzer.js"></script>
+  <script src="js/modules/dns-benchmark.js"></script>
+  <script src="js/modules/route-analyzer.js"></script>
+  <script src="js/modules/security-audit.js"></script>
+  <script src="js/modules/history.js"></script>
+  <script src="js/modules/quick-audit.js"></script>
+  <script src="js/modules/ai-assistant.js"></script>
+  <script src="js/modules/system-debugger.js"></script>
+
+  <!-- Main Router & Location State -->
+  <script src="js/app.js"></script>
+</body>
+</html>
