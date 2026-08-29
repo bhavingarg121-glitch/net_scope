@@ -260,6 +260,60 @@
     </div>
   </div>
 
+  <!-- 1.5 POST-TEST ANDROID APK DOWNLOAD PROMPT MODAL -->
+  <div id="apk-download-modal" class="modal-overlay">
+    <div class="modal-card" style="max-width: 520px; text-align: center;">
+      <div class="modal-header" style="border-bottom: none; padding-bottom: 0;">
+        <button id="btn-close-apk-modal" class="modal-close-btn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body" style="padding-top: 0;">
+        <div style="width: 76px; height: 76px; margin: 0 auto 16px; border-radius: 22px; background: linear-gradient(135deg, #10b981, #059669); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 38px; box-shadow: 0 10px 28px rgba(16,185,129,0.4);">
+          <i class="fa-brands fa-android"></i>
+        </div>
+
+        <div style="display:inline-flex; align-items:center; gap:6px; background:rgba(16,185,129,0.15); padding:4px 12px; border-radius:99px; font-size:11px; font-weight:700; color:#10b981; margin-bottom:10px;">
+          <i class="fa-solid fa-sparkles"></i> TEST COMPLETED &bull; RECOMMENDED UPGRADE
+        </div>
+
+        <h2 style="font-family:var(--font-heading); font-size: 22px; font-weight: 800; color:var(--text-main); margin-bottom: 8px;">
+          Get the Official NetScope Android App
+        </h2>
+        
+        <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 20px; max-width: 440px; margin-left: auto; margin-right: auto;">
+          Experience 10x faster native speed testing, real-time 5G signal tower radar, background latency alerts, and full offline diagnostics right on your device.
+        </p>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px; text-align:left;">
+          <div style="background:var(--bg-app); border:1px solid var(--border-light); border-radius:var(--radius-sm); padding:10px 12px;">
+            <div style="font-size:13px; font-weight:700; color:var(--text-main); margin-bottom:2px;"><i class="fa-solid fa-tower-cell" style="color:#10b981;"></i> 5G Signal Radar</div>
+            <div style="font-size:11px; color:var(--text-secondary);">Direct mobile cell tower telemetry</div>
+          </div>
+          <div style="background:var(--bg-app); border:1px solid var(--border-light); border-radius:var(--radius-sm); padding:10px 12px;">
+            <div style="font-size:13px; font-weight:700; color:var(--text-main); margin-bottom:2px;"><i class="fa-solid fa-bolt" style="color:#2563eb;"></i> 10x Faster & Offline</div>
+            <div style="font-size:11px; color:var(--text-secondary);">No browser load times or caching</div>
+          </div>
+          <div style="background:var(--bg-app); border:1px solid var(--border-light); border-radius:var(--radius-sm); padding:10px 12px;">
+            <div style="font-size:13px; font-weight:700; color:var(--text-main); margin-bottom:2px;"><i class="fa-solid fa-bell" style="color:#f59e0b;"></i> Background Ping</div>
+            <div style="font-size:11px; color:var(--text-secondary);">Instant alerts on packet drops</div>
+          </div>
+          <div style="background:var(--bg-app); border:1px solid var(--border-light); border-radius:var(--radius-sm); padding:10px 12px;">
+            <div style="font-size:13px; font-weight:700; color:var(--text-main); margin-bottom:2px;"><i class="fa-solid fa-shield-check" style="color:#7c3aed;"></i> 100% Free & Safe</div>
+            <div style="font-size:11px; color:var(--text-secondary);">Open source on GitHub</div>
+          </div>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <a href="https://github.com/bhavingarg121-glitch/net_scope/releases" target="_blank" class="action-btn" id="btn-modal-download-apk" style="background: linear-gradient(135deg, #10b981, #059669); padding:14px; font-size:15px; font-weight:700; box-shadow:0 6px 20px rgba(16,185,129,0.4); text-decoration:none; display:flex; align-items:center; justify-content:center; gap:8px;">
+            <i class="fa-brands fa-android" style="font-size:18px;"></i> Download NetScope APK (v1.0.0)
+          </a>
+          <button class="action-btn btn-secondary" id="btn-modal-continue-web" style="padding:10px; font-size:13px;">
+            Continue on Web
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- 2. QUICK NETWORK AUDIT MODAL -->
   <div id="quick-audit-modal" class="modal-overlay">
     <div class="modal-card">
@@ -2155,6 +2209,7 @@
   <script src="js/modules/quick-audit.js"></script>
   <script src="js/modules/ai-assistant.js"></script>
   <script src="js/modules/system-debugger.js"></script>
+  <script src="js/modules/apk-prompt.js"></script>
 
   <!-- Main Router & Location State -->
   <script src="js/app.js"></script>

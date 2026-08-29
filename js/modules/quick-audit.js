@@ -208,6 +208,11 @@
       }
 
       if (window.showToast) window.showToast(`Complete Network Check Finished! Health Score: ${healthScore}/100`, 'success');
+
+      // Trigger post-test Android APK download prompt for web users
+      if (window.notifyTestCompleted) {
+        window.notifyTestCompleted('Complete Check');
+      }
     };
 
     function updateStepUI(stepId, text, isDone = true) {

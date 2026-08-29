@@ -385,6 +385,11 @@ document.addEventListener('DOMContentLoaded', () => {
       btnStart.innerHTML = '<i class="fa-solid fa-play"></i> Run Live Speed Test';
       if (window.showToast) window.showToast(`Real Speed Test Complete: ${finalDownloadMbps} Mbps Download (${totalTransferredMb} MB transferred)`, 'success');
 
+      // Trigger post-test Android APK download prompt for web users
+      if (window.notifyTestCompleted) {
+        window.notifyTestCompleted('Speed Test');
+      }
+
     } catch (err) {
       console.error('Speed test error:', err);
       if (errorBox) errorBox.style.display = 'flex';
