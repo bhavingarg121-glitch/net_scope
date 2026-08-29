@@ -1,14 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
+        xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">
   <url>
     <loc>https://net-scopeindia.vercel.app/</loc>
-    <lastmod>2026-08-26</lastmod>
+    <lastmod>2026-08-29</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://net-scopeindia.vercel.app/og-image.jpg</image:loc>
+      <image:title>NetScope India - Internet Speed Test &amp; 5G Telecom Analytics</image:title>
+      <image:caption>NetScope India Telecom Intelligence, Speed Test &amp; 5G Signal Radar</image:caption>
+    </image:image>
   </url>
   <url>
     <loc>https://bhavingarg121-glitch.github.io/net_scope/</loc>
-    <lastmod>2026-08-26</lastmod>
+    <lastmod>2026-08-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
