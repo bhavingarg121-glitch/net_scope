@@ -15,7 +15,7 @@
 
 ---
 
-## 📱 Features
+## Features
 
 - **Live GPS Telemetry & Radar**: Real-time high-accuracy location tracking, speed calculation ($\text{km/h}$), dynamic bearing, MSL altitude, and breadcrumb movement trail.
 - **Hardware-Assisted Dynamic Compass**: Real-time hardware magnetometer & orientation sensor fusion ($0^\circ - 360^\circ$) with instant cardinal heading readouts.
@@ -24,11 +24,11 @@
 - **Multi-Stage Speedometer Engine**: Real multi-pass chunked speed test measuring download, upload, ping, jitter, and packet loss.
 - **AI Network Diagnostic Assistant**: Hardware telemetry-correlated assistant with multi-prompt diagnostic capability and step-by-step connection recovery.
 - **Enterprise Diagnostic PDF Certificate**: Formatted telecom audit certificate ready for export and print.
-- **100% Emoji-Free Clean UI**: Enterprise typography with FontAwesome vector icons and dark/light mode.
+- **Clean Professional Interface**: Enterprise typography with FontAwesome vector icons and dark/light mode.
 
 ---
 
-## 🏗️ Project Architecture
+## Project Architecture
 
 ```
 NetScopeApp/
@@ -54,7 +54,7 @@ NetScopeApp/
 
 ---
 
-## 🚀 Building & Running
+## Building & Running
 
 ### Prerequisites
 - **Android Studio** (Koala / Ladybug or newer)
@@ -74,15 +74,15 @@ app/build/outputs/apk/debug/app-debug.apk
 ### Open in Android Studio
 1. Launch Android Studio $\to$ Click **Open**.
 2. Select the `NetScopeApp` folder.
-3. Click the green **Run (▶)** button to install on your connected device or emulator.
+3. Click the green **Run** button to install on your connected device or emulator.
 
 ---
 
-## 🌐 Official Web Portal
+## Official Web Portal
 A companion cloud web portal is live at:
 [https://net-scopeindia.vercel.app/](https://net-scopeindia.vercel.app/)
 
 ---
 
-## 📄 License
+## License
 This project is proprietary and maintained for NetScope India Telecom Analytics.

@@ -52,7 +52,7 @@
     ctx.fillStyle = '#ffffff';
     ctx.font = 'bold 22px Outfit, sans-serif';
     ctx.textAlign = 'left';
-    ctx.fillText('⚡ NETSCOPE', 32, 48);
+    ctx.fillText('NETSCOPE', 32, 48);
 
     ctx.fillStyle = '#94a3b8';
     ctx.font = '12px Inter, sans-serif';
@@ -85,7 +85,7 @@
     ctx.font = 'bold 18px Outfit, sans-serif';
     ctx.fillText('/ 100', 115, 172);
 
-    const ratingText = d.score >= 85 ? '✓ EXCELLENT QoS' : d.score >= 70 ? '✓ GOOD QoS' : '⚠ SUB-OPTIMAL';
+    const ratingText = d.score >= 85 ? 'EXCELLENT QoS' : d.score >= 70 ? 'GOOD QoS' : 'ACTION RECOMMENDED';
     ctx.fillStyle = d.score >= 85 ? '#10b981' : d.score >= 70 ? '#f59e0b' : '#ef4444';
     ctx.font = 'bold 13px Inter, sans-serif';
     ctx.textAlign = 'right';
@@ -138,7 +138,7 @@
 
   function getShareSummaryText() {
     if (!currentCardData) return 'Tested with NetScope India';
-    return `⚡ NetScope India Network Report\n🏆 Score: ${currentCardData.score}/100\n⬇ Download: ${currentCardData.download} Mbps\n⬆ Upload: ${currentCardData.upload} Mbps\n⏱ Ping: ${currentCardData.ping} ms (Jitter: ${currentCardData.jitter} ms)\n📡 Carrier: ${currentCardData.isp}\n🔗 Check your speed: https://net-scopeindia.vercel.app/`;
+    return `NetScope India Network Report\nScore: ${currentCardData.score}/100\nDownload: ${currentCardData.download} Mbps\nUpload: ${currentCardData.upload} Mbps\nPing: ${currentCardData.ping} ms (Jitter: ${currentCardData.jitter} ms)\nCarrier: ${currentCardData.isp}\nCheck your speed: https://net-scopeindia.vercel.app/`;
   }
 
   document.addEventListener('DOMContentLoaded', () => {

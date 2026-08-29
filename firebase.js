@@ -61,7 +61,7 @@ let analytics = null;
 isSupported().then((yes) => {
     if (yes) {
         analytics = getAnalytics(app);
-        console.log("📊 Firebase Analytics Enabled");
+        console.log("Firebase Analytics Enabled");
     }
 });
 
@@ -75,9 +75,9 @@ async function saveTestResult(data) {
             createdAt: serverTimestamp()
         });
 
-        console.log("✅ Speed test saved");
+        console.log("Speed test saved");
     } catch (err) {
-        console.error("❌ saveTestResult error:", err);
+        console.error("saveTestResult error:", err);
     }
 }
 
@@ -91,9 +91,9 @@ async function saveAIInsight(message) {
             createdAt: serverTimestamp()
         });
 
-        console.log("✅ AI insight saved");
+        console.log("AI insight saved");
     } catch (err) {
-        console.error("❌ saveAIInsight error:", err);
+        console.error("saveAIInsight error:", err);
     }
 }
 
@@ -107,9 +107,9 @@ async function saveActivity(activity) {
             createdAt: serverTimestamp()
         });
 
-        console.log("✅ Activity saved");
+        console.log("Activity saved");
     } catch (err) {
-        console.error("❌ saveActivity error:", err);
+        console.error("saveActivity error:", err);
     }
 }
 
@@ -124,30 +124,36 @@ async function getLatestTests() {
             limit(10)
         );
 
-        const snap = await getDocs(q);
+        const snapshot = await getDocs(q);
 
-        return snap.docs.map(d => ({
-            id: d.id,
-            ...d.data()
-        }));
+        const list = [];
+        snapshot.forEach((doc) => {
+            list.push({ id: doc.id, ...doc.data() });
+        });
 
+        return list;
     } catch (err) {
-        console.error("❌ getLatestTests error:", err);
+        console.error("getLatestTests error:", err);
         return [];
     }
 }
 
 // ==========================
-// REALTIME SPEED TEST LISTENER
+// REALTIME SPEED TEST FEED
 // ==========================
 function listenSpeedTests(callback) {
-    return onSnapshot(collection(db, "speedtests"), (snap) => {
-        const data = snap.docs.map(d => ({
-            id: d.id,
-            ...d.data()
-        }));
+    const q = query(
+        collection(db, "speedtests"),
+        orderBy("createdAt", "desc"),
+        limit(10)
+    );
 
-        callback(data);
+    return onSnapshot(q, (snapshot) => {
+        const list = [];
+        snapshot.forEach((doc) => {
+            list.push({ id: doc.id, ...doc.data() });
+        });
+        callback(list);
     });
 }
 
@@ -159,18 +165,19 @@ async function getAIInsights() {
         const q = query(
             collection(db, "aiInsights"),
             orderBy("createdAt", "desc"),
-            limit(5)
+            limit(10)
         );
 
-        const snap = await getDocs(q);
+        const snapshot = await getDocs(q);
 
-        return snap.docs.map(d => ({
-            id: d.id,
-            ...d.data()
-        }));
+        const list = [];
+        snapshot.forEach((doc) => {
+            list.push({ id: doc.id, ...doc.data() });
+        });
 
+        return list;
     } catch (err) {
-        console.error("❌ getAIInsights error:", err);
+        console.error("getAIInsights error:", err);
         return [];
     }
 }
@@ -186,27 +193,30 @@ async function getActivities() {
             limit(10)
         );
 
-        const snap = await getDocs(q);
+        const snapshot = await getDocs(q);
 
-        return snap.docs.map(d => ({
-            id: d.id,
-            ...d.data()
-        }));
+        const list = [];
+        snapshot.forEach((doc) => {
+            list.push({ id: doc.id, ...doc.data() });
+        });
 
+        return list;
     } catch (err) {
-        console.error("❌ getActivities error:", err);
+        console.error("getActivities error:", err);
         return [];
     }
 }
 
 // ==========================
-// ADMIN LOGIN (CONTROL CENTER)
+// ADMIN LOGIN
 // ==========================
 async function loginAdmin(email, password) {
     try {
-        return await signInWithEmailAndPassword(auth, email, password);
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        return userCredential.user;
     } catch (err) {
-        console.error("❌ login error:", err);
+        console.error("login error:", err);
+        throw err;
     }
 }
 
@@ -215,9 +225,9 @@ async function loginAdmin(email, password) {
 // ==========================
 onAuthStateChanged(auth, (user) => {
     if (user) {
-        console.log("🟢 Admin logged in:", user.email);
+        console.log("Admin logged in:", user.email);
     } else {
-        console.log("🔴 Admin logged out");
+        console.log("Admin logged out");
     }
 });
 
@@ -225,11 +235,11 @@ onAuthStateChanged(auth, (user) => {
 // ONLINE/OFFLINE STATUS
 // ==========================
 window.addEventListener("online", () => {
-    console.log("🟢 Internet Connected");
+    console.log("Internet Connected");
 });
 
 window.addEventListener("offline", () => {
-    console.log("🔴 Internet Disconnected");
+    console.log("Internet Disconnected");
 });
 
 // ==========================
@@ -252,4 +262,4 @@ window.loginAdmin = loginAdmin;
 // ==========================
 // READY
 // ==========================
-console.log("🚀 NetScope Firebase Engine Ready (FIXED)");
+console.log("NetScope Firebase Engine Ready");

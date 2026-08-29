@@ -128,7 +128,7 @@
             </div>
 
             <div class="pill ${healthScore >= 85 ? 'pill-success' : healthScore >= 70 ? 'pill-warning' : 'pill-danger'}" style="font-size:13px; display:inline-block; padding:4px 16px; margin-bottom:16px;">
-              ${healthScore >= 85 ? '✓ Excellent Overall Quality' : healthScore >= 70 ? '✓ Good Quality' : '⚠ Action Recommended'}
+              ${healthScore >= 85 ? 'Excellent Overall Quality' : healthScore >= 70 ? 'Good Quality' : 'Action Recommended'}
             </div>
 
             <!-- Health Breakdown Grid -->
@@ -208,6 +208,11 @@
       }
 
       if (window.showToast) window.showToast(`Complete Network Check Finished! Health Score: ${healthScore}/100`, 'success');
+
+      // Trigger post-test Android APK download prompt for web users
+      if (window.notifyTestCompleted) {
+        window.notifyTestCompleted('Complete Check');
+      }
     };
 
     function updateStepUI(stepId, text, isDone = true) {
